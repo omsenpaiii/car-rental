@@ -18,7 +18,7 @@ export default async function OurFleetsPage({ searchParams }: FleetsPageProps) {
         <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Our fleets"
-            title="Browse the Philips fleet"
+            title="Browse the Phillips Car Rental fleet"
             description="The page mirrors the familiar listing-first flow: filters up top, available cars underneath, and a practical grid built for quick comparison."
           />
           <div className="mt-10">

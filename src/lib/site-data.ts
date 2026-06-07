@@ -14,11 +14,11 @@ export type FleetItem = {
 };
 
 export const siteConfig = {
-  brand: "Philips Car Rental",
+  brand: "Phillips Car Rental",
   tagline: "The Wheels to your Dreams! Rent Smart, Ride Happy",
   phone: "1300 315 275",
-  email: "booking@philipscarrental.com.au",
-  address: "132 Indian Dr, Keysborough VIC 3173",
+  email: "booking@phillipscarrental.com.au",
+  address: "132 Indian Dr, Keysborough, Melbourne VIC 3173, Australia",
   nav: [
     { label: "Home", href: "/" },
     { label: "Our Fleets", href: "/our-fleets" },
@@ -33,7 +33,7 @@ export const siteConfig = {
 
 export const bookingFormDefaults = {
   locations: [
-    "Philips Rental Office (132 Indian Dr, Keysborough VIC 3173)",
+    "Phillips Car Rental Office (132 Indian Dr, Keysborough, Melbourne VIC 3173, Australia)",
     "Melbourne Airport Pickup Hub",
     "Southern Cross City Desk",
   ],
@@ -129,7 +129,7 @@ export const testimonials = [
     name: "Ava Thompson",
     role: "Family road trip",
     quote:
-      "We needed a roomy SUV at short notice and Philips made it feel effortless from start to finish.",
+      "We needed a roomy SUV at short notice and Phillips Car Rental made it feel effortless from start to finish.",
   },
 ];
 

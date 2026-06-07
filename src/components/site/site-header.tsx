@@ -24,11 +24,11 @@ export function SiteHeader() {
       <div className="mx-auto flex w-full max-w-[1290px] items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-3">
           <div className="relative flex flex-col leading-none">
-            <span className="text-[31px] font-extrabold uppercase tracking-[0.08em] text-[#272727]">
-              Philips
+            <span className="text-[22px] font-extrabold uppercase tracking-[0.08em] text-[#272727] sm:text-[24px]">
+              Phillips Car Rental
             </span>
             <span className="mt-1 text-[11px] font-normal uppercase tracking-[0.62em] text-[#727272]">
-              Car Rental
+              Melbourne Australia
             </span>
           </div>
         </Link>
@@ -67,7 +67,7 @@ export function SiteHeader() {
           </SheetTrigger>
           <SheetContent side="right" className="w-[84vw] max-w-sm bg-white">
             <SheetHeader className="border-b border-slate-200 px-6 py-5">
-              <SheetTitle>Philips Car Rental</SheetTitle>
+              <SheetTitle>Phillips Car Rental</SheetTitle>
               <SheetDescription>Navigate the booking and fleet pages.</SheetDescription>
             </SheetHeader>
             <div className="flex flex-col gap-2 px-6 py-6">

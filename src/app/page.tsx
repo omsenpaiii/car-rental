@@ -36,7 +36,7 @@ export default function Home() {
         <div className="mx-auto grid w-full max-w-[1290px] gap-10 px-4 pb-24 pt-14 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:items-center lg:pt-20">
           <div className="z-10 flex flex-col justify-center">
             <h1 className="max-w-[760px] text-[50px] font-semibold uppercase leading-[1.08] text-[#272727] sm:text-[64px] lg:text-[78px]">
-              PHILIPS CAR RENTAL
+              PHILLIPS CAR RENTAL
             </h1>
             <p className="mt-10 max-w-[760px] text-[26px] font-light leading-[1.45] text-[#727272]">
               {siteConfig.tagline}
@@ -66,7 +66,7 @@ export default function Home() {
           <div className="relative min-h-[320px] lg:min-h-[620px]">
             <Image
               src="https://mobiscarrental.com.au/wp-content/uploads/2024/09/car-home-2-1.png"
-              alt="Philips car rental featured vehicle"
+              alt="Phillips Car Rental featured vehicle"
               fill
               priority
               className="object-contain object-center"
@@ -108,7 +108,7 @@ export default function Home() {
           <div className="relative min-h-[360px] overflow-hidden rounded-[32px]">
             <Image
               src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1400&q=80"
-              alt="Interior detail for Philips Car Rental"
+              alt="Interior detail for Phillips Car Rental"
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 50vw"
@@ -118,7 +118,7 @@ export default function Home() {
             <SectionHeading
               eyebrow="About us"
               title="Modern convenience, grounded in the same practical rental experience people already trust"
-              description="This first version mirrors the familiar Mobis-style information architecture while polishing the experience into a cleaner, more responsive Philips brand."
+              description="This first version mirrors the familiar Mobis-style information architecture while polishing the experience into a cleaner, more responsive Phillips Car Rental brand for Melbourne, Australia."
             />
             <div className="grid gap-4 sm:grid-cols-2">
               {whyChooseUs.map((item) => (
@@ -169,7 +169,7 @@ export default function Home() {
           <SectionHeading
             eyebrow="Why choose us"
             title="Everything important, without the clutter"
-            description="Philips keeps the signal strong: dependable support, clean interfaces, and straightforward booking tools."
+            description="Phillips Car Rental keeps the signal strong for Melbourne, Australia: dependable support, clean interfaces, and straightforward booking tools."
             inverted
           />
             <div className="flex flex-col gap-4">

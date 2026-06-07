@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Oxanium, Poppins } from "next/font/google";
 import "./globals.css";
-import { SiteFooter } from "@/components/site/site-footer";
-import { SiteHeader } from "@/components/site/site-header";
+import { SiteChrome } from "@/components/site/site-chrome";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -17,8 +16,8 @@ const oxanium = Oxanium({
 });
 
 export const metadata: Metadata = {
-  title: "Philips Car Rental",
-  description: "Philips Car Rental booking website patterned after the Mobis Car Rental layout.",
+  title: "Phillips Car Rental",
+  description: "Phillips Car Rental booking website patterned after the Mobis Car Rental layout.",
 };
 
 export default function RootLayout({
@@ -32,11 +31,7 @@ export default function RootLayout({
       className={`${poppins.variable} ${oxanium.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-white text-slate-950">
-        <div className="flex min-h-screen flex-col">
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-        </div>
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );

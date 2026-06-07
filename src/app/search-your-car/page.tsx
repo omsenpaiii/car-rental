@@ -16,7 +16,7 @@ export default function SearchYourCarPage() {
       </section>
 
       <MotionSection className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
-        <BookingForm title="Philips Car Rental" showMapLink />
+        <BookingForm title="Phillips Car Rental" showMapLink />
       </MotionSection>
     </div>
   );

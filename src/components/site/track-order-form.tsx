@@ -60,8 +60,8 @@ export function TrackOrderForm() {
             <div className="flex flex-col gap-1">
               <p className="font-semibold text-slate-950">Booking confirmed and ready</p>
               <p className="text-sm leading-6 text-slate-600">
-                Your Philips pickup is scheduled for tomorrow at 10:00 from the Dandenong South
-                office.
+                Your Phillips Car Rental pickup is scheduled for tomorrow at 10:00 from the
+                Melbourne pickup desk.
               </p>
             </div>
           </div>
