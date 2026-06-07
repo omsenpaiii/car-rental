@@ -8,8 +8,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-mono: var(--font-oxanium);
+  --font-heading: var(--font-heading);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,24 +49,26 @@
 }
 
 :root {
-  --background: oklch(0.99 0.005 90);
-  --foreground: oklch(0.23 0.02 262);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.23 0.02 262);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.23 0.02 262);
-  --primary: oklch(0.84 0.16 84);
-  --primary-foreground: oklch(0.2 0.01 262);
-  --secondary: oklch(0.97 0.005 95);
-  --secondary-foreground: oklch(0.23 0.02 262);
-  --muted: oklch(0.97 0.004 95);
-  --muted-foreground: oklch(0.53 0.02 250);
-  --accent: oklch(0.97 0.004 95);
-  --accent-foreground: oklch(0.23 0.02 262);
+  --font-sans: var(--font-poppins);
+  --font-heading: var(--font-oxanium);
+  --background: #f8faff;
+  --foreground: #272727;
+  --card: #ffffff;
+  --card-foreground: #272727;
+  --popover: #ffffff;
+  --popover-foreground: #272727;
+  --primary: #11ac69;
+  --primary-foreground: #ffffff;
+  --secondary: #f8faff;
+  --secondary-foreground: #272727;
+  --muted: #f2f5fb;
+  --muted-foreground: #727272;
+  --accent: #f2f5fb;
+  --accent-foreground: #272727;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.008 95);
-  --input: oklch(0.92 0.008 95);
-  --ring: oklch(0.84 0.16 84);
+  --border: #d8dde8;
+  --input: #d8dde8;
+  --ring: #11ac69;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -134,7 +136,7 @@
   h2,
   h3,
   h4 {
-    @apply font-medium tracking-tight;
+    @apply tracking-tight;
   }
 
   a,
@@ -156,18 +158,26 @@
   }
 
   .booking-label {
-    @apply text-sm font-medium text-slate-600;
+    @apply text-[18px] font-normal text-[#727272];
   }
 
   .booking-icon-wrap {
-    @apply flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4;
+    @apply flex h-[62px] items-center gap-3 rounded-[18px] border border-[#d8dde8] bg-white px-4;
   }
 
   .booking-trigger {
-    @apply h-auto w-full border-0 bg-transparent px-0 py-0 text-slate-950 shadow-none focus-visible:ring-0;
+    @apply h-auto w-full border-0 bg-transparent px-0 py-0 text-[16px] text-[#272727] shadow-none focus-visible:ring-0;
   }
 
   .booking-input {
-    @apply w-full bg-transparent text-sm text-slate-950 outline-none;
+    @apply w-full bg-transparent text-[16px] text-[#272727] outline-none;
+  }
+
+  .mobis-button {
+    @apply inline-flex items-center justify-center rounded-[12px] bg-[#11ac69] px-8 py-4 text-[17px] font-semibold uppercase tracking-[0.28em] text-white transition-colors hover:bg-[#0d8d56];
+  }
+
+  .mobis-link {
+    @apply inline-flex items-center gap-3 text-[17px] font-semibold uppercase tracking-[0.28em] text-[#272727];
   }
 }

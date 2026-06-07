@@ -1,22 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Oxanium, Poppins } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const oxanium = Oxanium({
+  variable: "--font-oxanium",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
   title: "Philips Car Rental",
-  description: "Responsive Philips-branded car rental website inspired by Mobis Car Rental.",
+  description: "Philips Car Rental booking website patterned after the Mobis Car Rental layout.",
 };
 
 export default function RootLayout({
@@ -27,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${poppins.variable} ${oxanium.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-white text-slate-950">
         <div className="flex min-h-screen flex-col">

@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, ChevronRight, Quote, Star } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Check, ChevronRight, Quote } from "lucide-react";
 
 import { BookingForm } from "@/components/site/booking-form";
 import { FleetCard } from "@/components/site/fleet-card";
@@ -9,7 +9,6 @@ import { SectionHeading } from "@/components/site/section-heading";
 import {
   carCategories,
   fleetItems,
-  heroMetrics,
   howItWorks,
   services,
   siteConfig,
@@ -22,63 +21,67 @@ export default function Home() {
 
   return (
     <div className="bg-white">
-      <section className="relative overflow-hidden border-b border-slate-200 bg-slate-950 text-white">
-        <div className="absolute inset-0">
-          <Image
-            src="https://images.unsplash.com/photo-1507136566006-cfc505b114fc?auto=format&fit=crop&w=1600&q=80"
-            alt="Philips Car Rental hero vehicle"
-            fill
-            priority
-            className="object-cover opacity-30"
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.28),transparent_30%),linear-gradient(135deg,rgba(15,23,42,0.92),rgba(15,23,42,0.76))]" />
-        </div>
-
-        <div className="relative mx-auto grid w-full max-w-7xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-24">
-          <div className="flex flex-col justify-center gap-8">
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/6 px-4 py-2 text-sm text-white/80">
-              <Star className="size-4 fill-amber-400 text-amber-400" />
-              Trusted by Melbourne drivers across business, airport, and family travel
-            </div>
-            <div className="flex flex-col gap-5">
-              <h1 className="max-w-2xl text-5xl font-semibold tracking-tight text-white sm:text-6xl">
-                {siteConfig.brand}
-              </h1>
-              <p className="max-w-xl text-lg leading-8 text-slate-200">{siteConfig.tagline}</p>
-            </div>
-            <div className="flex flex-col gap-4 sm:flex-row">
-              <Link
-                href="/our-fleets"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-amber-400 px-6 text-sm font-semibold text-slate-950 transition-transform duration-200 hover:-translate-y-0.5 hover:bg-amber-300"
-              >
-                View available cars
+      <section
+        className="relative overflow-hidden bg-[#f8faff] pb-[210px] text-[#272727]"
+        style={{
+          backgroundImage:
+            "url('https://mobiscarrental.com.au/wp-content/uploads/2024/09/newbanner-1.jpg')",
+          backgroundPosition: "center top",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          borderBottomLeftRadius: "40px",
+          borderBottomRightRadius: "40px",
+        }}
+      >
+        <div className="mx-auto grid w-full max-w-[1290px] gap-10 px-4 pb-24 pt-14 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:items-center lg:pt-20">
+          <div className="z-10 flex flex-col justify-center">
+            <h1 className="max-w-[760px] text-[50px] font-semibold uppercase leading-[1.08] text-[#272727] sm:text-[64px] lg:text-[78px]">
+              PHILIPS CAR RENTAL
+            </h1>
+            <p className="mt-10 max-w-[760px] text-[26px] font-light leading-[1.45] text-[#727272]">
+              {siteConfig.tagline}
+            </p>
+            <div className="mt-10 flex flex-col gap-5 sm:flex-row sm:items-center">
+              <Link href="/our-fleets" className="mobis-button">
+                Find a car
+                <span aria-hidden="true" className="ml-3 text-[20px] tracking-normal">
+                  →
+                </span>
               </Link>
-              <a
-                href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
-                className="inline-flex h-12 items-center justify-center rounded-full border border-white/15 px-6 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-              >
-                Call {siteConfig.phone}
-              </a>
+              <Link href="#how-it-works" className="mobis-link">
+                Learn more
+                <span aria-hidden="true" className="text-[20px] tracking-normal">
+                  →
+                </span>
+              </Link>
             </div>
-
-            <div className="grid max-w-xl grid-cols-3 gap-3">
-              {heroMetrics.map((metric) => (
-                <div key={metric.label} className="rounded-[22px] border border-white/10 bg-white/8 p-4 backdrop-blur-sm">
-                  <p className="text-2xl font-semibold text-white">{metric.value}</p>
-                  <p className="mt-1 text-sm text-slate-300">{metric.label}</p>
-                </div>
-              ))}
+            <div className="mt-12 flex items-end gap-3 text-[#272727]">
+              <span className="font-heading text-[54px] font-medium leading-none sm:text-[76px]">
+                $15.00
+              </span>
+              <span className="pb-2 text-[26px] font-light text-[#727272]">/Per Day</span>
             </div>
           </div>
 
-          <div className="lg:pt-4">
-            <BookingForm compact title="Search for your car" />
+          <div className="relative min-h-[320px] lg:min-h-[620px]">
+            <Image
+              src="https://mobiscarrental.com.au/wp-content/uploads/2024/09/car-home-2-1.png"
+              alt="Philips car rental featured vehicle"
+              fill
+              priority
+              className="object-contain object-center"
+              sizes="(max-width: 1024px) 100vw, 55vw"
+            />
           </div>
         </div>
       </section>
 
-      <MotionSection className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8" delay={0.05}>
+      <div className="relative z-20 mx-auto -mt-[170px] w-full max-w-[1390px] px-4 sm:px-6 lg:px-8">
+        <BookingForm compact title="" />
+      </div>
+
+      <div id="how-it-works" />
+      <MotionSection className="mx-auto w-full max-w-7xl px-4 pb-20 pt-24 sm:px-6 lg:px-8" delay={0.05}>
         <SectionHeading
           eyebrow="How it works"
           title="A booking flow that stays quick, clear, and road-focused"

@@ -20,28 +20,27 @@ export function SiteHeader() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 border-b border-[#ececec] bg-white">
+      <div className="mx-auto flex w-full max-w-[1290px] items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-2xl bg-amber-400 text-lg font-bold text-slate-950 shadow-sm">
-            P
-          </div>
-          <div className="flex flex-col">
-            <span className="text-base font-semibold tracking-tight text-slate-950">
-              Philips Car Rental
+          <div className="relative flex flex-col leading-none">
+            <span className="text-[31px] font-extrabold uppercase tracking-[0.08em] text-[#272727]">
+              Philips
             </span>
-            <span className="text-xs text-slate-500">Victoria&apos;s road-ready rental team</span>
+            <span className="mt-1 text-[11px] font-normal uppercase tracking-[0.62em] text-[#727272]">
+              Car Rental
+            </span>
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-12 md:flex">
           {siteConfig.nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "text-sm font-medium text-slate-600 transition-colors hover:text-slate-950",
-                pathname === item.href && "text-slate-950"
+                "text-[17px] font-semibold uppercase tracking-[0.28em] text-[#272727] transition-colors hover:text-[#11ac69]",
+                pathname === item.href && "text-[#11ac69]"
               )}
             >
               {item.label}
@@ -52,22 +51,16 @@ export function SiteHeader() {
         <div className="hidden items-center gap-3 md:flex">
           <a
             href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 transition-colors hover:text-slate-950"
+            className="inline-flex h-[68px] items-center gap-4 rounded-[10px] bg-[#11ac69] px-8 text-[17px] font-semibold tracking-[0.2em] text-white transition-colors hover:bg-[#0d8d56]"
           >
-            <Phone className="size-4 text-amber-500" />
+            <Phone className="size-5" />
             {siteConfig.phone}
           </a>
-          <Link
-            href="/search-your-car"
-            className="inline-flex h-11 items-center justify-center rounded-full bg-amber-400 px-5 text-sm font-semibold text-slate-950 transition-transform duration-200 hover:-translate-y-0.5 hover:bg-amber-300"
-          >
-            Book now
-          </Link>
         </div>
 
         <Sheet>
           <SheetTrigger
-            className="inline-flex size-10 items-center justify-center rounded-full border border-slate-200 text-slate-700 md:hidden"
+            className="inline-flex size-10 items-center justify-center rounded-full border border-[#d8dde8] text-[#272727] md:hidden"
             aria-label="Open menu"
           >
             <Menu />
@@ -83,8 +76,8 @@ export function SiteHeader() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "rounded-2xl px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950",
-                    pathname === item.href && "bg-slate-100 text-slate-950"
+                    "rounded-2xl px-4 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-[#272727] transition-colors hover:bg-[#f2f5fb] hover:text-[#11ac69]",
+                    pathname === item.href && "bg-[#f2f5fb] text-[#11ac69]"
                   )}
                 >
                   {item.label}
@@ -94,12 +87,12 @@ export function SiteHeader() {
             <div className="mt-auto flex flex-col gap-4 border-t border-slate-200 px-6 py-6">
               <a
                 href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
-                className="text-sm font-semibold text-slate-700"
+                className="rounded-[10px] bg-[#11ac69] px-5 py-4 text-center text-sm font-semibold uppercase tracking-[0.2em] text-white"
               >
                 {siteConfig.phone}
               </a>
               <Button
-                className="h-11 rounded-full bg-amber-400 text-slate-950 hover:bg-amber-300"
+                className="h-11 rounded-[10px] bg-[#11ac69] text-white hover:bg-[#0d8d56]"
                 onClick={() => {
                   window.location.href = "/search-your-car";
                 }}
