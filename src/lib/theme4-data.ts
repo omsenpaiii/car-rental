@@ -21,10 +21,10 @@ export type TuroCar = {
 };
 
 export const makeCategories = [
-  { name: "Tesla", logo: "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=150&q=80" },
+  { name: "Tesla", logo: "/theme4/tesla_model_3.png" },
   { name: "Porsche", logo: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=150&q=80" },
   { name: "BMW", logo: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=150&q=80" },
-  { name: "Jeep", logo: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=150&q=80" },
+  { name: "Jeep", logo: "/theme4/jeep_wrangler.png" },
   { name: "Mustang", logo: "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=150&q=80" },
   { name: "Mercedes", logo: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=150&q=80" },
 ];
@@ -43,7 +43,7 @@ export const turoCars: TuroCar[] = [
     isAllStarHost: true,
     hostName: "Marcus P.",
     hostAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80",
-    image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=800&q=80",
+    image: "/theme4/tesla_model_3.png",
     location: "Melbourne CBD, VIC",
     transmission: "Automatic",
     fuelType: "Electric",
@@ -85,7 +85,7 @@ export const turoCars: TuroCar[] = [
     isAllStarHost: false,
     hostName: "Dave M.",
     hostAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80",
-    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80",
+    image: "/theme4/jeep_wrangler.png",
     location: "Keysborough, VIC",
     transmission: "Automatic",
     fuelType: "Petrol",
