@@ -1,0 +1,766 @@
+"use client";
+
+import React, { useState, useEffect, Suspense } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Search, Calendar, Clock, MapPin, Compass, DollarSign, 
+  ShieldCheck, HelpCircle, Star, Sparkles, Plus, AlertCircle, Info 
+} from "lucide-react";
+import { makeCategories, turoCars, hostFaqs, renterFaqs } from "@/lib/theme4-data";
+
+function Theme4HomePageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  
+  // Set tab based on URL parameter or default to "rent"
+  const [activeTab, setActiveTab] = useState<"rent" | "lent">("rent");
+  
+  useEffect(() => {
+    if (tabParam === "lent") {
+      setActiveTab("lent");
+    } else {
+      setActiveTab("rent");
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (tab: "rent" | "lent") => {
+    setActiveTab(tab);
+    router.push(`/theme4?tab=${tab}`, { scroll: false });
+  };
+
+  // Rent Search State
+  const [searchLocation, setSearchLocation] = useState("Melbourne, VIC");
+  const [pickupDate, setPickupDate] = useState("2026-06-15");
+  const [returnDate, setReturnDate] = useState("2026-06-18");
+
+  // Lent Calculator State
+  const [carValue, setCarValue] = useState(45000); // Car value in AUD
+  const [daysPerMonth, setDaysPerMonth] = useState(12);
+  const projectedEarnings = Math.round((carValue * 0.002) * daysPerMonth * 12);
+
+  // Search Submit
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push(
+      `/theme4/search?location=${encodeURIComponent(searchLocation)}&pickup=${pickupDate}&return=${returnDate}`
+    );
+  };
+
+  // Add a Car Mock Form Modal State
+  const [isLendModalOpen, setIsLendModalOpen] = useState(false);
+  const [lendStep, setLendStep] = useState(1);
+  const [newLendCar, setNewLendCar] = useState({
+    make: "",
+    model: "",
+    year: "2023",
+    price: "80",
+    location: "Melbourne, VIC",
+  });
+
+  return (
+    <div className="bg-white min-h-screen pb-20">
+      {/* Top Rent / Lent Segmented Switch */}
+      <div className="flex justify-center pt-6 pb-2">
+        <div className="inline-flex bg-gray-100 p-1.5 rounded-full shadow-inner border border-gray-200">
+          <button
+            onClick={() => handleTabChange("rent")}
+            className={`px-8 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all duration-300 ${
+              activeTab === "rent"
+                ? "bg-turo-purple text-white shadow-md"
+                : "text-gray-600 hover:text-turo-purple"
+            }`}
+          >
+            Rent a Car
+          </button>
+          <button
+            onClick={() => handleTabChange("lent")}
+            className={`px-8 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all duration-300 ${
+              activeTab === "lent"
+                ? "bg-turo-purple text-white shadow-md"
+                : "text-gray-600 hover:text-turo-purple"
+            }`}
+          >
+            Lend your Car
+          </button>
+        </div>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {activeTab === "rent" ? (
+          <motion.div
+            key="rent-tab"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Rent Hero Section */}
+            <section className="relative h-[560px] flex items-center justify-center bg-gray-900 overflow-hidden">
+              <div className="absolute inset-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1800&q=80"
+                  alt="Road background"
+                  className="w-full h-full object-cover opacity-50 filter saturate-50"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+              </div>
+
+              <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
+                <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mb-6">
+                  Find the perfect car to <span className="text-turo-light text-turo-purple underline decoration-turo-purple underline-offset-4">rent</span> in Melbourne
+                </h1>
+                <p className="text-lg sm:text-xl text-gray-200 font-medium max-w-2xl mx-auto mb-10">
+                  Skip the rental counter. Rent unique cars from local hosts, with custom delivery options.
+                </p>
+
+                {/* Turo-style Search Widget */}
+                <form
+                  onSubmit={handleSearchSubmit}
+                  className="bg-white rounded-3xl md:rounded-full shadow-2xl p-4 md:py-2 md:px-3 flex flex-col md:flex-row items-center gap-3 max-w-3xl mx-auto border border-gray-100"
+                >
+                  {/* Location Input */}
+                  <div className="flex items-center gap-3 px-3 py-2 w-full md:w-1/3 border-b md:border-b-0 md:border-r border-gray-200">
+                    <MapPin className="text-turo-purple size-5 shrink-0" />
+                    <div className="text-left w-full">
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                        Where
+                      </label>
+                      <input
+                        type="text"
+                        value={searchLocation}
+                        onChange={(e) => setSearchLocation(e.target.value)}
+                        placeholder="City, airport, or hotel"
+                        className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Dates Pickers */}
+                  <div className="flex items-center gap-3 px-3 py-2 w-full md:w-1/2">
+                    <Calendar className="text-turo-purple size-5 shrink-0" />
+                    <div className="flex gap-4 w-full justify-between">
+                      <div className="text-left w-1/2">
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                          From
+                        </label>
+                        <input
+                          type="date"
+                          value={pickupDate}
+                          onChange={(e) => setPickupDate(e.target.value)}
+                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer"
+                        />
+                      </div>
+                      <div className="h-8 w-px bg-gray-200 self-center hidden sm:block"></div>
+                      <div className="text-left w-1/2">
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                          Until
+                        </label>
+                        <input
+                          type="date"
+                          value={returnDate}
+                          onChange={(e) => setReturnDate(e.target.value)}
+                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Search Button */}
+                  <button
+                    type="submit"
+                    className="w-full md:w-auto bg-turo-purple hover:bg-turo-hover text-white font-bold px-8 py-4 md:py-3.5 rounded-2xl md:rounded-full transition-colors flex items-center justify-center gap-2 shadow-lg shadow-turo-purple/20 cursor-pointer"
+                  >
+                    <Search className="size-4" />
+                    Search Cars
+                  </button>
+                </form>
+              </div>
+            </section>
+
+            {/* Browse by Category (Turo Brand Carousel) */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-2">
+                Browse by brand
+              </h2>
+              <p className="text-sm font-medium text-gray-500 mb-8">
+                Drive your dream car. Filter by popular makes in Melbourne.
+              </p>
+              
+              <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+                {makeCategories.map((make) => (
+                  <Link
+                    key={make.name}
+                    href={`/theme4/search?make=${make.name}`}
+                    className="flex flex-col items-center gap-3 shrink-0 p-4 border border-gray-100 rounded-2xl bg-white shadow-sm hover:shadow-md hover:border-turo-purple/30 transition-all duration-300 group cursor-pointer"
+                  >
+                    <div className="size-20 rounded-full overflow-hidden bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:scale-105 transition-transform">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={make.logo}
+                        alt={make.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <span className="text-sm font-bold text-gray-800 group-hover:text-turo-purple transition-colors">
+                      {make.name}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            {/* Featured marketplace cars */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+              <div className="flex justify-between items-end mb-8">
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-black text-gray-900">
+                    Find the perfect match
+                  </h2>
+                  <p className="text-sm font-medium text-gray-500 mt-1">
+                    Explore highly rated cars shared by Phillips P2P hosts.
+                  </p>
+                </div>
+                <Link
+                  href="/theme4/search"
+                  className="text-sm font-bold text-turo-purple hover:underline"
+                >
+                  View all cars →
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {turoCars.map((car) => (
+                  <Link
+                    key={car.id}
+                    href={`/theme4/car/${car.id}`}
+                    className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                  >
+                    {/* Car Image container */}
+                    <div className="relative h-48 sm:h-52 bg-gray-50 overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={car.image}
+                        alt={car.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      {car.isAllStarHost && (
+                        <span className="absolute top-4 left-4 bg-turo-purple text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                          All-Star Host
+                        </span>
+                      )}
+                      <span className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm text-gray-900 text-sm font-bold px-3 py-1 rounded-lg shadow-sm">
+                        ${car.pricePerDay} <span className="text-xs font-normal text-gray-500">/day</span>
+                      </span>
+                    </div>
+
+                    {/* Car details */}
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+                          <span className="font-semibold px-2 py-0.5 bg-gray-100 rounded-md">
+                            {car.category}
+                          </span>
+                          <span>•</span>
+                          <span>{car.transmission}</span>
+                          <span>•</span>
+                          <span>{car.fuelType}</span>
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-turo-purple transition-colors mb-2">
+                          {car.name}
+                        </h3>
+                        <p className="text-xs text-gray-400 font-medium mb-3">
+                          {car.location}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-3 border-t border-gray-100 mt-2">
+                        <div className="flex items-center text-amber-500 font-bold text-sm gap-0.5">
+                          <Star className="size-4 fill-current" />
+                          <span>{car.rating.toFixed(2)}</span>
+                        </div>
+                        <span className="text-xs text-gray-400">
+                          ({car.tripsCount} trips)
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            {/* Value Proposition */}
+            <section className="bg-turo-gray mt-24 py-20 border-y border-gray-200">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <span className="text-xs font-black text-turo-purple uppercase tracking-widest bg-turo-light px-3 py-1.5 rounded-full">
+                  Why Phillips P2P
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mt-6 mb-16">
+                  Car rental, redesigned for people
+                </h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                  <div className="flex flex-col items-center">
+                    <div className="bg-white p-5 rounded-3xl shadow-md text-turo-purple mb-6 border border-gray-100">
+                      <Compass className="size-8" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Endless Choice</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed max-w-sm">
+                      Choose from electric sedans, muscular sports convertibles, clean family SUVs, or rugged 4x4s.
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="bg-white p-5 rounded-3xl shadow-md text-turo-purple mb-6 border border-gray-100">
+                      <ShieldCheck className="size-8" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Total Safety</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed max-w-sm">
+                      Rent confidently knowing every trip includes comprehensive third-party insurance and 24/7 roadside assist.
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="bg-white p-5 rounded-3xl shadow-md text-turo-purple mb-6 border border-gray-100">
+                      <DollarSign className="size-8" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Locally Owned</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed max-w-sm">
+                      Skip rental corporation counters. Support local Melbourne car owners and get a more customized experience.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* FAQs for Renters */}
+            <section className="max-w-3xl mx-auto px-4 mt-24">
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 text-center mb-10">
+                Frequently asked questions
+              </h2>
+              <div className="space-y-6">
+                {renterFaqs.map((faq, index) => (
+                  <div key={index} className="border border-gray-200 rounded-2xl p-5 bg-white shadow-sm">
+                    <h3 className="font-bold text-gray-900 flex items-center gap-3">
+                      <HelpCircle className="text-turo-purple size-5 shrink-0" />
+                      {faq.question}
+                    </h3>
+                    <p className="mt-3 text-sm text-gray-600 pl-8 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="lent-tab"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Lent Hero Section */}
+            <section className="relative h-[560px] flex items-center justify-center bg-gray-900 overflow-hidden">
+              <div className="absolute inset-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=1800&q=80"
+                  alt="Modern garage"
+                  className="w-full h-full object-cover opacity-50 filter saturate-50"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+              </div>
+
+              <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
+                <span className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md">
+                  Phillips Host Network
+                </span>
+                <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mt-6 mb-6">
+                  Let your car work for you
+                </h1>
+                <p className="text-lg sm:text-xl text-gray-200 font-medium max-w-2xl mx-auto mb-10">
+                  Lend your vehicle, cover your car payments, and build a scalable rental business on Melbourne&apos;s premium P2P platform.
+                </p>
+
+                <button
+                  onClick={() => {
+                    setIsLendModalOpen(true);
+                    setLendStep(1);
+                  }}
+                  className="bg-turo-purple hover:bg-turo-hover text-white font-black px-10 py-5 rounded-full transition-colors flex items-center justify-center gap-2 mx-auto shadow-xl shadow-turo-purple/35 cursor-pointer text-base uppercase tracking-wider"
+                >
+                  <Plus className="size-5" />
+                  List your car now
+                </button>
+              </div>
+            </section>
+
+            {/* Earnings Calculator */}
+            <section className="max-w-4xl mx-auto px-4 sm:px-6 mt-20">
+              <div className="bg-white border border-gray-200 rounded-3xl shadow-xl p-8 sm:p-10 relative -mt-24 z-20">
+                <div className="text-center mb-8">
+                  <span className="text-xs font-bold text-turo-purple uppercase tracking-wider">
+                    Earnings Calculator
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-2">
+                    How much can you earn?
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Adjust vehicle value and active rental days to project your extra income.
+                  </p>
+                </div>
+
+                <div className="space-y-8">
+                  {/* Slider 1: Car Value */}
+                  <div>
+                    <div className="flex justify-between text-sm font-bold text-gray-700 mb-2">
+                      <span>Vehicle Market Value</span>
+                      <span className="text-turo-purple">${carValue.toLocaleString()} AUD</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="15000"
+                      max="150000"
+                      step="5000"
+                      value={carValue}
+                      onChange={(e) => setCarValue(Number(e.target.value))}
+                      className="w-full accent-turo-purple h-2 bg-gray-100 rounded-lg cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[10px] text-gray-400 font-bold mt-1.5 uppercase">
+                      <span>$15k (Hatchback)</span>
+                      <span>$75k (Premium SUV)</span>
+                      <span>$150k (Luxury Sport)</span>
+                    </div>
+                  </div>
+
+                  {/* Slider 2: Rental Days */}
+                  <div>
+                    <div className="flex justify-between text-sm font-bold text-gray-700 mb-2">
+                      <span>Days Shared Per Month</span>
+                      <span className="text-turo-purple">{daysPerMonth} Days</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="3"
+                      max="30"
+                      step="1"
+                      value={daysPerMonth}
+                      onChange={(e) => setDaysPerMonth(Number(e.target.value))}
+                      className="w-full accent-turo-purple h-2 bg-gray-100 rounded-lg cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[10px] text-gray-400 font-bold mt-1.5 uppercase">
+                      <span>3 Days (Weekend)</span>
+                      <span>15 Days (Half month)</span>
+                      <span>30 Days (Full time)</span>
+                    </div>
+                  </div>
+
+                  {/* Projected Output */}
+                  <div className="bg-turo-gray rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border border-gray-100">
+                    <div className="text-left">
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                        Projected Annual Earnings
+                      </span>
+                      <p className="text-3xl sm:text-4xl font-black text-gray-900 mt-1">
+                        ${projectedEarnings.toLocaleString()}{" "}
+                        <span className="text-sm font-bold text-gray-500">AUD/yr</span>
+                      </p>
+                    </div>
+                    <div className="text-xs text-gray-400 max-w-xs leading-relaxed text-left sm:text-right">
+                      *Based on Melbourne historical averages. Renting out standard vehicles at a daily average rate of 0.2% of market value.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* How hosting works */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
+              <h2 className="text-3xl font-black text-gray-900 text-center mb-16">
+                How hosting works in 4 easy steps
+              </h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm relative">
+                  <div className="size-10 rounded-full bg-turo-light text-turo-purple font-black flex items-center justify-center text-lg mb-4">
+                    1
+                  </div>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">Create your listing</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Provide your car details, snap a few high-quality photos, write a friendly bio, and set calendar availability.
+                  </p>
+                </div>
+                <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm relative">
+                  <div className="size-10 rounded-full bg-turo-light text-turo-purple font-black flex items-center justify-center text-lg mb-4">
+                    2
+                  </div>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">Set your rules</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Adjust daily price guidelines, set mileage limits, choose pickup rules, and approve/reject bookings manually or set Auto-Book.
+                  </p>
+                </div>
+                <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm relative">
+                  <div className="size-10 rounded-full bg-turo-light text-turo-purple font-black flex items-center justify-center text-lg mb-4">
+                    3
+                  </div>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">Check-in and hand keys</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Review renter details, document fuel and vehicle cleanliness photo checks in-app, and hand keys to the verified guest.
+                  </p>
+                </div>
+                <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm relative">
+                  <div className="size-10 rounded-full bg-turo-light text-turo-purple font-black flex items-center justify-center text-lg mb-4">
+                    4
+                  </div>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">Get paid securely</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Earn up to 75% of the trip price. Your earnings are securely deposited directly to your bank account after every booking.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Insurance details */}
+            <section className="bg-turo-purple text-white mt-24 py-20">
+              <div className="max-w-4xl mx-auto px-4 text-center">
+                <ShieldCheck className="size-16 text-white mb-6 mx-auto" />
+                <h2 className="text-3xl sm:text-4xl font-black mb-6">
+                  You are backed by comprehensive host protection
+                </h2>
+                <p className="text-lg text-white/90 leading-relaxed max-w-2xl mx-auto mb-10">
+                  Every P2P listing at Phillips Car Rental is backed by $20 Million in comprehensive damage liability coverage, roadside assistance, and renter screening.
+                </p>
+                <div className="flex flex-wrap justify-center gap-6 text-sm font-bold uppercase tracking-wider">
+                  <span className="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
+                    $20M Liability Cover
+                  </span>
+                  <span className="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
+                    24/7 Roadside Assist
+                  </span>
+                  <span className="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
+                    Prequalified Guests
+                  </span>
+                </div>
+              </div>
+            </section>
+
+            {/* FAQs for Hosts */}
+            <section className="max-w-3xl mx-auto px-4 mt-24">
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 text-center mb-10">
+                Frequently asked host questions
+              </h2>
+              <div className="space-y-6">
+                {hostFaqs.map((faq, index) => (
+                  <div key={index} className="border border-gray-200 rounded-2xl p-5 bg-white shadow-sm">
+                    <h3 className="font-bold text-gray-900 flex items-center gap-3">
+                      <HelpCircle className="text-turo-purple size-5 shrink-0" />
+                      {faq.question}
+                    </h3>
+                    <p className="mt-3 text-sm text-gray-600 pl-8 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Multi-step list car Modal */}
+      <AnimatePresence>
+        {isLendModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-gray-100 flex flex-col"
+            >
+              {/* Modal Header */}
+              <div className="px-6 py-5 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                <div>
+                  <h3 className="font-black text-lg text-gray-900">
+                    List Your Personal Car
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    Step {lendStep} of 3
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsLendModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-700 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 flex-1">
+                {lendStep === 1 && (
+                  <div className="space-y-4">
+                    <h4 className="font-bold text-gray-900 text-sm mb-2">
+                      Tell us about your vehicle
+                    </h4>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                        Car Make (Brand)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Tesla, Porsche, Toyota"
+                        value={newLendCar.make}
+                        onChange={(e) => setNewLendCar({ ...newLendCar, make: e.target.value })}
+                        className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                        Model
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Model 3, 911, Camry"
+                        value={newLendCar.model}
+                        onChange={(e) => setNewLendCar({ ...newLendCar, model: e.target.value })}
+                        className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                          Year
+                        </label>
+                        <select
+                          value={newLendCar.year}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, year: e.target.value })}
+                          className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                        >
+                          {["2025", "2024", "2023", "2022", "2021", "2020"].map((y) => (
+                            <option key={y} value={y}>{y}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                          Location
+                        </label>
+                        <input
+                          type="text"
+                          value={newLendCar.location}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, location: e.target.value })}
+                          className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {lendStep === 2 && (
+                  <div className="space-y-4">
+                    <h4 className="font-bold text-gray-900 text-sm mb-2">
+                      Set pricing & settings
+                    </h4>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                        Daily Rental Rate (AUD)
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-sm">
+                          $
+                        </span>
+                        <input
+                          type="number"
+                          value={newLendCar.price}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, price: e.target.value })}
+                          className="w-full border border-gray-200 pl-8 pr-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400 uppercase">
+                          /day
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-gray-400 mt-1 font-medium">
+                        Based on similar vehicles, we suggest $65 - $90/day. You receive up to 75%.
+                      </p>
+                    </div>
+
+                    <div className="flex gap-4 p-4 border border-turo-purple/20 bg-turo-light rounded-2xl text-turo-purple items-start">
+                      <Info className="size-5 shrink-0 mt-0.5" />
+                      <div className="text-xs font-medium leading-relaxed">
+                        <strong className="font-bold">Insurance & Protection:</strong> You are protected by our $20M third-party property cover. Renter pays direct insurance fee during booking.
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {lendStep === 3 && (
+                  <div className="text-center py-6 space-y-4">
+                    <div className="size-16 bg-turo-light text-turo-purple rounded-full flex items-center justify-center mx-auto shadow-md">
+                      <Sparkles className="size-8" />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-xl text-gray-900">
+                        Listing Submitted!
+                      </h4>
+                      <p className="text-sm text-gray-500 mt-2 max-w-xs mx-auto leading-relaxed">
+                        Congratulations! Your <strong>{newLendCar.year} {newLendCar.make} {newLendCar.model}</strong> has been submitted. Our team will verify your vehicle details within 24 hours.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center">
+                {lendStep > 1 && lendStep < 3 ? (
+                  <button
+                    onClick={() => setLendStep(lendStep - 1)}
+                    className="text-sm font-bold text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Back
+                  </button>
+                ) : (
+                  <div></div>
+                )}
+
+                {lendStep < 3 ? (
+                  <button
+                    onClick={() => {
+                      if (!newLendCar.make || !newLendCar.model) {
+                        alert("Please fill in the make and model fields.");
+                        return;
+                      }
+                      setLendStep(lendStep + 1);
+                    }}
+                    className="bg-turo-purple hover:bg-turo-hover text-white text-sm font-bold px-6 py-2.5 rounded-full transition-colors cursor-pointer"
+                  >
+                    {lendStep === 2 ? "Finish Listing" : "Next Step"}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsLendModalOpen(false)}
+                    className="bg-turo-purple hover:bg-turo-hover text-white text-sm font-bold px-8 py-2.5 rounded-full transition-colors mx-auto cursor-pointer"
+                  >
+                    Done
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export default function Theme4HomePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-turo-purple font-bold">Loading Phillips P2P...</div>}>
+      <Theme4HomePageContent />
+    </Suspense>
+  );
+}

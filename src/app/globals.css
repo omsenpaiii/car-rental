@@ -39,6 +39,11 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-turo-purple: #593CFB;
+  --color-turo-hover: #4b32d8;
+  --color-turo-light: #ece9ff;
+  --color-turo-dark: #121212;
+  --color-turo-gray: #f4f4f6;
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);

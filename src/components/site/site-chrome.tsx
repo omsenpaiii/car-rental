@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/site/site-header";
 
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isThemeRoute = pathname.startsWith("/theme2") || pathname.startsWith("/theme3");
+  const isThemeRoute = pathname.startsWith("/theme2") || pathname.startsWith("/theme3") || pathname.startsWith("/theme4");
 
   if (isThemeRoute) {
     return <main className="min-h-screen">{children}</main>;
