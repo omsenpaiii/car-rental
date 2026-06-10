@@ -100,11 +100,13 @@ function Theme4HomePageContent() {
             {/* Rent Hero Section */}
             <section className="relative h-[560px] flex items-center justify-center bg-gray-900 overflow-hidden">
               <div className="absolute inset-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1800&q=80"
-                  alt="Road background"
-                  className="w-full h-full object-cover opacity-50 filter saturate-50"
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover opacity-60 filter saturate-50"
+                  src="https://cdn.coverr.co/videos/coverr-driving-on-a-highway-in-the-mountains-2461/1080p.mp4"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
               </div>
@@ -151,8 +153,9 @@ function Theme4HomePageContent() {
                         <input
                           type="date"
                           value={pickupDate}
+                          min={new Date().toISOString().split('T')[0]}
                           onChange={(e) => setPickupDate(e.target.value)}
-                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer"
+                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer focus:text-turo-purple transition-colors"
                         />
                       </div>
                       <div className="h-8 w-px bg-gray-200 self-center hidden sm:block"></div>
@@ -163,8 +166,9 @@ function Theme4HomePageContent() {
                         <input
                           type="date"
                           value={returnDate}
+                          min={pickupDate || new Date().toISOString().split('T')[0]}
                           onChange={(e) => setReturnDate(e.target.value)}
-                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer"
+                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer focus:text-turo-purple transition-colors"
                         />
                       </div>
                     </div>
@@ -184,113 +188,127 @@ function Theme4HomePageContent() {
 
             {/* Browse by Category (Turo Brand Carousel) */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
-              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-2">
-                Browse by brand
-              </h2>
-              <p className="text-sm font-medium text-gray-500 mb-8">
-                Drive your dream car. Filter by popular makes in Melbourne.
-              </p>
-              
-              <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-                {makeCategories.map((make) => (
-                  <Link
-                    key={make.name}
-                    href={`/theme4/search?make=${make.name}`}
-                    className="flex flex-col items-center gap-3 shrink-0 p-4 border border-gray-100 rounded-2xl bg-white shadow-sm hover:shadow-md hover:border-turo-purple/30 transition-all duration-300 group cursor-pointer"
-                  >
-                    <div className="size-20 rounded-full overflow-hidden bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:scale-105 transition-transform">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={make.logo}
-                        alt={make.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <span className="text-sm font-bold text-gray-800 group-hover:text-turo-purple transition-colors">
-                      {make.name}
-                    </span>
-                  </Link>
-                ))}
-              </div>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6 }}
+              >
+                <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-2">
+                  Browse by brand
+                </h2>
+                <p className="text-sm font-medium text-gray-500 mb-8">
+                  Drive your dream car. Filter by popular makes in Melbourne.
+                </p>
+                
+                <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+                  {makeCategories.map((make) => (
+                    <Link
+                      key={make.name}
+                      href={`/theme4/search?make=${make.name}`}
+                      className="flex flex-col items-center gap-3 shrink-0 p-4 border border-gray-100 rounded-2xl bg-white shadow-sm hover:shadow-md hover:border-turo-purple/30 transition-all duration-300 group cursor-pointer"
+                    >
+                      <div className="size-20 rounded-full overflow-hidden bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:scale-105 transition-transform">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={make.logo}
+                          alt={make.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <span className="text-sm font-bold text-gray-800 group-hover:text-turo-purple transition-colors">
+                        {make.name}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </motion.div>
             </section>
 
             {/* Featured marketplace cars */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
-              <div className="flex justify-between items-end mb-8">
-                <div>
-                  <h2 className="text-2xl sm:text-3xl font-black text-gray-900">
-                    Find the perfect match
-                  </h2>
-                  <p className="text-sm font-medium text-gray-500 mt-1">
-                    Explore highly rated cars shared by Phillips P2P hosts.
-                  </p>
-                </div>
-                <Link
-                  href="/theme4/search"
-                  className="text-sm font-bold text-turo-purple hover:underline"
-                >
-                  View all cars →
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {turoCars.map((car) => (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="flex justify-between items-end mb-8">
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900">
+                      Find the perfect match
+                    </h2>
+                    <p className="text-sm font-medium text-gray-500 mt-1">
+                      Explore highly rated cars shared by Phillips P2P hosts.
+                    </p>
+                  </div>
                   <Link
-                    key={car.id}
-                    href={`/theme4/car/${car.id}`}
-                    className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                    href="/theme4/search"
+                    className="text-sm font-bold text-turo-purple hover:underline"
                   >
-                    {/* Car Image container */}
-                    <div className="relative h-48 sm:h-52 bg-gray-50 overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={car.image}
-                        alt={car.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      {car.isAllStarHost && (
-                        <span className="absolute top-4 left-4 bg-turo-purple text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
-                          All-Star Host
-                        </span>
-                      )}
-                      <span className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm text-gray-900 text-sm font-bold px-3 py-1 rounded-lg shadow-sm">
-                        ${car.pricePerDay} <span className="text-xs font-normal text-gray-500">/day</span>
-                      </span>
-                    </div>
-
-                    {/* Car details */}
-                    <div className="p-5 flex-1 flex flex-col justify-between">
-                      <div>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
-                          <span className="font-semibold px-2 py-0.5 bg-gray-100 rounded-md">
-                            {car.category}
-                          </span>
-                          <span>•</span>
-                          <span>{car.transmission}</span>
-                          <span>•</span>
-                          <span>{car.fuelType}</span>
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-turo-purple transition-colors mb-2">
-                          {car.name}
-                        </h3>
-                        <p className="text-xs text-gray-400 font-medium mb-3">
-                          {car.location}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-3 pt-3 border-t border-gray-100 mt-2">
-                        <div className="flex items-center text-amber-500 font-bold text-sm gap-0.5">
-                          <Star className="size-4 fill-current" />
-                          <span>{car.rating.toFixed(2)}</span>
-                        </div>
-                        <span className="text-xs text-gray-400">
-                          ({car.tripsCount} trips)
-                        </span>
-                      </div>
-                    </div>
+                    View all cars →
                   </Link>
-                ))}
-              </div>
+                </div>
+  
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {turoCars.map((car) => (
+                    <Link
+                      key={car.id}
+                      href={`/theme4/car/${car.id}`}
+                      className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                    >
+                      {/* Car Image container */}
+                      <div className="relative h-48 sm:h-52 bg-gray-50 overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={car.image}
+                          alt={car.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        {car.isAllStarHost && (
+                          <span className="absolute top-4 left-4 bg-turo-purple text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                            All-Star Host
+                          </span>
+                        )}
+                        <span className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm text-gray-900 text-sm font-bold px-3 py-1 rounded-lg shadow-sm">
+                          ${car.pricePerDay} <span className="text-xs font-normal text-gray-500">/day</span>
+                        </span>
+                      </div>
+  
+                      {/* Car details */}
+                      <div className="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+                            <span className="font-semibold px-2 py-0.5 bg-gray-100 rounded-md">
+                              {car.category}
+                            </span>
+                            <span>•</span>
+                            <span>{car.transmission}</span>
+                            <span>•</span>
+                            <span>{car.fuelType}</span>
+                          </div>
+                          <h3 className="text-lg font-bold text-gray-900 group-hover:text-turo-purple transition-colors mb-2">
+                            {car.name}
+                          </h3>
+                          <p className="text-xs text-gray-400 font-medium mb-3">
+                            {car.location}
+                          </p>
+                        </div>
+  
+                        <div className="flex items-center gap-3 pt-3 border-t border-gray-100 mt-2">
+                          <div className="flex items-center text-amber-500 font-bold text-sm gap-0.5">
+                            <Star className="size-4 fill-current" />
+                            <span>{car.rating.toFixed(2)}</span>
+                          </div>
+                          <span className="text-xs text-gray-400">
+                            ({car.tripsCount} trips)
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </motion.div>
             </section>
 
             {/* Value Proposition */}
