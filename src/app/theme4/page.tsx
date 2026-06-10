@@ -109,7 +109,7 @@ function Theme4HomePageContent() {
                   muted
                   playsInline
                   className="w-full h-full object-cover opacity-60 filter saturate-50"
-                  src="https://cdn.coverr.co/videos/coverr-driving-on-a-highway-in-the-mountains-2461/1080p.mp4"
+                  src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
               </div>
