@@ -127,7 +127,7 @@ export const turoCars: TuroCar[] = [
     isAllStarHost: true,
     hostName: "Marcus P.",
     hostAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80",
-    image: "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=800&q=80",
+    image: "/theme4/tesla_model_y.png",
     location: "Melbourne CBD, VIC",
     transmission: "Automatic",
     fuelType: "Electric",
