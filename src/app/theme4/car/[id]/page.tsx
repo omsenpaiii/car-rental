@@ -31,11 +31,19 @@ export default function Theme4CarDetailsPage() {
     ];
   }, [car]);
 
+  // Favorite state
+  const [isFavorite, setIsFavorite] = useState(false);
+
   // Booking details state
   const [pickupDate, setPickupDate] = useState("2026-06-15");
   const [returnDate, setReturnDate] = useState("2026-06-18");
   const [deliveryLocation, setDeliveryLocation] = useState("Melbourne Airport");
   const [protectionPlan, setProtectionPlan] = useState<"standard" | "minimum" | "none">("standard");
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    alert("Share link copied to clipboard!");
+  };
 
   // Calculate days count
   const daysCount = useMemo(() => {
@@ -87,11 +95,21 @@ export default function Theme4CarDetailsPage() {
           Back to Search
         </button>
         <div className="flex gap-4">
-          <button className="text-gray-500 hover:text-turo-purple transition-colors p-1.5 rounded-full hover:bg-gray-50" aria-label="Share">
+          <button 
+            onClick={handleShare}
+            className="text-gray-500 hover:text-turo-purple transition-colors p-1.5 rounded-full hover:bg-gray-50 cursor-pointer" 
+            aria-label="Share"
+          >
             <Share2 className="size-4.5" />
           </button>
-          <button className="text-gray-500 hover:text-turo-purple transition-colors p-1.5 rounded-full hover:bg-gray-50" aria-label="Favorite">
-            <Heart className="size-4.5" />
+          <button 
+            onClick={() => setIsFavorite(!isFavorite)}
+            className={`transition-colors p-1.5 rounded-full hover:bg-gray-50 cursor-pointer ${
+              isFavorite ? "text-red-500" : "text-gray-500 hover:text-turo-purple"
+            }`} 
+            aria-label="Favorite"
+          >
+            <Heart className={`size-4.5 ${isFavorite ? "fill-current" : ""}`} />
           </button>
         </div>
       </div>
@@ -223,6 +241,46 @@ export default function Theme4CarDetailsPage() {
             </div>
           </div>
 
+          {/* Reviews Section */}
+          <div className="space-y-6 pt-6 border-t border-gray-100">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-black text-gray-900">Reviews ({car.tripsCount > 5 ? 3 : car.tripsCount})</h2>
+              <div className="flex items-center text-amber-500 font-bold gap-1 text-sm">
+                <Star className="size-4.5 fill-current" />
+                <span>{car.rating.toFixed(2)}</span>
+              </div>
+            </div>
+            <div className="space-y-6">
+              {[
+                { name: "Sarah L.", rating: 5, date: "June 2026", text: `This ${car.model} was absolutely pristine and fully charged when picked up. The host ${car.hostName} was super communicative and pick up was a breeze. Highly recommended!` },
+                { name: "James D.", rating: 5, date: "May 2026", text: "Incredible car, very fun to drive. Transaction was seamless. Will definitely book again next time I'm in Melbourne." },
+                { name: "Michael K.", rating: 4, date: "April 2026", text: "Great experience overall. Clean interior, smooth ride. Drop off was quick and easy." }
+              ].map((review, idx) => (
+                <div key={idx} className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="size-9 rounded-full bg-turo-purple/10 text-turo-purple font-black flex items-center justify-center text-xs">
+                      {review.name[0]}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-gray-900">{review.name}</h4>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <div className="flex text-amber-500">
+                          {Array.from({ length: review.rating }).map((_, i) => (
+                            <Star key={i} className="size-3 fill-current" />
+                          ))}
+                        </div>
+                        <span className="text-[10px] text-gray-400 font-bold">{review.date}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-600 leading-relaxed pl-12 font-medium">
+                    {review.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Host guidelines */}
           <div className="space-y-4 pt-6 border-t border-gray-100">
             <h2 className="text-xl font-black text-gray-900">Guidelines & Policies</h2>
@@ -278,8 +336,9 @@ export default function Theme4CarDetailsPage() {
                     <input
                       type="date"
                       value={pickupDate}
+                      min={new Date().toISOString().split('T')[0]}
                       onChange={(e) => setPickupDate(e.target.value)}
-                      className="w-full text-sm font-semibold text-gray-800 bg-transparent outline-none cursor-pointer mt-0.5"
+                      className="w-full text-sm font-semibold text-gray-800 bg-transparent outline-none cursor-pointer mt-0.5 focus:text-turo-purple transition-colors"
                     />
                   </div>
                   <div>
@@ -287,8 +346,9 @@ export default function Theme4CarDetailsPage() {
                     <input
                       type="date"
                       value={returnDate}
+                      min={pickupDate || new Date().toISOString().split('T')[0]}
                       onChange={(e) => setReturnDate(e.target.value)}
-                      className="w-full text-sm font-semibold text-gray-800 bg-transparent outline-none cursor-pointer mt-0.5"
+                      className="w-full text-sm font-semibold text-gray-800 bg-transparent outline-none cursor-pointer mt-0.5 focus:text-turo-purple transition-colors"
                     />
                   </div>
                 </div>

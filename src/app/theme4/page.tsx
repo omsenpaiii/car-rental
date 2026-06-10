@@ -6,9 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, Calendar, Clock, MapPin, Compass, DollarSign, 
-  ShieldCheck, HelpCircle, Star, Sparkles, Plus, AlertCircle, Info 
+  ShieldCheck, HelpCircle, Star, Sparkles, Plus, AlertCircle, Info, ChevronDown 
 } from "lucide-react";
-import { makeCategories, turoCars, hostFaqs, renterFaqs } from "@/lib/theme4-data";
+import { makeCategories, turoCars, hostFaqs, renterFaqs, TuroCar } from "@/lib/theme4-data";
 
 function Theme4HomePageContent() {
   const router = useRouter();
@@ -17,6 +17,9 @@ function Theme4HomePageContent() {
   
   // Set tab based on URL parameter or default to "rent"
   const [activeTab, setActiveTab] = useState<"rent" | "lent">("rent");
+  const [cars, setCars] = useState<TuroCar[]>(turoCars);
+  const [openRenterFaq, setOpenRenterFaq] = useState<number | null>(null);
+  const [openHostFaq, setOpenHostFaq] = useState<number | null>(null);
   
   useEffect(() => {
     if (tabParam === "lent") {
@@ -251,7 +254,7 @@ function Theme4HomePageContent() {
                 </div>
   
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {turoCars.map((car) => (
+                  {cars.map((car) => (
                     <Link
                       key={car.id}
                       href={`/theme4/car/${car.id}`}
@@ -359,17 +362,29 @@ function Theme4HomePageContent() {
                 Frequently asked questions
               </h2>
               <div className="space-y-6">
-                {renterFaqs.map((faq, index) => (
-                  <div key={index} className="border border-gray-200 rounded-2xl p-5 bg-white shadow-sm">
-                    <h3 className="font-bold text-gray-900 flex items-center gap-3">
-                      <HelpCircle className="text-turo-purple size-5 shrink-0" />
-                      {faq.question}
-                    </h3>
-                    <p className="mt-3 text-sm text-gray-600 pl-8 leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </div>
-                ))}
+                {renterFaqs.map((faq, index) => {
+                  const isOpen = openRenterFaq === index;
+                  return (
+                    <div key={index} className="border border-gray-200 rounded-2xl p-5 bg-white shadow-sm overflow-hidden transition-all duration-300">
+                      <button 
+                        type="button"
+                        onClick={() => setOpenRenterFaq(isOpen ? null : index)}
+                        className="w-full text-left font-bold text-gray-900 flex items-center justify-between gap-3 cursor-pointer group"
+                      >
+                        <span className="flex items-center gap-3">
+                          <HelpCircle className="text-turo-purple size-5 shrink-0 group-hover:scale-110 transition-transform" />
+                          {faq.question}
+                        </span>
+                        <ChevronDown className={`size-4 text-gray-400 transition-transform duration-300 ${isOpen ? "rotate-180 text-turo-purple" : ""}`} />
+                      </button>
+                      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0"}`}>
+                        <p className="text-sm text-gray-600 pl-8 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </section>
           </motion.div>
@@ -572,17 +587,29 @@ function Theme4HomePageContent() {
                 Frequently asked host questions
               </h2>
               <div className="space-y-6">
-                {hostFaqs.map((faq, index) => (
-                  <div key={index} className="border border-gray-200 rounded-2xl p-5 bg-white shadow-sm">
-                    <h3 className="font-bold text-gray-900 flex items-center gap-3">
-                      <HelpCircle className="text-turo-purple size-5 shrink-0" />
-                      {faq.question}
-                    </h3>
-                    <p className="mt-3 text-sm text-gray-600 pl-8 leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </div>
-                ))}
+                {hostFaqs.map((faq, index) => {
+                  const isOpen = openHostFaq === index;
+                  return (
+                    <div key={index} className="border border-gray-200 rounded-2xl p-5 bg-white shadow-sm overflow-hidden transition-all duration-300">
+                      <button 
+                        type="button"
+                        onClick={() => setOpenHostFaq(isOpen ? null : index)}
+                        className="w-full text-left font-bold text-gray-900 flex items-center justify-between gap-3 cursor-pointer group"
+                      >
+                        <span className="flex items-center gap-3">
+                          <HelpCircle className="text-turo-purple size-5 shrink-0 group-hover:scale-110 transition-transform" />
+                          {faq.question}
+                        </span>
+                        <ChevronDown className={`size-4 text-gray-400 transition-transform duration-300 ${isOpen ? "rotate-180 text-turo-purple" : ""}`} />
+                      </button>
+                      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "max-h-40 opacity-100 mt-4" : "max-h-0 opacity-0"}`}>
+                        <p className="text-sm text-gray-600 pl-8 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </section>
           </motion.div>
@@ -751,6 +778,30 @@ function Theme4HomePageContent() {
                       if (!newLendCar.make || !newLendCar.model) {
                         alert("Please fill in the make and model fields.");
                         return;
+                      }
+                      if (lendStep === 2) {
+                        const newCarObj: TuroCar = {
+                          id: `${newLendCar.make.toLowerCase()}-${newLendCar.model.toLowerCase()}-${Date.now()}`,
+                          name: `${newLendCar.make} ${newLendCar.model} ${newLendCar.year}`,
+                          make: newLendCar.make,
+                          model: newLendCar.model,
+                          year: parseInt(newLendCar.year),
+                          category: "Sport",
+                          pricePerDay: parseInt(newLendCar.price) || 80,
+                          rating: 5.0,
+                          tripsCount: 0,
+                          isAllStarHost: true,
+                          hostName: "You (Host)",
+                          hostAvatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80",
+                          image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80",
+                          location: newLendCar.location,
+                          transmission: "Automatic",
+                          fuelType: "Petrol",
+                          seats: 5,
+                          description: "Listed by you. Feel the difference driving this personal vehicle.",
+                          features: ["Bluetooth", "USB Charger", "GPS"],
+                        };
+                        setCars([newCarObj, ...cars]);
                       }
                       setLendStep(lendStep + 1);
                     }}

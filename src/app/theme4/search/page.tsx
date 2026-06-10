@@ -32,6 +32,8 @@ function Theme4SearchPageContent() {
   const [selectedTransmission, setSelectedTransmission] = useState<string>("");
   const [selectedFuelType, setSelectedFuelType] = useState<string>("");
   const [showMap, setShowMap] = useState<boolean>(true);
+  const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
+  const [hoveredCarId, setHoveredCarId] = useState<string | null>(null);
 
   // Sync state with URL params on load
   useEffect(() => {
@@ -225,40 +227,56 @@ function Theme4SearchPageContent() {
             </button>
           </div>
 
-          {/* More Filters Panel (Inline Collapse) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-turo-gray rounded-2xl mb-8 border border-gray-100">
+          {/* More Filters Panel (Interactive Pill Buttons) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-5 bg-turo-gray rounded-3xl mb-8 border border-gray-100 items-center">
             <div>
-              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
                 Transmission
               </label>
-              <select
-                value={selectedTransmission}
-                onChange={(e) => setSelectedTransmission(e.target.value)}
-                className="w-full border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-gray-700 outline-none"
-              >
-                <option value="">Any</option>
-                <option value="Automatic">Automatic</option>
-                <option value="Manual">Manual</option>
-              </select>
+              <div className="flex gap-1.5 bg-white p-1 rounded-xl border border-gray-200">
+                {["", "Automatic", "Manual"].map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setSelectedTransmission(t)}
+                    className={`flex-1 text-center py-1.5 px-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      selectedTransmission === t
+                        ? "bg-turo-purple text-white shadow-sm"
+                        : "text-gray-600 hover:text-turo-purple hover:bg-gray-50"
+                    }`}
+                  >
+                    {t || "Any"}
+                  </button>
+                ))}
+              </div>
             </div>
             <div>
-              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
                 Fuel Type
               </label>
-              <select
-                value={selectedFuelType}
-                onChange={(e) => setSelectedFuelType(e.target.value)}
-                className="w-full border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-gray-700 outline-none"
-              >
-                <option value="">Any</option>
-                <option value="Electric">Electric</option>
-                <option value="Petrol">Petrol</option>
-                <option value="Hybrid">Hybrid</option>
-              </select>
+              <div className="flex gap-1 bg-white p-1 rounded-xl border border-gray-200 overflow-x-auto scrollbar-hide">
+                {["", "Electric", "Petrol", "Hybrid"].map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setSelectedFuelType(f)}
+                    className={`flex-1 text-center py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                      selectedFuelType === f
+                        ? "bg-turo-purple text-white shadow-sm"
+                        : "text-gray-600 hover:text-turo-purple hover:bg-gray-50"
+                    }`}
+                  >
+                    {f || "Any"}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="col-span-2 flex items-end justify-end">
-              <span className="text-xs text-gray-400 font-semibold mb-1">
-                Showing {filteredCars.length} vehicles in Melbourne
+            <div className="lg:col-span-2 flex items-center justify-between sm:justify-end gap-4 self-end h-full pt-4 sm:pt-0">
+              <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">
+                Active Match Count
+              </span>
+              <span className="bg-turo-purple/10 text-turo-purple text-xs font-black px-3 py-1.5 rounded-full border border-turo-purple/10">
+                {filteredCars.length} Cars Available
               </span>
             </div>
           </div>
@@ -270,7 +288,13 @@ function Theme4SearchPageContent() {
                 <Link
                   key={car.id}
                   href={`/theme4/car/${car.id}`}
-                  className="flex flex-col sm:flex-row border border-gray-200 rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-md hover:border-turo-purple/20 transition-all duration-300 group cursor-pointer"
+                  onMouseEnter={() => setHoveredCarId(car.id)}
+                  onMouseLeave={() => setHoveredCarId(null)}
+                  className={`flex flex-col sm:flex-row border rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer ${
+                    hoveredCarId === car.id || selectedCarId === car.id
+                      ? "border-turo-purple ring-2 ring-turo-purple/10 scale-[1.01]"
+                      : "border-gray-200"
+                  }`}
                 >
                   {/* Left Column - Car Image */}
                   <div className="relative w-full sm:w-2/5 h-48 sm:h-auto min-h-[180px] bg-gray-50 overflow-hidden shrink-0">
@@ -365,29 +389,80 @@ function Theme4SearchPageContent() {
                   { top: "35%", left: "70%" },
                   { top: "75%", left: "35%" },
                 ];
+                const isHovered = hoveredCarId === car.id;
+                const isSelected = selectedCarId === car.id;
                 return (
-                  <div
+                  <button
                     key={car.id}
-                    className="absolute z-10 transition-transform hover:scale-110 cursor-pointer shadow-md bg-white border border-turo-purple px-2 py-1 rounded-full text-xs font-black text-gray-900 flex items-center gap-0.5"
+                    type="button"
+                    onClick={() => setSelectedCarId(isSelected ? null : car.id)}
+                    className={`absolute z-10 transition-all duration-300 transform hover:scale-110 cursor-pointer shadow-md px-2.5 py-1.5 rounded-full text-xs font-black flex items-center gap-1 ${
+                      isHovered || isSelected 
+                        ? "bg-turo-purple text-white scale-110 border-2 border-white ring-2 ring-turo-purple" 
+                        : "bg-white text-gray-900 border border-turo-purple"
+                    }`}
                     style={positions[index % positions.length]}
                   >
-                    <Star className="size-2.5 fill-amber-500 text-amber-500" />
+                    <Star className={`size-3 ${isHovered || isSelected ? "fill-white text-white" : "fill-amber-500 text-amber-500"}`} />
                     ${car.pricePerDay}
-                  </div>
+                  </button>
                 );
               })}
 
-              <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-gray-100 text-left">
-                <span className="text-[10px] font-black text-turo-purple uppercase tracking-wider">
-                  Interactive Map View
-                </span>
-                <h4 className="font-bold text-sm text-gray-900 mt-1">
-                  Melbourne Rental Zones
-                </h4>
-                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
-                  Pins show general neighborhood hubs. Click any pin to zoom or select specific pick-up locations.
-                </p>
-              </div>
+              {selectedCarId ? (() => {
+                const selectedCar = filteredCars.find(c => c.id === selectedCarId);
+                if (!selectedCar) return null;
+                return (
+                  <div className="absolute bottom-6 left-6 right-6 bg-white p-3.5 rounded-2xl shadow-2xl border border-gray-100 text-left flex gap-3 animate-in slide-in-from-bottom-3 duration-300 z-20">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                      src={selectedCar.image} 
+                      alt={selectedCar.name} 
+                      className="size-16 rounded-xl object-cover shrink-0 bg-gray-50 border border-gray-100"
+                    />
+                    <div className="flex-1 min-w-0 relative">
+                      <button 
+                        onClick={() => setSelectedCarId(null)}
+                        className="absolute -top-1.5 right-0 text-gray-400 hover:text-gray-700 font-bold text-xs p-1"
+                      >
+                        ✕
+                      </button>
+                      <h4 className="font-bold text-xs text-gray-950 truncate pr-5 mt-0.5">
+                        {selectedCar.name}
+                      </h4>
+                      <div className="flex items-center gap-1.5 mt-1 text-[9px] font-bold text-gray-400 uppercase">
+                        <span className="text-turo-purple">{selectedCar.category}</span>
+                        <span>•</span>
+                        <span>{selectedCar.transmission}</span>
+                      </div>
+                      <div className="flex justify-between items-end mt-2">
+                        <div className="flex items-center text-amber-500 font-bold text-[10px] gap-0.5">
+                          <Star className="size-3 fill-current" />
+                          <span>{selectedCar.rating.toFixed(2)}</span>
+                        </div>
+                        <Link 
+                          href={`/theme4/car/${selectedCar.id}`}
+                          className="bg-turo-purple hover:bg-turo-hover text-white text-[10px] font-black px-3 py-1.5 rounded-lg transition-colors shadow-sm"
+                        >
+                          View Details (${selectedCar.pricePerDay})
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })() : (
+                <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-gray-100 text-left">
+                  <span className="text-[10px] font-black text-turo-purple uppercase tracking-wider">
+                    Interactive Map View
+                  </span>
+                  <h4 className="font-bold text-sm text-gray-900 mt-1">
+                    Melbourne Rental Zones
+                  </h4>
+                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                    Pins show general neighborhood hubs. Click any pin to zoom or select specific pick-up locations.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}
