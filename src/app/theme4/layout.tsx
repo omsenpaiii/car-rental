@@ -17,7 +17,7 @@ export default function Theme4Layout({
   const [selectedLanguage, setSelectedLanguage] = useState("English (AU)");
 
   const notifications = [
-    { id: 1, text: "Welcome to Phillips P2P! Use code P2P15 for 15% off your first trip.", time: "2 hours ago", unread: true },
+    { id: 1, text: "Welcome to Phillip Cars! Use code P2P15 for 15% off your first trip.", time: "2 hours ago", unread: true },
     { id: 2, text: "Marcus P. verified his Tesla Model 3. Instant book now active.", time: "1 day ago", unread: false },
     { id: 3, text: "Host Dave M. added new photos for the Jeep Wrangler.", time: "2 days ago", unread: false }
   ];
@@ -32,10 +32,10 @@ export default function Theme4Layout({
           {/* Logo / Branding */}
           <Link href="/theme4" className="flex items-center gap-2">
             <span className="text-xl sm:text-2xl font-black tracking-tight text-turo-purple uppercase">
-              PHILLIPS
+              PHILLIP CARS
             </span>
             <span className="hidden sm:inline-block text-xs font-semibold px-2 py-0.5 bg-turo-light text-turo-purple rounded-full">
-              P2P Rental
+              P2P
             </span>
           </Link>
 
@@ -151,8 +151,8 @@ export default function Theme4Layout({
               {isProfileOpen && (
                 <div className="absolute right-0 mt-2.5 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl py-2 z-50 text-left animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="px-4 py-2 border-b border-gray-100 mb-1">
-                    <p className="text-xs font-black text-gray-900">Phillips Customer</p>
-                    <p className="text-[10px] text-gray-400 font-medium">booking@phillipscarrental.com</p>
+                    <p className="text-xs font-black text-gray-900">Phillip Cars Customer</p>
+                    <p className="text-[10px] text-gray-400 font-medium">booking@phillipcars.com</p>
                   </div>
                   <Link 
                     href="/theme4?tab=lent" 
@@ -181,7 +181,7 @@ export default function Theme4Layout({
                     Account Settings
                   </button>
                   <a 
-                    href="mailto:booking@phillipscarrental.com.au"
+                    href="mailto:booking@phillipcars.com.au"
                     onClick={() => setIsProfileOpen(false)}
                     className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700 transition-colors"
                   >
@@ -216,10 +216,10 @@ export default function Theme4Layout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <h3 className="text-sm font-bold text-gray-900 tracking-wider uppercase mb-4">
-              Phillips P2P
+              Phillip Cars
             </h3>
             <ul className="space-y-2.5">
-              <li><Link href="/theme4" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">About Phillips P2P</Link></li>
+              <li><Link href="/theme4" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">About Phillip Cars</Link></li>
               <li><Link href="/theme4?tab=lent" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">How it works (Lending)</Link></li>
               <li><Link href="/theme4" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">How it works (Renting)</Link></li>
               <li><Link href="/theme4/policies/terms" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">Policies & Trust</Link></li>
@@ -252,18 +252,18 @@ export default function Theme4Layout({
               Contact & Support
             </h3>
             <ul className="space-y-2.5 text-sm text-gray-600">
-              <li className="font-semibold text-gray-800">Phillips Car Rental</li>
+              <li className="font-semibold text-gray-800">Phillip Cars</li>
               <li>132 Indian Dr, Keysborough</li>
               <li>Melbourne VIC 3173</li>
               <li>Tel: 1300 315 275</li>
-              <li>Email: booking@phillipscarrental.com.au</li>
+              <li>Email: booking@phillipcars.com.au</li>
             </ul>
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-gray-200 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-gray-500">
-            © {new Date().getFullYear()} Phillips Car Rental P2P. Clone theme designed for demonstration.
+            © {new Date().getFullYear()} Phillip Cars P2P. Clone theme designed for demonstration.
           </p>
           <div className="flex gap-6">
             <Link href="/theme4/policies/terms" className="text-xs text-gray-500 hover:text-turo-purple transition-colors">Terms of Service</Link>

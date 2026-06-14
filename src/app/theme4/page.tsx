@@ -268,7 +268,7 @@ function Theme4HomePageContent() {
                       Find the perfect match
                     </h2>
                     <p className="text-sm font-medium text-gray-500 mt-1">
-                      Explore highly rated cars shared by Phillips P2P hosts.
+                      Explore highly rated cars shared by Phillip Cars hosts.
                     </p>
                   </div>
                   <Link
@@ -344,10 +344,10 @@ function Theme4HomePageContent() {
             <section className="bg-turo-gray mt-24 py-20 border-y border-gray-200">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <span className="text-xs font-black text-turo-purple uppercase tracking-widest bg-turo-light px-3 py-1.5 rounded-full">
-                  Why Phillips P2P
+                  Why Phillip Cars
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mt-6 mb-16">
-                  Car rental, redesigned for people
+                  P2P car sharing, redesigned for people
                 </h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -707,13 +707,13 @@ function Theme4HomePageContent() {
 
               <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
                 <span className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md">
-                  Phillips Host Network
+                  Phillip Cars Host Network
                 </span>
                 <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mt-6 mb-6">
                   Let your car work for you
                 </h1>
                 <p className="text-lg sm:text-xl text-gray-200 font-medium max-w-2xl mx-auto mb-10">
-                  Lend your vehicle, cover your car payments, and build a scalable rental business on Melbourne&apos;s premium P2P platform.
+                  Lend your vehicle, cover your car payments, and build a scalable car sharing business on Melbourne&apos;s premium P2P platform.
                 </p>
 
                 <button
@@ -862,7 +862,7 @@ function Theme4HomePageContent() {
                   You are backed by comprehensive host protection
                 </h2>
                 <p className="text-lg text-white/90 leading-relaxed max-w-2xl mx-auto mb-10">
-                  Every P2P listing at Phillips Car Rental is backed by $20 Million in comprehensive damage liability coverage, roadside assistance, and renter screening.
+                  Every P2P listing at Phillip Cars is backed by $20 Million in comprehensive damage liability coverage, roadside assistance, and renter screening.
                 </p>
                 <div className="flex flex-wrap justify-center gap-6 text-sm font-bold uppercase tracking-wider">
                   <span className="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
@@ -1196,7 +1196,7 @@ function Theme4HomePageContent() {
 
 export default function Theme4HomePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-turo-purple font-bold">Loading Phillips P2P...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-turo-purple font-bold">Loading Phillip Cars...</div>}>
       <Theme4HomePageContent />
     </Suspense>
   );

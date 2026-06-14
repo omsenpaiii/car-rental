@@ -551,7 +551,7 @@ export default function Theme4CarDetailsPage() {
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span>Phillips Service fee</span>
+                      <span>Phillip Cars Service fee</span>
                       <span className="text-gray-800">${pricing.serviceFee}</span>
                     </div>
                     
@@ -658,7 +658,7 @@ export default function Theme4CarDetailsPage() {
               </span>
               <p className="text-[10px] text-gray-400 mt-1 max-w-[240px] mx-auto leading-relaxed">
                 {bookingMode === "rto" 
-                  ? "All monthly rent payments are secured in escrow. Commission is handled automatically by Phillips." 
+                  ? "All monthly rent payments are secured in escrow. Commission is handled automatically by Phillip Cars." 
                   : "Full refund up to 24 hours before your trip starts. 24/7 support is available."
                 }
               </p>
@@ -686,7 +686,7 @@ export default function Theme4CarDetailsPage() {
             <div className="bg-gray-50 p-4 rounded-2xl text-left border border-gray-100 text-xs text-gray-600 space-y-1.5">
               <div><strong>Pickup:</strong> {pickupDate} at 10:00 AM</div>
               <div><strong>Delivery Location:</strong> {deliveryLocation}</div>
-              <div><strong>Host Contact:</strong> {car.hostName} (melbourne-p2p@phillips.com)</div>
+              <div><strong>Host Contact:</strong> {car.hostName} (melbourne-p2p@phillipcars.com)</div>
             </div>
             <button
               onClick={() => {
@@ -724,7 +724,7 @@ export default function Theme4CarDetailsPage() {
                 LEASE WITH OPTION TO PURCHASE AGREEMENT
               </p>
               <p>
-                This Lease with Option to Purchase Agreement (the &quot;Agreement&quot;) is entered into by and between the Host (hereinafter &quot;Seller/Lessor&quot;) and the verified Phillips Renter (hereinafter &quot;Buyer/Lessee&quot;).
+                This Lease with Option to Purchase Agreement (the &quot;Agreement&quot;) is entered into by and between the Host (hereinafter &quot;Seller/Lessor&quot;) and the verified Phillip Cars Renter (hereinafter &quot;Buyer/Lessee&quot;).
               </p>
               <div>
                 <strong className="text-gray-800">1. VEHICLE DESCRIPTION:</strong>
@@ -746,7 +746,7 @@ export default function Theme4CarDetailsPage() {
               <div>
                 <strong className="text-gray-800">3. PURCHASE OPTION & TITLE ESCROW:</strong>
                 <p className="mt-1">
-                  The Buyer/Lessee shall have the exclusive right and option to purchase the vehicle. Upon completion of {rtoMonths} consecutive monthly payments, title ownership will be transferred from Seller to Buyer. Phillips Car Rental holds the title and transfer paperwork in digital escrow to guarantee fulfillment.
+                  The Buyer/Lessee shall have the exclusive right and option to purchase the vehicle. Upon completion of {rtoMonths} consecutive monthly payments, title ownership will be transferred from Seller to Buyer. Phillip Cars holds the title and transfer paperwork in digital escrow to guarantee fulfillment.
                 </p>
               </div>
               <div>

@@ -586,7 +586,7 @@ function Theme4SearchPageContent() {
 
 export default function Theme4SearchPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-turo-purple font-bold">Searching Phillips P2P...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-turo-purple font-bold">Searching Phillip Cars...</div>}>
       <Theme4SearchPageContent />
     </Suspense>
   );
