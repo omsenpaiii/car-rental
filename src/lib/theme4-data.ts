@@ -18,6 +18,10 @@ export type TuroCar = {
   seats: number;
   description: string;
   features: string[];
+  rentToOwnAvailable?: boolean;
+  rentToOwnPrice?: number;
+  rentToOwnMonths?: number;
+  downPayment?: number;
 };
 
 export const makeCategories = [
@@ -50,6 +54,10 @@ export const turoCars: TuroCar[] = [
     seats: 5,
     description: "Experience the future of driving with this brand new 2024 Tesla Model 3. Features autopilot, premium sound, dual-zone climate, and a panoramic glass roof. Spotless, fully charged, and ready for your Melbourne adventure.",
     features: ["Autopilot", "Bluetooth", "USB Charger", "Panoramic Roof", "GPS", "Heated Seats"],
+    rentToOwnAvailable: true,
+    rentToOwnPrice: 38000,
+    rentToOwnMonths: 24,
+    downPayment: 3800,
   },
   {
     id: "porsche-911-carrera-2023",
@@ -92,6 +100,10 @@ export const turoCars: TuroCar[] = [
     seats: 5,
     description: "Go anywhere, do anything with the ultimate utility vehicle. This Jeep Wrangler Rubicon has 4-wheel drive, removable top panels for open-air cruising, and off-road capability. Spacious interior for luggage and gear.",
     features: ["4-Wheel Drive", "Convertible Top", "Towing Package", "Apple CarPlay", "Roof Rack"],
+    rentToOwnAvailable: true,
+    rentToOwnPrice: 48000,
+    rentToOwnMonths: 36,
+    downPayment: 4800,
   },
   {
     id: "ford-mustang-gt-2021",
@@ -134,6 +146,10 @@ export const turoCars: TuroCar[] = [
     seats: 5,
     description: "The Model Y is the ultimate family electric car. Elevated seating position, massive cargo space, high range, and advanced safety features. Deliveries available across major transit hubs.",
     features: ["Autopilot", "All-Wheel Drive", "Panoramic Roof", "USB Charger", "Extra Storage"],
+    rentToOwnAvailable: true,
+    rentToOwnPrice: 42000,
+    rentToOwnMonths: 36,
+    downPayment: 4200,
   },
   {
     id: "mercedes-amg-c63-2022",

@@ -222,7 +222,7 @@ export default function Theme4Layout({
               <li><Link href="/theme4" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">About Phillips P2P</Link></li>
               <li><Link href="/theme4?tab=lent" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">How it works (Lending)</Link></li>
               <li><Link href="/theme4" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">How it works (Renting)</Link></li>
-              <li><Link href="/theme4" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">Policies & Trust</Link></li>
+              <li><Link href="/theme4/policies/terms" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">Policies & Trust</Link></li>
             </ul>
           </div>
           <div>
@@ -266,7 +266,7 @@ export default function Theme4Layout({
             © {new Date().getFullYear()} Phillips Car Rental P2P. Clone theme designed for demonstration.
           </p>
           <div className="flex gap-6">
-            <a href="#" className="text-xs text-gray-500 hover:text-turo-purple transition-colors">Terms of Service</a>
+            <Link href="/theme4/policies/terms" className="text-xs text-gray-500 hover:text-turo-purple transition-colors">Terms of Service</Link>
             <a href="#" className="text-xs text-gray-500 hover:text-turo-purple transition-colors">Privacy Policy</a>
             <a href="#" className="text-xs text-gray-500 hover:text-turo-purple transition-colors">Sitemap</a>
           </div>

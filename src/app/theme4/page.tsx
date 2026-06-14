@@ -16,20 +16,26 @@ function Theme4HomePageContent() {
   const tabParam = searchParams.get("tab");
   
   // Set tab based on URL parameter or default to "rent"
-  const [activeTab, setActiveTab] = useState<"rent" | "lent">("rent");
+  const [activeTab, setActiveTab] = useState<"rent" | "rto" | "lent">("rent");
   const [cars, setCars] = useState<TuroCar[]>(turoCars);
   const [openRenterFaq, setOpenRenterFaq] = useState<number | null>(null);
   const [openHostFaq, setOpenHostFaq] = useState<number | null>(null);
+
+  // RTO Calculator State
+  const [rtoCalcValue, setRtoCalcValue] = useState(40000);
+  const [rtoCalcMonths, setRtoCalcMonths] = useState(24);
   
   useEffect(() => {
     if (tabParam === "lent") {
       setActiveTab("lent");
+    } else if (tabParam === "rto") {
+      setActiveTab("rto");
     } else {
       setActiveTab("rent");
     }
   }, [tabParam]);
 
-  const handleTabChange = (tab: "rent" | "lent") => {
+  const handleTabChange = (tab: "rent" | "rto" | "lent") => {
     setActiveTab(tab);
     router.push(`/theme4?tab=${tab}`, { scroll: false });
   };
@@ -52,6 +58,13 @@ function Theme4HomePageContent() {
     );
   };
 
+  const handleRtoSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push(
+      `/theme4/search?mode=rto&location=${encodeURIComponent(searchLocation)}&pickup=${pickupDate}&return=${returnDate}`
+    );
+  };
+
   // Add a Car Mock Form Modal State
   const [isLendModalOpen, setIsLendModalOpen] = useState(false);
   const [lendStep, setLendStep] = useState(1);
@@ -61,16 +74,19 @@ function Theme4HomePageContent() {
     year: "2023",
     price: "80",
     location: "Melbourne, VIC",
+    enableRentToOwn: false,
+    rentToOwnPrice: "35000",
+    rentToOwnMonths: "24",
   });
 
   return (
     <div className="bg-white min-h-screen pb-20">
-      {/* Top Rent / Lent Segmented Switch */}
+      {/* Top Rent / RTO / Lent Segmented Switch */}
       <div className="flex justify-center pt-6 pb-2">
         <div className="inline-flex bg-gray-100 p-1.5 rounded-full shadow-inner border border-gray-200">
           <button
             onClick={() => handleTabChange("rent")}
-            className={`px-8 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all duration-300 ${
+            className={`px-6 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-all duration-300 cursor-pointer ${
               activeTab === "rent"
                 ? "bg-turo-purple text-white shadow-md"
                 : "text-gray-600 hover:text-turo-purple"
@@ -79,8 +95,18 @@ function Theme4HomePageContent() {
             Rent a Car
           </button>
           <button
+            onClick={() => handleTabChange("rto")}
+            className={`px-6 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-all duration-300 cursor-pointer ${
+              activeTab === "rto"
+                ? "bg-turo-purple text-white shadow-md"
+                : "text-gray-600 hover:text-turo-purple"
+            }`}
+          >
+            Rent to Own
+          </button>
+          <button
             onClick={() => handleTabChange("lent")}
-            className={`px-8 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all duration-300 ${
+            className={`px-6 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-all duration-300 cursor-pointer ${
               activeTab === "lent"
                 ? "bg-turo-purple text-white shadow-md"
                 : "text-gray-600 hover:text-turo-purple"
@@ -383,6 +409,277 @@ function Theme4HomePageContent() {
                         </p>
                       </div>
                     </div>
+                  );
+                })}
+              </div>
+            </section>
+          </motion.div>
+        ) : activeTab === "rto" ? (
+          <motion.div
+            key="rto-tab"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Rent to Own Hero Section */}
+            <section className="relative h-[560px] flex items-center justify-center bg-gray-900 overflow-hidden">
+              <div className="absolute inset-0">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover opacity-60 filter saturate-50"
+                  src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+              </div>
+
+              <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
+                <span className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md">
+                  Rent to Own Program
+                </span>
+                <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mt-6 mb-6">
+                  Own the car you <span className="text-turo-light text-turo-purple underline decoration-turo-purple underline-offset-4">drive</span>
+                </h1>
+                <p className="text-lg sm:text-xl text-gray-200 font-medium max-w-2xl mx-auto mb-10">
+                  Drive your dream car today with flexible monthly payments, 10% downpayment, and guaranteed title transfer upon completion.
+                </p>
+
+                {/* Turo-style Search Widget for RTO */}
+                <form
+                  onSubmit={handleRtoSearchSubmit}
+                  className="bg-white rounded-3xl md:rounded-full shadow-2xl p-4 md:py-2 md:px-3 flex flex-col md:flex-row items-center gap-3 max-w-3xl mx-auto border border-gray-100 animate-in fade-in zoom-in duration-300"
+                >
+                  {/* Location Input */}
+                  <div className="flex items-center gap-3 px-3 py-2 w-full md:w-1/3 border-b md:border-b-0 md:border-r border-gray-200">
+                    <MapPin className="text-turo-purple size-5 shrink-0" />
+                    <div className="text-left w-full">
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                        Where
+                      </label>
+                      <input
+                        type="text"
+                        value={searchLocation}
+                        onChange={(e) => setSearchLocation(e.target.value)}
+                        placeholder="City, airport, or hotel"
+                        className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Dates Pickers */}
+                  <div className="flex items-center gap-3 px-3 py-2 w-full md:w-1/2">
+                    <Calendar className="text-turo-purple size-5 shrink-0" />
+                    <div className="flex gap-4 w-full justify-between">
+                      <div className="text-left w-1/2">
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                          From
+                        </label>
+                        <input
+                          type="date"
+                          value={pickupDate}
+                          min={new Date().toISOString().split('T')[0]}
+                          onChange={(e) => setPickupDate(e.target.value)}
+                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer focus:text-turo-purple transition-colors"
+                        />
+                      </div>
+                      <div className="h-8 w-px bg-gray-200 self-center hidden sm:block"></div>
+                      <div className="text-left w-1/2">
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                          Until
+                        </label>
+                        <input
+                          type="date"
+                          value={returnDate}
+                          min={pickupDate || new Date().toISOString().split('T')[0]}
+                          onChange={(e) => setReturnDate(e.target.value)}
+                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer focus:text-turo-purple transition-colors"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Search Button */}
+                  <button
+                    type="submit"
+                    className="w-full md:w-auto bg-turo-purple hover:bg-turo-hover text-white font-bold px-8 py-4 md:py-3.5 rounded-2xl md:rounded-full transition-colors flex items-center justify-center gap-2 shadow-lg shadow-turo-purple/20 cursor-pointer"
+                  >
+                    <Search className="size-4" />
+                    Find RTO Cars
+                  </button>
+                </form>
+              </div>
+            </section>
+
+            {/* RTO Path to Ownership Estimator */}
+            <section className="max-w-4xl mx-auto px-4 sm:px-6 mt-20">
+              <div className="bg-white border border-gray-200 rounded-3xl shadow-xl p-8 sm:p-10 relative -mt-24 z-20">
+                <div className="text-center mb-8">
+                  <span className="text-xs font-bold text-turo-purple uppercase tracking-wider">
+                    Program Estimator
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-2">
+                    Estimate your monthly payments
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Calculate monthly lease buyout metrics based on target car value and contract duration.
+                  </p>
+                </div>
+
+                <div className="space-y-8">
+                  {/* Slider 1: Target Car Buyout Price */}
+                  <div>
+                    <div className="flex justify-between text-sm font-bold text-gray-700 mb-2">
+                      <span>Target Vehicle Buyout Price</span>
+                      <span className="text-turo-purple">${rtoCalcValue.toLocaleString()} AUD</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="20000"
+                      max="120000"
+                      step="5000"
+                      value={rtoCalcValue}
+                      onChange={(e) => setRtoCalcValue(Number(e.target.value))}
+                      className="w-full accent-turo-purple h-2 bg-gray-100 rounded-lg cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[10px] text-gray-400 font-bold mt-1.5 uppercase">
+                      <span>$20k (Entry Sedan)</span>
+                      <span>$70k (Premium EV)</span>
+                      <span>$120k (Sports Performance)</span>
+                    </div>
+                  </div>
+
+                  {/* Slider 2: Duration */}
+                  <div>
+                    <div className="flex justify-between text-sm font-bold text-gray-700 mb-2">
+                      <span>Option Payout Term</span>
+                      <span className="text-turo-purple">{rtoCalcMonths} Months</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      {[12, 24, 36].map((m) => (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => setRtoCalcMonths(m)}
+                          className={`py-3 rounded-2xl text-sm font-black border transition-all cursor-pointer ${
+                            rtoCalcMonths === m
+                              ? "bg-turo-purple border-turo-purple text-white shadow-md"
+                              : "bg-white border-gray-200 text-gray-700 hover:border-turo-purple/30"
+                          }`}
+                        >
+                          {m} Months ({m/12} yr)
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Calculations Details Card */}
+                  <div className="bg-turo-gray rounded-2xl p-6 grid grid-cols-1 md:grid-cols-3 gap-6 border border-gray-100">
+                    <div className="text-left">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
+                        Upfront Downpayment (10%)
+                      </span>
+                      <p className="text-2xl font-black text-gray-900 mt-1">
+                        ${Math.round(rtoCalcValue * 0.1).toLocaleString()} <span className="text-xs font-normal text-gray-500">AUD</span>
+                      </p>
+                    </div>
+                    <div className="text-left border-y md:border-y-0 md:border-x border-gray-200 py-4 md:py-0 md:px-6">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
+                        Monthly Payment (Includes markup)
+                      </span>
+                      <p className="text-2xl font-black text-turo-purple mt-1">
+                        ${Math.round((rtoCalcValue - (rtoCalcValue * 0.1)) / rtoCalcMonths * 1.25).toLocaleString()} <span className="text-xs font-normal text-gray-500">/mo</span>
+                      </p>
+                    </div>
+                    <div className="text-left">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
+                        Total Payout Value
+                      </span>
+                      <p className="text-2xl font-black text-gray-900 mt-1">
+                        ${(Math.round(rtoCalcValue * 0.1) + Math.round((rtoCalcValue - (rtoCalcValue * 0.1)) / rtoCalcMonths * 1.25) * rtoCalcMonths).toLocaleString()} <span className="text-xs font-normal text-gray-500">AUD</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* RTO Catalog Grid */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
+              <div className="flex justify-between items-end mb-8">
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-black text-gray-900">
+                    Browse Rent-to-Own vehicles
+                  </h2>
+                  <p className="text-sm font-medium text-gray-500 mt-1">
+                    Select a vehicle, pay the downpayment, sign the contract, and start driving toward ownership.
+                  </p>
+                </div>
+                <Link
+                  href="/theme4/search?mode=rto"
+                  className="text-sm font-bold text-turo-purple hover:underline"
+                >
+                  View RTO Catalog →
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {cars.filter(c => c.rentToOwnAvailable).map((car) => {
+                  const monthlyRto = Math.round((car.rentToOwnPrice! - car.downPayment!) / car.rentToOwnMonths! * 1.25);
+                  return (
+                    <Link
+                      key={car.id}
+                      href={`/theme4/car/${car.id}?mode=rto`}
+                      className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                    >
+                      {/* Image */}
+                      <div className="relative h-48 sm:h-52 bg-gray-50 overflow-hidden">
+                        <img
+                          src={car.image}
+                          alt={car.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <span className="absolute top-4 left-4 bg-turo-purple text-white text-[9px] font-black px-2.5 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                          Rent to Own
+                        </span>
+                        <span className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm text-gray-900 text-sm font-bold px-3 py-1 rounded-lg shadow-sm">
+                          ${monthlyRto} <span className="text-xs font-normal text-gray-500">/month</span>
+                        </span>
+                      </div>
+
+                      {/* Info */}
+                      <div className="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+                            <span className="font-semibold px-2 py-0.5 bg-turo-light text-turo-purple rounded-md">
+                              Downpayment: ${car.downPayment}
+                            </span>
+                            <span>•</span>
+                            <span>{car.rentToOwnMonths} mo term</span>
+                          </div>
+                          <h3 className="text-lg font-bold text-gray-900 group-hover:text-turo-purple transition-colors mb-2">
+                            {car.name}
+                          </h3>
+                          <p className="text-xs text-gray-400 font-medium mb-3">
+                            {car.location}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-2">
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center text-amber-500 font-bold text-sm gap-0.5">
+                              <Star className="size-4 fill-current" />
+                              <span>{car.rating.toFixed(2)}</span>
+                            </div>
+                            <span className="text-xs text-gray-400">({car.tripsCount} trips)</span>
+                          </div>
+                          <span className="text-xs font-bold text-turo-purple hover:underline">Calculate Payout →</span>
+                        </div>
+                      </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -735,10 +1032,75 @@ function Theme4HomePageContent() {
 
                     <div className="flex gap-4 p-4 border border-turo-purple/20 bg-turo-light rounded-2xl text-turo-purple items-start">
                       <Info className="size-5 shrink-0 mt-0.5" />
-                      <div className="text-xs font-medium leading-relaxed">
+                      <div className="text-xs font-medium leading-relaxed text-left">
                         <strong className="font-bold">Insurance & Protection:</strong> You are protected by our $20M third-party property cover. Renter pays direct insurance fee during booking.
                       </div>
                     </div>
+
+                    {/* Rent-to-Own Checkbox & Settings */}
+                    <div className="pt-4 border-t border-gray-100">
+                      <label className="flex items-center gap-3 cursor-pointer p-3 bg-gray-50 rounded-2xl border border-gray-200/60 hover:border-turo-purple/20 transition-all">
+                        <input
+                          type="checkbox"
+                          checked={newLendCar.enableRentToOwn}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, enableRentToOwn: e.target.checked })}
+                          className="accent-turo-purple size-4 shrink-0"
+                        />
+                        <div className="text-left">
+                          <span className="text-xs font-bold text-gray-800">Enable Rent-to-Own</span>
+                          <span className="text-[10px] text-gray-400 block mt-0.5">Let renters buy this car over periodic payments.</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    {newLendCar.enableRentToOwn && (
+                      <div className="space-y-4 p-4 bg-turo-light/30 border border-turo-purple/15 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-300 text-left">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1.5">
+                              Buyout Price (AUD)
+                            </label>
+                            <input
+                              type="number"
+                              value={newLendCar.rentToOwnPrice}
+                              onChange={(e) => setNewLendCar({ ...newLendCar, rentToOwnPrice: e.target.value })}
+                              className="w-full border border-gray-200 px-3 py-2 bg-white rounded-xl text-xs font-semibold text-gray-800 outline-none focus:border-turo-purple"
+                              placeholder="e.g. 35000"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1.5">
+                              Buyout Term
+                            </label>
+                            <select
+                              value={newLendCar.rentToOwnMonths}
+                              onChange={(e) => setNewLendCar({ ...newLendCar, rentToOwnMonths: e.target.value })}
+                              className="w-full border border-gray-200 px-3 py-2 bg-white rounded-xl text-xs font-semibold text-gray-800 outline-none focus:border-turo-purple"
+                            >
+                              <option value="12">12 Months (1 yr)</option>
+                              <option value="24">24 Months (2 yrs)</option>
+                              <option value="36">36 Months (3 yrs)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Calculated Summary */}
+                        <div className="bg-white p-3 rounded-xl border border-gray-200/60 text-xs space-y-1.5 text-gray-600">
+                          <div className="flex justify-between font-medium">
+                            <span>Downpayment (10%):</span>
+                            <span className="text-gray-900 font-bold">${Math.round((parseInt(newLendCar.rentToOwnPrice) || 0) * 0.1).toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between font-medium">
+                            <span>Monthly Payment:</span>
+                            <span className="text-gray-900 font-bold">${Math.round(((parseInt(newLendCar.rentToOwnPrice) || 0) * 0.9) / (parseInt(newLendCar.rentToOwnMonths) || 12) * 1.25).toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between font-bold text-turo-purple border-t border-dashed border-gray-100 pt-1.5">
+                            <span>Seller Payout (Net 90%):</span>
+                            <span>${Math.round((((parseInt(newLendCar.rentToOwnPrice) || 0) * 0.9) / (parseInt(newLendCar.rentToOwnMonths) || 12) * 1.25) * 0.9).toLocaleString()}/mo</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -800,6 +1162,12 @@ function Theme4HomePageContent() {
                           seats: 5,
                           description: "Listed by you. Feel the difference driving this personal vehicle.",
                           features: ["Bluetooth", "USB Charger", "GPS"],
+                          ...(newLendCar.enableRentToOwn ? {
+                            rentToOwnAvailable: true,
+                            rentToOwnPrice: parseInt(newLendCar.rentToOwnPrice) || 35000,
+                            rentToOwnMonths: parseInt(newLendCar.rentToOwnMonths) || 24,
+                            downPayment: Math.round((parseInt(newLendCar.rentToOwnPrice) || 35000) * 0.1),
+                          } : {})
                         };
                         setCars([newCarObj, ...cars]);
                       }

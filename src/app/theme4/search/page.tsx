@@ -19,16 +19,18 @@ function Theme4SearchPageContent() {
   const initReturn = searchParams.get("return") || "2026-06-18";
   const initMake = searchParams.get("make") || "";
   const initCategory = searchParams.get("category") || "";
+  const initMode = searchParams.get("mode") || "rent";
 
   // Filter States
   const [location, setLocation] = useState(initLocation);
   const [pickupDate, setPickupDate] = useState(initPickup);
   const [returnDate, setReturnDate] = useState(initReturn);
+  const [searchMode, setSearchMode] = useState<"rent" | "rto">(initMode === "rto" ? "rto" : "rent");
 
   // Active filters
   const [sortBy, setSortBy] = useState<"relevance" | "priceLow" | "priceHigh" | "rating">("relevance");
   const [selectedCategory, setSelectedCategory] = useState<string>(initCategory);
-  const [maxPrice, setMaxPrice] = useState<number>(300);
+  const [maxPrice, setMaxPrice] = useState<number>(initMode === "rto" ? 2500 : 300);
   const [selectedTransmission, setSelectedTransmission] = useState<string>("");
   const [selectedFuelType, setSelectedFuelType] = useState<string>("");
   const [showMap, setShowMap] = useState<boolean>(true);
@@ -40,18 +42,28 @@ function Theme4SearchPageContent() {
     if (initCategory) setSelectedCategory(initCategory);
   }, [initCategory]);
 
+  useEffect(() => {
+    if (initMode === "rto") {
+      setSearchMode("rto");
+      setMaxPrice(2500);
+    } else {
+      setSearchMode("rent");
+      setMaxPrice(300);
+    }
+  }, [initMode]);
+
   // Handle Location/Date Search Bar submit
   const handleSearchBarSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     router.push(
-      `/theme4/search?location=${encodeURIComponent(location)}&pickup=${pickupDate}&return=${returnDate}`
+      `/theme4/search?mode=${searchMode}&location=${encodeURIComponent(location)}&pickup=${pickupDate}&return=${returnDate}`
     );
   };
 
   // Reset Filters
   const resetFilters = () => {
     setSelectedCategory("");
-    setMaxPrice(300);
+    setMaxPrice(searchMode === "rto" ? 2500 : 300);
     setSelectedTransmission("");
     setSelectedFuelType("");
     setSortBy("relevance");
@@ -75,8 +87,20 @@ function Theme4SearchPageContent() {
       );
     }
 
+    // Filter by Rent-to-Own mode
+    if (searchMode === "rto") {
+      result = result.filter((car) => car.rentToOwnAvailable);
+    }
+
     // Filter by Max Price
-    result = result.filter((car) => car.pricePerDay <= maxPrice);
+    if (searchMode === "rto") {
+      result = result.filter((car) => {
+        const monthlyRto = Math.round((car.rentToOwnPrice! - car.downPayment!) / car.rentToOwnMonths! * 1.25);
+        return monthlyRto <= maxPrice;
+      });
+    } else {
+      result = result.filter((car) => car.pricePerDay <= maxPrice);
+    }
 
     // Filter by Transmission
     if (selectedTransmission) {
@@ -94,15 +118,31 @@ function Theme4SearchPageContent() {
 
     // Sorting
     if (sortBy === "priceLow") {
-      result.sort((a, b) => a.pricePerDay - b.pricePerDay);
+      if (searchMode === "rto") {
+        result.sort((a, b) => {
+          const priceA = Math.round((a.rentToOwnPrice! - a.downPayment!) / a.rentToOwnMonths! * 1.25);
+          const priceB = Math.round((b.rentToOwnPrice! - b.downPayment!) / b.rentToOwnMonths! * 1.25);
+          return priceA - priceB;
+        });
+      } else {
+        result.sort((a, b) => a.pricePerDay - b.pricePerDay);
+      }
     } else if (sortBy === "priceHigh") {
-      result.sort((a, b) => b.pricePerDay - a.pricePerDay);
+      if (searchMode === "rto") {
+        result.sort((a, b) => {
+          const priceA = Math.round((a.rentToOwnPrice! - a.downPayment!) / a.rentToOwnMonths! * 1.25);
+          const priceB = Math.round((b.rentToOwnPrice! - b.downPayment!) / b.rentToOwnMonths! * 1.25);
+          return priceB - priceA;
+        });
+      } else {
+        result.sort((a, b) => b.pricePerDay - a.pricePerDay);
+      }
     } else if (sortBy === "rating") {
       result.sort((a, b) => b.rating - a.rating);
     }
 
     return result;
-  }, [initMake, selectedCategory, maxPrice, selectedTransmission, selectedFuelType, sortBy]);
+  }, [initMake, selectedCategory, searchMode, maxPrice, selectedTransmission, selectedFuelType, sortBy]);
 
   return (
     <div className="bg-white min-h-screen flex flex-col">
@@ -163,6 +203,36 @@ function Theme4SearchPageContent() {
         {/* Left column: Filters & Listings */}
         <div className={`flex-1 flex flex-col ${showMap ? "lg:w-7/12" : "w-full"}`}>
           
+          {/* Rent vs Rent-to-Own Tab Switcher */}
+          <div className="flex bg-gray-100 p-1 rounded-2xl mb-6 w-full sm:w-fit border border-gray-200/50">
+            <button
+              onClick={() => {
+                setSearchMode("rent");
+                setMaxPrice(300);
+              }}
+              className={`flex-1 sm:flex-initial text-center px-6 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                searchMode === "rent"
+                  ? "bg-white text-gray-950 shadow-sm border border-gray-200/30"
+                  : "text-gray-500 hover:text-gray-900"
+              }`}
+            >
+              Rent standard ($/day)
+            </button>
+            <button
+              onClick={() => {
+                setSearchMode("rto");
+                setMaxPrice(2500);
+              }}
+              className={`flex-1 sm:flex-initial text-center px-6 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                searchMode === "rto"
+                  ? "bg-turo-purple text-white shadow-sm"
+                  : "text-gray-500 hover:text-turo-purple"
+              }`}
+            >
+              Rent to Own ($/month)
+            </button>
+          </div>
+
           {/* Quick Filters / Top Controls */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -181,12 +251,12 @@ function Theme4SearchPageContent() {
 
               {/* Price filter indicator */}
               <div className="flex items-center gap-2 text-xs font-bold border border-gray-200 px-3 py-2 rounded-full bg-white text-gray-700">
-                <span>Max: ${maxPrice}/day</span>
+                <span>Max: ${maxPrice.toLocaleString()}/{searchMode === "rto" ? "mo" : "day"}</span>
                 <input
                   type="range"
-                  min="50"
-                  max="300"
-                  step="10"
+                  min={searchMode === "rto" ? 500 : 50}
+                  max={searchMode === "rto" ? 5000 : 500}
+                  step={searchMode === "rto" ? 100 : 10}
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
                   className="w-16 h-1 bg-gray-200 rounded-lg accent-turo-purple cursor-pointer"
@@ -206,7 +276,7 @@ function Theme4SearchPageContent() {
               </select>
 
               {/* Reset */}
-              {(selectedCategory || maxPrice < 300 || selectedTransmission || selectedFuelType || sortBy !== "relevance") && (
+              {(selectedCategory || (searchMode === "rent" ? maxPrice < 300 : maxPrice < 2500) || selectedTransmission || selectedFuelType || sortBy !== "relevance") && (
                 <button
                   onClick={resetFilters}
                   className="text-xs font-bold text-turo-purple hover:text-turo-hover flex items-center gap-1 cursor-pointer"
@@ -284,74 +354,107 @@ function Theme4SearchPageContent() {
           {/* Search Listings Grid */}
           {filteredCars.length > 0 ? (
             <div className="space-y-6">
-              {filteredCars.map((car) => (
-                <Link
-                  key={car.id}
-                  href={`/theme4/car/${car.id}`}
-                  onMouseEnter={() => setHoveredCarId(car.id)}
-                  onMouseLeave={() => setHoveredCarId(null)}
-                  className={`flex flex-col sm:flex-row border rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer ${
-                    hoveredCarId === car.id || selectedCarId === car.id
-                      ? "border-turo-purple ring-2 ring-turo-purple/10 scale-[1.01]"
-                      : "border-gray-200"
-                  }`}
-                >
-                  {/* Left Column - Car Image */}
-                  <div className="relative w-full sm:w-2/5 h-48 sm:h-auto min-h-[180px] bg-gray-50 overflow-hidden shrink-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={car.image}
-                      alt={car.name}
-                      className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
-                    />
-                    {car.isAllStarHost && (
-                      <span className="absolute top-4 left-4 bg-turo-purple text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
-                        All-Star Host
-                      </span>
-                    )}
-                  </div>
+              {filteredCars.map((car) => {
+                const monthlyRto = car.rentToOwnAvailable
+                  ? Math.round((car.rentToOwnPrice! - car.downPayment!) / car.rentToOwnMonths! * 1.25)
+                  : 0;
 
-                  {/* Right Column - Car Info */}
-                  <div className="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase mb-1.5">
-                        <span className="text-turo-purple">{car.category}</span>
-                        <span>•</span>
-                        <span>{car.transmission}</span>
-                        <span>•</span>
-                        <span>{car.fuelType}</span>
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 group-hover:text-turo-purple transition-colors">
-                        {car.name}
-                      </h3>
-                      <p className="text-xs text-gray-500 font-semibold mt-1">
-                        {car.location}
-                      </p>
-                      <p className="text-xs text-gray-400 font-medium line-clamp-2 mt-2 leading-relaxed">
-                        {car.description}
-                      </p>
+                return (
+                  <Link
+                    key={car.id}
+                    href={`/theme4/car/${car.id}${searchMode === "rto" ? "?mode=rto" : ""}`}
+                    onMouseEnter={() => setHoveredCarId(car.id)}
+                    onMouseLeave={() => setHoveredCarId(null)}
+                    className={`flex flex-col sm:flex-row border rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer ${
+                      hoveredCarId === car.id || selectedCarId === car.id
+                        ? "border-turo-purple ring-2 ring-turo-purple/10 scale-[1.01]"
+                        : "border-gray-200"
+                    }`}
+                  >
+                    {/* Left Column - Car Image */}
+                    <div className="relative w-full sm:w-2/5 h-48 sm:h-auto min-h-[180px] bg-gray-50 overflow-hidden shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={car.image}
+                        alt={car.name}
+                        className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
+                      />
+                      {car.isAllStarHost && (
+                        <span className="absolute top-4 left-4 bg-turo-purple text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                          All-Star Host
+                        </span>
+                      )}
+                      {searchMode === "rto" && (
+                        <span className="absolute top-4 right-4 bg-emerald-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                          Rent to Own
+                        </span>
+                      )}
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center text-amber-500 font-bold text-xs gap-0.5">
-                          <Star className="size-3.5 fill-current" />
-                          <span>{car.rating.toFixed(2)}</span>
+                    {/* Right Column - Car Info */}
+                    <div className="p-6 flex-1 flex flex-col justify-between">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase mb-1.5">
+                          <span className="text-turo-purple">{car.category}</span>
+                          <span>•</span>
+                          <span>{car.transmission}</span>
+                          <span>•</span>
+                          <span>{car.fuelType}</span>
+                          {searchMode === "rto" && car.rentToOwnMonths && (
+                            <>
+                              <span>•</span>
+                              <span className="text-emerald-600 font-extrabold bg-emerald-50 px-1.5 py-0.5 rounded text-[9px]">
+                                {car.rentToOwnMonths} mo term
+                              </span>
+                            </>
+                          )}
                         </div>
-                        <span className="text-[11px] text-gray-400">
-                          ({car.tripsCount} trips)
-                        </span>
+                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-turo-purple transition-colors">
+                          {car.name}
+                        </h3>
+                        <p className="text-xs text-gray-500 font-semibold mt-1">
+                          {car.location}
+                        </p>
+                        <p className="text-xs text-gray-400 font-medium line-clamp-2 mt-2 leading-relaxed">
+                          {car.description}
+                        </p>
                       </div>
-                      <div className="text-right">
-                        <span className="text-xl font-black text-gray-900">
-                          ${car.pricePerDay}
-                        </span>
-                        <span className="text-xs font-normal text-gray-500"> /day</span>
+
+                      <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center text-amber-500 font-bold text-xs gap-0.5">
+                            <Star className="size-3.5 fill-current" />
+                            <span>{car.rating.toFixed(2)}</span>
+                          </div>
+                          <span className="text-[11px] text-gray-400">
+                            ({car.tripsCount} trips)
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          {searchMode === "rto" ? (
+                            <>
+                              <span className="text-xl font-black text-emerald-600">
+                                ${monthlyRto.toLocaleString()}
+                              </span>
+                              <span className="text-xs font-normal text-gray-500"> /mo</span>
+                              <div className="text-[10px] text-gray-400 font-medium mt-0.5">
+                                Down: ${car.downPayment?.toLocaleString()}
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-xl font-black text-gray-900">
+                                ${car.pricePerDay}
+                              </span>
+                              <span className="text-xs font-normal text-gray-500"> /day</span>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-20 bg-turo-gray rounded-3xl border border-dashed border-gray-300">
@@ -391,6 +494,11 @@ function Theme4SearchPageContent() {
                 ];
                 const isHovered = hoveredCarId === car.id;
                 const isSelected = selectedCarId === car.id;
+                
+                const price = searchMode === "rto"
+                  ? Math.round((car.rentToOwnPrice! - car.downPayment!) / car.rentToOwnMonths! * 1.25)
+                  : car.pricePerDay;
+
                 return (
                   <button
                     key={car.id}
@@ -404,7 +512,7 @@ function Theme4SearchPageContent() {
                     style={positions[index % positions.length]}
                   >
                     <Star className={`size-3 ${isHovered || isSelected ? "fill-white text-white" : "fill-amber-500 text-amber-500"}`} />
-                    ${car.pricePerDay}
+                    ${price.toLocaleString()}{searchMode === "rto" ? "/mo" : ""}
                   </button>
                 );
               })}
@@ -412,6 +520,10 @@ function Theme4SearchPageContent() {
               {selectedCarId ? (() => {
                 const selectedCar = filteredCars.find(c => c.id === selectedCarId);
                 if (!selectedCar) return null;
+                const monthlyPrice = selectedCar.rentToOwnAvailable
+                  ? Math.round((selectedCar.rentToOwnPrice! - selectedCar.downPayment!) / selectedCar.rentToOwnMonths! * 1.25)
+                  : 0;
+
                 return (
                   <div className="absolute bottom-6 left-6 right-6 bg-white p-3.5 rounded-2xl shadow-2xl border border-gray-100 text-left flex gap-3 animate-in slide-in-from-bottom-3 duration-300 z-20">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -441,10 +553,10 @@ function Theme4SearchPageContent() {
                           <span>{selectedCar.rating.toFixed(2)}</span>
                         </div>
                         <Link 
-                          href={`/theme4/car/${selectedCar.id}`}
+                          href={`/theme4/car/${selectedCar.id}${searchMode === "rto" ? "?mode=rto" : ""}`}
                           className="bg-turo-purple hover:bg-turo-hover text-white text-[10px] font-black px-3 py-1.5 rounded-lg transition-colors shadow-sm"
                         >
-                          View Details (${selectedCar.pricePerDay})
+                          View Details ({searchMode === "rto" ? `$${monthlyPrice.toLocaleString()}/mo` : `$${selectedCar.pricePerDay}/day`})
                         </Link>
                       </div>
                     </div>
