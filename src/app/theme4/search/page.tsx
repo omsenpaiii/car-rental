@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, SlidersHorizontal, Map, Grid, List, Star, 
   MapPin, Calendar, Check, Compass, ChevronDown, RefreshCw 
@@ -259,7 +260,7 @@ function Theme4SearchPageContent() {
                   step={searchMode === "rto" ? 100 : 10}
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
-                  className="w-16 h-1 bg-gray-200 rounded-lg accent-turo-purple cursor-pointer"
+                  className="w-24 sm:w-16 h-1 bg-gray-200 rounded-lg accent-turo-purple cursor-pointer"
                 />
               </div>
 
@@ -298,7 +299,7 @@ function Theme4SearchPageContent() {
           </div>
 
           {/* More Filters Panel (Interactive Pill Buttons) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-5 bg-turo-gray rounded-3xl mb-8 border border-gray-100 items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-5 bg-turo-gray rounded-3xl mb-6 sm:mb-8 border border-gray-100 items-center">
             <div>
               <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
                 Transmission
@@ -353,109 +354,128 @@ function Theme4SearchPageContent() {
 
           {/* Search Listings Grid */}
           {filteredCars.length > 0 ? (
-            <div className="space-y-6">
+            <motion.div 
+              initial="hidden"
+              animate="show"
+              variants={{
+                hidden: { opacity: 0 },
+                show: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.05 }
+                }
+              }}
+              className="space-y-6"
+            >
               {filteredCars.map((car) => {
                 const monthlyRto = car.rentToOwnAvailable
                   ? Math.round((car.rentToOwnPrice! - car.downPayment!) / car.rentToOwnMonths! * 1.25)
                   : 0;
 
                 return (
-                  <Link
+                  <motion.div
                     key={car.id}
-                    href={`/theme4/car/${car.id}${searchMode === "rto" ? "?mode=rto" : ""}`}
-                    onMouseEnter={() => setHoveredCarId(car.id)}
-                    onMouseLeave={() => setHoveredCarId(null)}
-                    className={`flex flex-col sm:flex-row border rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer ${
-                      hoveredCarId === car.id || selectedCarId === car.id
-                        ? "border-turo-purple ring-2 ring-turo-purple/10 scale-[1.01]"
-                        : "border-gray-200"
-                    }`}
+                    variants={{
+                      hidden: { opacity: 0, y: 15 },
+                      show: { opacity: 1, y: 0 }
+                    }}
+                    transition={{ duration: 0.3 }}
                   >
-                    {/* Left Column - Car Image */}
-                    <div className="relative w-full sm:w-2/5 h-48 sm:h-auto min-h-[180px] bg-gray-50 overflow-hidden shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={car.image}
-                        alt={car.name}
-                        className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
-                      />
-                      {car.isAllStarHost && (
-                        <span className="absolute top-4 left-4 bg-turo-purple text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
-                          All-Star Host
-                        </span>
-                      )}
-                      {searchMode === "rto" && (
-                        <span className="absolute top-4 right-4 bg-emerald-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
-                          Rent to Own
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Right Column - Car Info */}
-                    <div className="p-6 flex-1 flex flex-col justify-between">
-                      <div>
-                        <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase mb-1.5">
-                          <span className="text-turo-purple">{car.category}</span>
-                          <span>•</span>
-                          <span>{car.transmission}</span>
-                          <span>•</span>
-                          <span>{car.fuelType}</span>
-                          {searchMode === "rto" && car.rentToOwnMonths && (
-                            <>
-                              <span>•</span>
-                              <span className="text-emerald-600 font-extrabold bg-emerald-50 px-1.5 py-0.5 rounded text-[9px]">
-                                {car.rentToOwnMonths} mo term
-                              </span>
-                            </>
-                          )}
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-turo-purple transition-colors">
-                          {car.name}
-                        </h3>
-                        <p className="text-xs text-gray-500 font-semibold mt-1">
-                          {car.location}
-                        </p>
-                        <p className="text-xs text-gray-400 font-medium line-clamp-2 mt-2 leading-relaxed">
-                          {car.description}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center text-amber-500 font-bold text-xs gap-0.5">
-                            <Star className="size-3.5 fill-current" />
-                            <span>{car.rating.toFixed(2)}</span>
-                          </div>
-                          <span className="text-[11px] text-gray-400">
-                            ({car.tripsCount} trips)
+                    <Link
+                      href={`/theme4/car/${car.id}${searchMode === "rto" ? "?mode=rto" : ""}`}
+                      onMouseEnter={() => setHoveredCarId(car.id)}
+                      onMouseLeave={() => setHoveredCarId(null)}
+                      className={`flex flex-col sm:flex-row border rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer ${
+                        hoveredCarId === car.id || selectedCarId === car.id
+                          ? "border-turo-purple ring-2 ring-turo-purple/10 scale-[1.01]"
+                          : "border-gray-200"
+                      }`}
+                    >
+                      {/* Left Column - Car Image */}
+                      <div className="relative w-full sm:w-2/5 h-48 sm:h-auto min-h-[180px] bg-gray-50 overflow-hidden shrink-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={car.image}
+                          alt={car.name}
+                          className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
+                        />
+                        {car.isAllStarHost && (
+                          <span className="absolute top-4 left-4 bg-turo-purple text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                            All-Star Host
                           </span>
+                        )}
+                        {searchMode === "rto" && (
+                          <span className="absolute top-4 right-4 bg-emerald-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                            Rent to Own
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Right Column - Car Info */}
+                      <div className="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                          <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase mb-1.5">
+                            <span className="text-turo-purple">{car.category}</span>
+                            <span>•</span>
+                            <span>{car.transmission}</span>
+                            <span>•</span>
+                            <span>{car.fuelType}</span>
+                            {searchMode === "rto" && car.rentToOwnMonths && (
+                              <>
+                                <span>•</span>
+                                <span className="text-emerald-600 font-extrabold bg-emerald-50 px-1.5 py-0.5 rounded text-[9px]">
+                                  {car.rentToOwnMonths} mo term
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          <h3 className="text-xl font-bold text-gray-900 group-hover:text-turo-purple transition-colors">
+                            {car.name}
+                          </h3>
+                          <p className="text-xs text-gray-500 font-semibold mt-1">
+                            {car.location}
+                          </p>
+                          <p className="text-xs text-gray-400 font-medium line-clamp-2 mt-2 leading-relaxed">
+                            {car.description}
+                          </p>
                         </div>
-                        <div className="text-right">
-                          {searchMode === "rto" ? (
-                            <>
-                              <span className="text-xl font-black text-emerald-600">
-                                ${monthlyRto.toLocaleString()}
-                              </span>
-                              <span className="text-xs font-normal text-gray-500"> /mo</span>
-                              <div className="text-[10px] text-gray-400 font-medium mt-0.5">
-                                Down: ${car.downPayment?.toLocaleString()}
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <span className="text-xl font-black text-gray-900">
-                                ${car.pricePerDay}
-                              </span>
-                              <span className="text-xs font-normal text-gray-500"> /day</span>
-                            </>
-                          )}
+
+                        <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center text-amber-500 font-bold text-xs gap-0.5">
+                              <Star className="size-3.5 fill-current" />
+                              <span>{car.rating.toFixed(2)}</span>
+                            </div>
+                            <span className="text-[11px] text-gray-400">
+                              ({car.tripsCount} trips)
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            {searchMode === "rto" ? (
+                              <>
+                                <span className="text-xl font-black text-emerald-600">
+                                  ${monthlyRto.toLocaleString()}
+                                </span>
+                                <span className="text-xs font-normal text-gray-500"> /mo</span>
+                                <div className="text-[10px] text-gray-400 font-medium mt-0.5">
+                                  Down: ${car.downPayment?.toLocaleString()}
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <span className="text-xl font-black text-gray-900">
+                                  ${car.pricePerDay}
+                                </span>
+                                <span className="text-xs font-normal text-gray-500"> /day</span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
+                    </Link>
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           ) : (
             <div className="text-center py-20 bg-turo-gray rounded-3xl border border-dashed border-gray-300">
               <Compass className="size-12 text-gray-400 mb-4 mx-auto" />

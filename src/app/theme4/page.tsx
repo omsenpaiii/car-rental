@@ -79,44 +79,45 @@ function Theme4HomePageContent() {
     rentToOwnMonths: "24",
   });
 
+  const renderSwitcher = () => (
+    <div className="flex justify-center pb-8 max-w-full px-4 w-full z-20">
+      <div className="inline-flex bg-white/10 backdrop-blur-md p-1 rounded-full border border-white/20 max-w-full overflow-x-auto scrollbar-hide shadow-lg">
+        <button
+          onClick={() => handleTabChange("rent")}
+          className={`px-4 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
+            activeTab === "rent"
+              ? "bg-turo-purple text-white shadow-md scale-105"
+              : "text-white/80 hover:text-white hover:bg-white/10"
+          }`}
+        >
+          Rent a Car
+        </button>
+        <button
+          onClick={() => handleTabChange("rto")}
+          className={`px-4 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
+            activeTab === "rto"
+              ? "bg-turo-purple text-white shadow-md scale-105"
+              : "text-white/80 hover:text-white hover:bg-white/10"
+          }`}
+        >
+          Rent to Own
+        </button>
+        <button
+          onClick={() => handleTabChange("lent")}
+          className={`px-4 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
+            activeTab === "lent"
+              ? "bg-turo-purple text-white shadow-md scale-105"
+              : "text-white/80 hover:text-white hover:bg-white/10"
+          }`}
+        >
+          Lend your Car
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="bg-white min-h-screen pb-20">
-      {/* Top Rent / RTO / Lent Segmented Switch */}
-      <div className="flex justify-center pt-6 pb-2">
-        <div className="inline-flex bg-gray-100 p-1.5 rounded-full shadow-inner border border-gray-200">
-          <button
-            onClick={() => handleTabChange("rent")}
-            className={`px-6 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-all duration-300 cursor-pointer ${
-              activeTab === "rent"
-                ? "bg-turo-purple text-white shadow-md"
-                : "text-gray-600 hover:text-turo-purple"
-            }`}
-          >
-            Rent a Car
-          </button>
-          <button
-            onClick={() => handleTabChange("rto")}
-            className={`px-6 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-all duration-300 cursor-pointer ${
-              activeTab === "rto"
-                ? "bg-turo-purple text-white shadow-md"
-                : "text-gray-600 hover:text-turo-purple"
-            }`}
-          >
-            Rent to Own
-          </button>
-          <button
-            onClick={() => handleTabChange("lent")}
-            className={`px-6 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-all duration-300 cursor-pointer ${
-              activeTab === "lent"
-                ? "bg-turo-purple text-white shadow-md"
-                : "text-gray-600 hover:text-turo-purple"
-            }`}
-          >
-            Lend your Car
-          </button>
-        </div>
-      </div>
-
       <AnimatePresence mode="wait">
         {activeTab === "rent" ? (
           <motion.div
@@ -127,7 +128,7 @@ function Theme4HomePageContent() {
             transition={{ duration: 0.3 }}
           >
             {/* Rent Hero Section */}
-            <section className="relative h-[560px] flex items-center justify-center bg-gray-900 overflow-hidden">
+            <section className="relative min-h-[580px] sm:h-[640px] flex items-center justify-center bg-gray-900 overflow-hidden pt-24 pb-12">
               <div className="absolute inset-0">
                 <video
                   autoPlay
@@ -137,10 +138,12 @@ function Theme4HomePageContent() {
                   className="w-full h-full object-cover opacity-50"
                   src="/hero.mp4"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/75" />
               </div>
 
-              <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
+              <div className="relative z-10 max-w-4xl mx-auto px-4 text-center w-full flex flex-col items-center">
+                {renderSwitcher()}
+
                 <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mb-6">
                   Find the perfect car to <span className="text-turo-light text-turo-purple underline decoration-turo-purple underline-offset-4">rent</span> in Melbourne
                 </h1>
@@ -151,7 +154,7 @@ function Theme4HomePageContent() {
                 {/* Turo-style Search Widget */}
                 <form
                   onSubmit={handleSearchSubmit}
-                  className="bg-white rounded-3xl md:rounded-full shadow-2xl p-4 md:py-2 md:px-3 flex flex-col md:flex-row items-center gap-3 max-w-3xl mx-auto border border-gray-100"
+                  className="w-full bg-white rounded-3xl md:rounded-full shadow-2xl p-4 md:py-2 md:px-3 flex flex-col md:flex-row items-center gap-3 max-w-3xl mx-auto border border-gray-100"
                 >
                   {/* Location Input */}
                   <div className="flex items-center gap-3 px-3 py-2 w-full md:w-1/3 border-b md:border-b-0 md:border-r border-gray-200">
@@ -230,27 +233,47 @@ function Theme4HomePageContent() {
                   Drive your dream car. Filter by popular makes in Melbourne.
                 </p>
                 
-                <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+                <motion.div 
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.08 }
+                    }
+                  }}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, margin: "-50px" }}
+                  className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide px-1"
+                >
                   {makeCategories.map((make) => (
-                    <Link
+                    <motion.div
                       key={make.name}
-                      href={`/theme4/search?make=${make.name}`}
-                      className="flex flex-col items-center gap-3 shrink-0 p-4 border border-gray-100 rounded-2xl bg-white shadow-sm hover:shadow-md hover:border-turo-purple/30 transition-all duration-300 group cursor-pointer"
+                      variants={{
+                        hidden: { opacity: 0, scale: 0.9, y: 20 },
+                        show: { opacity: 1, scale: 1, y: 0 }
+                      }}
+                      transition={{ type: "spring", stiffness: 100, damping: 15 }}
                     >
-                      <div className="size-20 rounded-full overflow-hidden bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:scale-105 transition-transform">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={make.logo}
-                          alt={make.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <span className="text-sm font-bold text-gray-800 group-hover:text-turo-purple transition-colors">
-                        {make.name}
-                      </span>
-                    </Link>
+                      <Link
+                        href={`/theme4/search?make=${make.name}`}
+                        className="flex flex-col items-center gap-3 shrink-0 p-4 border border-gray-100 rounded-2xl bg-white shadow-sm hover:shadow-md hover:border-turo-purple/30 transition-all duration-300 group cursor-pointer"
+                      >
+                        <div className="size-20 rounded-full overflow-hidden bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:scale-105 transition-transform">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={make.logo}
+                            alt={make.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <span className="text-sm font-bold text-gray-800 group-hover:text-turo-purple transition-colors">
+                          {make.name}
+                        </span>
+                      </Link>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               </motion.div>
             </section>
 
@@ -280,61 +303,68 @@ function Theme4HomePageContent() {
                 </div>
   
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {cars.map((car) => (
-                    <Link
+                  {cars.map((car, index) => (
+                    <motion.div
                       key={car.id}
-                      href={`/theme4/car/${car.id}`}
-                      className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                      initial={{ opacity: 0, y: 35 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-50px" }}
+                      transition={{ duration: 0.5, delay: index * 0.08 }}
                     >
-                      {/* Car Image container */}
-                      <div className="relative h-48 sm:h-52 bg-gray-50 overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={car.image}
-                          alt={car.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                        {car.isAllStarHost && (
-                          <span className="absolute top-4 left-4 bg-turo-purple text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
-                            All-Star Host
-                          </span>
-                        )}
-                        <span className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm text-gray-900 text-sm font-bold px-3 py-1 rounded-lg shadow-sm">
-                          ${car.pricePerDay} <span className="text-xs font-normal text-gray-500">/day</span>
-                        </span>
-                      </div>
-  
-                      {/* Car details */}
-                      <div className="p-5 flex-1 flex flex-col justify-between">
-                        <div>
-                          <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
-                            <span className="font-semibold px-2 py-0.5 bg-gray-100 rounded-md">
-                              {car.category}
+                      <Link
+                        href={`/theme4/car/${car.id}`}
+                        className="flex flex-col h-full overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                      >
+                        {/* Car Image container */}
+                        <div className="relative h-48 sm:h-52 bg-gray-50 overflow-hidden">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={car.image}
+                            alt={car.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          {car.isAllStarHost && (
+                            <span className="absolute top-4 left-4 bg-turo-purple text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                              All-Star Host
                             </span>
-                            <span>•</span>
-                            <span>{car.transmission}</span>
-                            <span>•</span>
-                            <span>{car.fuelType}</span>
-                          </div>
-                          <h3 className="text-lg font-bold text-gray-900 group-hover:text-turo-purple transition-colors mb-2">
-                            {car.name}
-                          </h3>
-                          <p className="text-xs text-gray-400 font-medium mb-3">
-                            {car.location}
-                          </p>
-                        </div>
-  
-                        <div className="flex items-center gap-3 pt-3 border-t border-gray-100 mt-2">
-                          <div className="flex items-center text-amber-500 font-bold text-sm gap-0.5">
-                            <Star className="size-4 fill-current" />
-                            <span>{car.rating.toFixed(2)}</span>
-                          </div>
-                          <span className="text-xs text-gray-400">
-                            ({car.tripsCount} trips)
+                          )}
+                          <span className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm text-gray-900 text-sm font-bold px-3 py-1 rounded-lg shadow-sm">
+                            ${car.pricePerDay} <span className="text-xs font-normal text-gray-500">/day</span>
                           </span>
                         </div>
-                      </div>
-                    </Link>
+    
+                        {/* Car details */}
+                        <div className="p-5 flex-1 flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+                              <span className="font-semibold px-2 py-0.5 bg-gray-100 rounded-md">
+                                {car.category}
+                              </span>
+                              <span>•</span>
+                              <span>{car.transmission}</span>
+                              <span>•</span>
+                              <span>{car.fuelType}</span>
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-900 group-hover:text-turo-purple transition-colors mb-2">
+                              {car.name}
+                            </h3>
+                            <p className="text-xs text-gray-400 font-medium mb-3">
+                              {car.location}
+                            </p>
+                          </div>
+    
+                          <div className="flex items-center gap-3 pt-3 border-t border-gray-100 mt-2">
+                            <div className="flex items-center text-amber-500 font-bold text-sm gap-0.5">
+                              <Star className="size-4 fill-current" />
+                              <span>{car.rating.toFixed(2)}</span>
+                            </div>
+                            <span className="text-xs text-gray-400">
+                              ({car.tripsCount} trips)
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    </motion.div>
                   ))}
                 </div>
               </motion.div>
@@ -351,33 +381,28 @@ function Theme4HomePageContent() {
                 </h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                  <div className="flex flex-col items-center">
-                    <div className="bg-white p-5 rounded-3xl shadow-md text-turo-purple mb-6 border border-gray-100">
-                      <Compass className="size-8" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Endless Choice</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed max-w-sm">
-                      Choose from electric sedans, muscular sports convertibles, clean family SUVs, or rugged 4x4s.
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="bg-white p-5 rounded-3xl shadow-md text-turo-purple mb-6 border border-gray-100">
-                      <ShieldCheck className="size-8" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Total Safety</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed max-w-sm">
-                      Rent confidently knowing every trip includes comprehensive third-party insurance and 24/7 roadside assist.
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="bg-white p-5 rounded-3xl shadow-md text-turo-purple mb-6 border border-gray-100">
-                      <DollarSign className="size-8" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Locally Owned</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed max-w-sm">
-                      Skip rental corporation counters. Support local Melbourne car owners and get a more customized experience.
-                    </p>
-                  </div>
+                  {[
+                    { icon: <Compass className="size-8" />, title: "Endless Choice", desc: "Choose from electric sedans, muscular sports convertibles, clean family SUVs, or rugged 4x4s." },
+                    { icon: <ShieldCheck className="size-8" />, title: "Total Safety", desc: "Rent confidently knowing every trip includes comprehensive third-party insurance and 24/7 roadside assist." },
+                    { icon: <DollarSign className="size-8" />, title: "Locally Owned", desc: "Skip rental corporation counters. Support local Melbourne car owners and get a more customized experience." }
+                  ].map((prop, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-50px" }}
+                      transition={{ duration: 0.5, delay: idx * 0.1 }}
+                      className="flex flex-col items-center"
+                    >
+                      <div className="bg-white p-5 rounded-3xl shadow-md text-turo-purple mb-6 border border-gray-100">
+                        {prop.icon}
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-3">{prop.title}</h3>
+                      <p className="text-sm text-gray-600 leading-relaxed max-w-sm">
+                        {prop.desc}
+                      </p>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
             </section>
@@ -391,7 +416,14 @@ function Theme4HomePageContent() {
                 {renterFaqs.map((faq, index) => {
                   const isOpen = openRenterFaq === index;
                   return (
-                    <div key={index} className="border border-gray-200 rounded-2xl p-5 bg-white shadow-sm overflow-hidden transition-all duration-300">
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: index * 0.08 }}
+                      className="border border-gray-200 rounded-2xl p-5 bg-white shadow-sm overflow-hidden transition-all duration-300"
+                    >
                       <button 
                         type="button"
                         onClick={() => setOpenRenterFaq(isOpen ? null : index)}
@@ -408,7 +440,7 @@ function Theme4HomePageContent() {
                           {faq.answer}
                         </p>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -423,7 +455,7 @@ function Theme4HomePageContent() {
             transition={{ duration: 0.3 }}
           >
             {/* Rent to Own Hero Section */}
-            <section className="relative h-[560px] flex items-center justify-center bg-gray-900 overflow-hidden">
+            <section className="relative min-h-[580px] sm:h-[640px] flex items-center justify-center bg-gray-900 overflow-hidden pt-24 pb-12">
               <div className="absolute inset-0">
                 <video
                   autoPlay
@@ -433,14 +465,16 @@ function Theme4HomePageContent() {
                   className="w-full h-full object-cover opacity-50"
                   src="/hero.mp4"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/75" />
               </div>
 
-              <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
-                <span className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md">
+              <div className="relative z-10 max-w-4xl mx-auto px-4 text-center w-full flex flex-col items-center">
+                {renderSwitcher()}
+
+                <span className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md mb-6">
                   Rent to Own Program
                 </span>
-                <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mt-6 mb-6">
+                <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mb-6">
                   Own the car you <span className="text-turo-light text-turo-purple underline decoration-turo-purple underline-offset-4">drive</span>
                 </h1>
                 <p className="text-lg sm:text-xl text-gray-200 font-medium max-w-2xl mx-auto mb-10">
@@ -627,59 +661,66 @@ function Theme4HomePageContent() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {cars.filter(c => c.rentToOwnAvailable).map((car) => {
+                {cars.filter(c => c.rentToOwnAvailable).map((car, index) => {
                   const monthlyRto = Math.round((car.rentToOwnPrice! - car.downPayment!) / car.rentToOwnMonths! * 1.25);
                   return (
-                    <Link
+                    <motion.div
                       key={car.id}
-                      href={`/theme4/car/${car.id}?mode=rto`}
-                      className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                      initial={{ opacity: 0, y: 35 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-50px" }}
+                      transition={{ duration: 0.5, delay: index * 0.08 }}
                     >
-                      {/* Image */}
-                      <div className="relative h-48 sm:h-52 bg-gray-50 overflow-hidden">
-                        <img
-                          src={car.image}
-                          alt={car.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                        <span className="absolute top-4 left-4 bg-turo-purple text-white text-[9px] font-black px-2.5 py-1.5 rounded-full uppercase tracking-wider shadow-md">
-                          Rent to Own
-                        </span>
-                        <span className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm text-gray-900 text-sm font-bold px-3 py-1 rounded-lg shadow-sm">
-                          ${monthlyRto} <span className="text-xs font-normal text-gray-500">/month</span>
-                        </span>
-                      </div>
-
-                      {/* Info */}
-                      <div className="p-5 flex-1 flex flex-col justify-between">
-                        <div>
-                          <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
-                            <span className="font-semibold px-2 py-0.5 bg-turo-light text-turo-purple rounded-md">
-                              Downpayment: ${car.downPayment}
-                            </span>
-                            <span>•</span>
-                            <span>{car.rentToOwnMonths} mo term</span>
-                          </div>
-                          <h3 className="text-lg font-bold text-gray-900 group-hover:text-turo-purple transition-colors mb-2">
-                            {car.name}
-                          </h3>
-                          <p className="text-xs text-gray-400 font-medium mb-3">
-                            {car.location}
-                          </p>
+                      <Link
+                        href={`/theme4/car/${car.id}?mode=rto`}
+                        className="flex flex-col h-full overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                      >
+                        {/* Image */}
+                        <div className="relative h-48 sm:h-52 bg-gray-50 overflow-hidden">
+                          <img
+                            src={car.image}
+                            alt={car.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <span className="absolute top-4 left-4 bg-turo-purple text-white text-[9px] font-black px-2.5 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                            Rent to Own
+                          </span>
+                          <span className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm text-gray-900 text-sm font-bold px-3 py-1 rounded-lg shadow-sm">
+                            ${monthlyRto} <span className="text-xs font-normal text-gray-500">/month</span>
+                          </span>
                         </div>
 
-                        <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-2">
-                          <div className="flex items-center gap-2">
-                            <div className="flex items-center text-amber-500 font-bold text-sm gap-0.5">
-                              <Star className="size-4 fill-current" />
-                              <span>{car.rating.toFixed(2)}</span>
+                        {/* Info */}
+                        <div className="p-5 flex-1 flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+                              <span className="font-semibold px-2 py-0.5 bg-turo-light text-turo-purple rounded-md">
+                                Downpayment: ${car.downPayment}
+                              </span>
+                              <span>•</span>
+                              <span>{car.rentToOwnMonths} mo term</span>
                             </div>
-                            <span className="text-xs text-gray-400">({car.tripsCount} trips)</span>
+                            <h3 className="text-lg font-bold text-gray-900 group-hover:text-turo-purple transition-colors mb-2">
+                              {car.name}
+                            </h3>
+                            <p className="text-xs text-gray-400 font-medium mb-3">
+                              {car.location}
+                            </p>
                           </div>
-                          <span className="text-xs font-bold text-turo-purple hover:underline">Calculate Payout →</span>
+
+                          <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-2">
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center text-amber-500 font-bold text-sm gap-0.5">
+                                <Star className="size-4 fill-current" />
+                                <span>{car.rating.toFixed(2)}</span>
+                              </div>
+                              <span className="text-xs text-gray-400">({car.tripsCount} trips)</span>
+                            </div>
+                            <span className="text-xs font-bold text-turo-purple hover:underline">Calculate Payout →</span>
+                          </div>
                         </div>
-                      </div>
-                    </Link>
+                      </Link>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -694,7 +735,7 @@ function Theme4HomePageContent() {
             transition={{ duration: 0.3 }}
           >
             {/* Lent Hero Section */}
-            <section className="relative h-[560px] flex items-center justify-center bg-gray-900 overflow-hidden">
+            <section className="relative min-h-[580px] sm:h-[640px] flex items-center justify-center bg-gray-900 overflow-hidden pt-24 pb-12">
               <div className="absolute inset-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -702,11 +743,13 @@ function Theme4HomePageContent() {
                   alt="Modern garage"
                   className="w-full h-full object-cover opacity-50 filter saturate-50"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/65" />
               </div>
 
-              <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
-                <span className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md">
+              <div className="relative z-10 max-w-4xl mx-auto px-4 text-center w-full flex flex-col items-center">
+                {renderSwitcher()}
+
+                <span className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md mb-6">
                   Phillip Cars Host Network
                 </span>
                 <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mt-6 mb-6">
@@ -815,42 +858,29 @@ function Theme4HomePageContent() {
               </h2>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm relative">
-                  <div className="size-10 rounded-full bg-turo-light text-turo-purple font-black flex items-center justify-center text-lg mb-4">
-                    1
-                  </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">Create your listing</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    Provide your car details, snap a few high-quality photos, write a friendly bio, and set calendar availability.
-                  </p>
-                </div>
-                <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm relative">
-                  <div className="size-10 rounded-full bg-turo-light text-turo-purple font-black flex items-center justify-center text-lg mb-4">
-                    2
-                  </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">Set your rules</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    Adjust daily price guidelines, set mileage limits, choose pickup rules, and approve/reject bookings manually or set Auto-Book.
-                  </p>
-                </div>
-                <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm relative">
-                  <div className="size-10 rounded-full bg-turo-light text-turo-purple font-black flex items-center justify-center text-lg mb-4">
-                    3
-                  </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">Check-in and hand keys</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    Review renter details, document fuel and vehicle cleanliness photo checks in-app, and hand keys to the verified guest.
-                  </p>
-                </div>
-                <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm relative">
-                  <div className="size-10 rounded-full bg-turo-light text-turo-purple font-black flex items-center justify-center text-lg mb-4">
-                    4
-                  </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">Get paid securely</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    Earn up to 75% of the trip price. Your earnings are securely deposited directly to your bank account after every booking.
-                  </p>
-                </div>
+                {[
+                  { step: 1, title: "Create your listing", desc: "Provide your car details, snap a few high-quality photos, write a friendly bio, and set calendar availability." },
+                  { step: 2, title: "Set your rules", desc: "Adjust daily price guidelines, set mileage limits, choose pickup rules, and approve/reject bookings manually or set Auto-Book." },
+                  { step: 3, title: "Check-in and hand keys", desc: "Review renter details, document fuel and vehicle cleanliness photo checks in-app, and hand keys to the verified guest." },
+                  { step: 4, title: "Get paid securely", desc: "Earn up to 75% of the trip price. Your earnings are securely deposited directly to your bank account after every booking." }
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.step}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.5, delay: idx * 0.1 }}
+                    className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm relative"
+                  >
+                    <div className="size-10 rounded-full bg-turo-light text-turo-purple font-black flex items-center justify-center text-lg mb-4">
+                      {item.step}
+                    </div>
+                    <h3 className="font-bold text-lg text-gray-900 mb-2">{item.title}</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </motion.div>
+                ))}
               </div>
             </section>
 
@@ -887,7 +917,14 @@ function Theme4HomePageContent() {
                 {hostFaqs.map((faq, index) => {
                   const isOpen = openHostFaq === index;
                   return (
-                    <div key={index} className="border border-gray-200 rounded-2xl p-5 bg-white shadow-sm overflow-hidden transition-all duration-300">
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: index * 0.08 }}
+                      className="border border-gray-200 rounded-2xl p-5 bg-white shadow-sm overflow-hidden transition-all duration-300"
+                    >
                       <button 
                         type="button"
                         onClick={() => setOpenHostFaq(isOpen ? null : index)}
@@ -904,7 +941,7 @@ function Theme4HomePageContent() {
                           {faq.answer}
                         </p>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, Star, Shield, Calendar, Clock, MapPin, 
   HelpCircle, CheckCircle2, Heart, Share2, Info, ChevronRight, Award, MessageSquare,
@@ -107,8 +108,14 @@ export default function Theme4CarDetailsPage() {
     ctx.strokeStyle = "#593CFB";
 
     const rect = canvas.getBoundingClientRect();
-    const x = ('touches' in e) ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
-    const y = ('touches' in e) ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const clientX = ('touches' in e) ? e.touches[0].clientX : e.clientX;
+    const clientY = ('touches' in e) ? e.touches[0].clientY : e.clientY;
+
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
 
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -123,8 +130,14 @@ export default function Theme4CarDetailsPage() {
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = ('touches' in e) ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
-    const y = ('touches' in e) ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const clientX = ('touches' in e) ? e.touches[0].clientX : e.clientX;
+    const clientY = ('touches' in e) ? e.touches[0].clientY : e.clientY;
+
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
 
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -400,7 +413,7 @@ export default function Theme4CarDetailsPage() {
         </div>
 
         {/* Right column: Sticky Booking Form widget */}
-        <div className="lg:col-span-5">
+        <div className="lg:col-span-5" id="booking-form-widget">
           <div className="sticky top-28 bg-white border border-gray-200 rounded-3xl shadow-xl p-6 sm:p-8 space-y-6">
             
             {/* Rent vs Rent-to-Own Tab Switcher */}
@@ -669,294 +682,361 @@ export default function Theme4CarDetailsPage() {
       </div>
 
       {/* Standard Success Modal Popup */}
-      {isSuccessModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-sm rounded-3xl p-8 text-center shadow-2xl border border-gray-100 space-y-5">
-            <div className="size-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
-              <CheckCircle2 className="size-8" />
-            </div>
-            <div>
-              <h3 className="font-black text-xl text-gray-900">
-                Booking Confirmed!
-              </h3>
-              <p className="text-sm text-gray-500 mt-2 leading-relaxed">
-                Your request has been approved. You are set to rent the <strong>{car.name}</strong> from <strong>{pickupDate}</strong> to <strong>{returnDate}</strong>.
-              </p>
-            </div>
-            <div className="bg-gray-50 p-4 rounded-2xl text-left border border-gray-100 text-xs text-gray-600 space-y-1.5">
-              <div><strong>Pickup:</strong> {pickupDate} at 10:00 AM</div>
-              <div><strong>Delivery Location:</strong> {deliveryLocation}</div>
-              <div><strong>Host Contact:</strong> {car.hostName} (melbourne-p2p@phillipcars.com)</div>
-            </div>
-            <button
-              onClick={() => {
-                setIsSuccessModalOpen(false);
-                router.push("/theme4");
-              }}
-              className="w-full bg-turo-purple hover:bg-turo-hover text-white text-xs font-bold py-3 rounded-full transition-colors cursor-pointer"
+      <AnimatePresence>
+        {isSuccessModalOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white w-full max-w-sm rounded-3xl p-8 text-center shadow-2xl border border-gray-100 space-y-5"
             >
-              Back to Home
-            </button>
-          </div>
-        </div>
-      )}
+              <div className="size-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
+                <CheckCircle2 className="size-8" />
+              </div>
+              <div>
+                <h3 className="font-black text-xl text-gray-900">
+                  Booking Confirmed!
+                </h3>
+                <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+                  Your request has been approved. You are set to rent the <strong>{car.name}</strong> from <strong>{pickupDate}</strong> to <strong>{returnDate}</strong>.
+                </p>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-2xl text-left border border-gray-100 text-xs text-gray-600 space-y-1.5">
+                <div><strong>Pickup:</strong> {pickupDate} at 10:00 AM</div>
+                <div><strong>Delivery Location:</strong> {deliveryLocation}</div>
+                <div><strong>Host Contact:</strong> {car.hostName} (melbourne-p2p@phillipcars.com)</div>
+              </div>
+              <button
+                onClick={() => {
+                  setIsSuccessModalOpen(false);
+                  router.push("/theme4");
+                }}
+                className="w-full bg-turo-purple hover:bg-turo-hover text-white text-xs font-bold py-3 rounded-full transition-colors cursor-pointer"
+              >
+                Back to Home
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* RTO Lease-Option Contract Signature Modal */}
-      {isRtoModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100 my-8 space-y-6 animate-in fade-in zoom-in-95 duration-300">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h3 className="font-black text-xl text-gray-900 flex items-center gap-2">
-                <FileText className="text-turo-purple size-5" />
-                Rent-to-Own Lease Option Contract
-              </h3>
-              <button 
-                onClick={() => setIsRtoModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 font-bold text-sm cursor-pointer p-1"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Scrollable contract text */}
-            <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 text-xs font-medium text-gray-600 h-64 overflow-y-auto space-y-4 font-mono leading-relaxed">
-              <p className="font-bold text-center text-gray-800 text-sm">
-                LEASE WITH OPTION TO PURCHASE AGREEMENT
-              </p>
-              <p>
-                This Lease with Option to Purchase Agreement (the &quot;Agreement&quot;) is entered into by and between the Host (hereinafter &quot;Seller/Lessor&quot;) and the verified Phillip Cars Renter (hereinafter &quot;Buyer/Lessee&quot;).
-              </p>
-              <div>
-                <strong className="text-gray-800">1. VEHICLE DESCRIPTION:</strong>
-                <ul className="list-disc pl-4 mt-1 space-y-1">
-                  <li>Make/Model: {car.name}</li>
-                  <li>Year: {car.year}</li>
-                  <li>Escrow Status: Active escrow pending downpayment</li>
-                </ul>
-              </div>
-              <div>
-                <strong className="text-gray-800">2. FINANCIAL CONSIDERATIONS:</strong>
-                <ul className="list-disc pl-4 mt-1 space-y-1">
-                  <li>Downpayment Option Fee: ${rtoMetrics.down.toLocaleString()} AUD (Non-Refundable)</li>
-                  <li>Monthly Option Rent: ${rtoMetrics.monthlyRate.toLocaleString()} AUD/month</li>
-                  <li>Contract Term: {rtoMonths} months</li>
-                  <li>Escrow Commission: 10% platform commission (${rtoMetrics.commission.toLocaleString()} AUD/mo) is deducted automatically from Host distributions.</li>
-                </ul>
-              </div>
-              <div>
-                <strong className="text-gray-800">3. PURCHASE OPTION & TITLE ESCROW:</strong>
-                <p className="mt-1">
-                  The Buyer/Lessee shall have the exclusive right and option to purchase the vehicle. Upon completion of {rtoMonths} consecutive monthly payments, title ownership will be transferred from Seller to Buyer. Phillip Cars holds the title and transfer paperwork in digital escrow to guarantee fulfillment.
-                </p>
-              </div>
-              <div>
-                <strong className="text-gray-800">4. MAINTENANCE, INSURANCE & TAXES:</strong>
-                <p className="mt-1">
-                  During the lease period, all maintenance costs, registration, insurance coverage, and vehicle running costs are the sole responsibility of the Buyer/Lessee. Buyer/Lessee agrees to abide by all platform <Link href="/theme4/policies/terms" target="_blank" className="text-turo-purple hover:underline font-bold">Terms of Service</Link> and Rent-to-Own Provisions.
-                </p>
-              </div>
-              <div>
-                <strong className="text-gray-800">5. PAYMENT DEFAULT & REPOSSESSION:</strong>
-                <p className="mt-1">
-                  Time is of the essence. If payments are more than 7 days overdue, the option is voided. Seller retains the downpayment, and platform GPS tracking will be activated for immediate repossession of the vehicle.
-                </p>
-              </div>
-            </div>
-
-            {/* Signature inputs */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-black text-gray-500 uppercase mb-1">
-                  Type Name to Sign (Cursive Preview)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Type your full name"
-                  value={typedSignature}
-                  onChange={(e) => setTypedSignature(e.target.value)}
-                  className="w-full border border-gray-200 px-4 py-2 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple bg-white"
-                />
+      <AnimatePresence>
+        {isRtoModalOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100 my-8 space-y-6"
+            >
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h3 className="font-black text-xl text-gray-900 flex items-center gap-2">
+                  <FileText className="text-turo-purple size-5" />
+                  Rent-to-Own Lease Option Contract
+                </h3>
+                <button 
+                  onClick={() => setIsRtoModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 font-bold text-sm cursor-pointer p-1"
+                >
+                  ✕
+                </button>
               </div>
 
-              {/* Typed cursive preview block */}
-              {typedSignature && (
-                <div className="p-3 bg-purple-50/30 border border-dashed border-turo-purple/30 rounded-2xl text-center">
-                  <span className="text-[9px] text-turo-purple/60 font-bold block mb-1">Digital Signature Preview</span>
-                  <span 
-                    style={{ fontFamily: "'Brush Script MT', 'Great Vibes', 'Lucida Handwriting', cursive" }} 
-                    className="text-3xl text-turo-purple font-medium inline-block select-none"
-                  >
-                    {typedSignature}
-                  </span>
+              {/* Scrollable contract text */}
+              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 text-xs font-medium text-gray-600 h-64 overflow-y-auto space-y-4 font-mono leading-relaxed">
+                <p className="font-bold text-center text-gray-800 text-sm">
+                  LEASE WITH OPTION TO PURCHASE AGREEMENT
+                </p>
+                <p>
+                  This Lease with Option to Purchase Agreement (the &quot;Agreement&quot;) is entered into by and between the Host (hereinafter &quot;Seller/Lessor&quot;) and the verified Phillip Cars Renter (hereinafter &quot;Buyer/Lessee&quot;).
+                </p>
+                <div>
+                  <strong className="text-gray-800">1. VEHICLE DESCRIPTION:</strong>
+                  <ul className="list-disc pl-4 mt-1 space-y-1">
+                    <li>Make/Model: {car.name}</li>
+                    <li>Year: {car.year}</li>
+                    <li>Escrow Status: Active escrow pending downpayment</li>
+                  </ul>
                 </div>
-              )}
+                <div>
+                  <strong className="text-gray-800">2. FINANCIAL CONSIDERATIONS:</strong>
+                  <ul className="list-disc pl-4 mt-1 space-y-1">
+                    <li>Downpayment Option Fee: ${rtoMetrics.down.toLocaleString()} AUD (Non-Refundable)</li>
+                    <li>Monthly Option Rent: ${rtoMetrics.monthlyRate.toLocaleString()} AUD/month</li>
+                    <li>Contract Term: {rtoMonths} months</li>
+                    <li>Escrow Commission: 10% platform commission (${rtoMetrics.commission.toLocaleString()} AUD/mo) is deducted automatically from Host distributions.</li>
+                  </ul>
+                </div>
+                <div>
+                  <strong className="text-gray-800">3. PURCHASE OPTION & TITLE ESCROW:</strong>
+                  <p className="mt-1">
+                    The Buyer/Lessee shall have the exclusive right and option to purchase the vehicle. Upon completion of {rtoMonths} consecutive monthly payments, title ownership will be transferred from Seller to Buyer. Phillip Cars holds the title and transfer paperwork in digital escrow to guarantee fulfillment.
+                  </p>
+                </div>
+                <div>
+                  <strong className="text-gray-800">4. MAINTENANCE, INSURANCE & TAXES:</strong>
+                  <p className="mt-1">
+                    During the lease period, all maintenance costs, registration, insurance coverage, and vehicle running costs are the sole responsibility of the Buyer/Lessee. Buyer/Lessee agrees to abide by all platform <Link href="/theme4/policies/terms" target="_blank" className="text-turo-purple hover:underline font-bold">Terms of Service</Link> and Rent-to-Own Provisions.
+                  </p>
+                </div>
+                <div>
+                  <strong className="text-gray-800">5. PAYMENT DEFAULT & REPOSSESSION:</strong>
+                  <p className="mt-1">
+                    Time is of the essence. If payments are more than 7 days overdue, the option is voided. Seller retains the downpayment, and platform GPS tracking will be activated for immediate repossession of the vehicle.
+                  </p>
+                </div>
+              </div>
 
-              {/* Draw Signature Canvas pad */}
-              <div>
-                <div className="flex justify-between items-baseline mb-1">
-                  <label className="block text-xs font-black text-gray-500 uppercase">
-                    Draw Signature (Canvas Pad)
+              {/* Signature inputs */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-black text-gray-500 uppercase mb-1">
+                    Type Name to Sign (Cursive Preview)
                   </label>
-                  <button
-                    type="button"
-                    onClick={clearCanvas}
-                    className="text-[10px] text-turo-purple font-bold hover:underline cursor-pointer"
-                  >
-                    Clear Drawing
-                  </button>
-                </div>
-                <div className="border border-gray-200 rounded-2xl overflow-hidden bg-gray-50 cursor-crosshair">
-                  <canvas
-                    ref={canvasRef}
-                    width={550}
-                    height={100}
-                    onMouseDown={startDrawing}
-                    onMouseMove={draw}
-                    onMouseUp={stopDrawing}
-                    onMouseLeave={stopDrawing}
-                    onTouchStart={(e) => {
-                      e.preventDefault();
-                      startDrawing(e);
-                    }}
-                    onTouchMove={(e) => {
-                      e.preventDefault();
-                      draw(e);
-                    }}
-                    onTouchEnd={(e) => {
-                      e.preventDefault();
-                      stopDrawing();
-                    }}
-                    className="w-full h-[100px] block"
+                  <input
+                    type="text"
+                    placeholder="Type your full name"
+                    value={typedSignature}
+                    onChange={(e) => setTypedSignature(e.target.value)}
+                    className="w-full border border-gray-200 px-4 py-2 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple bg-white"
                   />
                 </div>
+
+                {/* Typed cursive preview block */}
+                {typedSignature && (
+                  <div className="p-3 bg-purple-50/30 border border-dashed border-turo-purple/30 rounded-2xl text-center">
+                    <span className="text-[9px] text-turo-purple/60 font-bold block mb-1">Digital Signature Preview</span>
+                    <span 
+                      style={{ fontFamily: "'Brush Script MT', 'Great Vibes', 'Lucida Handwriting', cursive" }} 
+                      className="text-3xl text-turo-purple font-medium inline-block select-none"
+                    >
+                      {typedSignature}
+                    </span>
+                  </div>
+                )}
+
+                {/* Draw Signature Canvas pad */}
+                <div>
+                  <div className="flex justify-between items-baseline mb-1">
+                    <label className="block text-xs font-black text-gray-500 uppercase">
+                      Draw Signature (Canvas Pad)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={clearCanvas}
+                      className="text-[10px] text-turo-purple font-bold hover:underline cursor-pointer"
+                    >
+                      Clear Drawing
+                    </button>
+                  </div>
+                  <div className="border border-gray-200 rounded-2xl overflow-hidden bg-gray-50 cursor-crosshair">
+                    <canvas
+                      ref={canvasRef}
+                      width={550}
+                      height={100}
+                      onMouseDown={startDrawing}
+                      onMouseMove={draw}
+                      onMouseUp={stopDrawing}
+                      onMouseLeave={stopDrawing}
+                      onTouchStart={(e) => {
+                        e.preventDefault();
+                        startDrawing(e);
+                      }}
+                      onTouchMove={(e) => {
+                        e.preventDefault();
+                        draw(e);
+                      }}
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        stopDrawing();
+                      }}
+                      className="w-full h-[100px] block"
+                    />
+                  </div>
+                </div>
+
+                {/* Checkbox agreement */}
+                <label className="flex items-start gap-2.5 cursor-pointer text-xs text-gray-600 font-semibold select-none pt-1">
+                  <input
+                    type="checkbox"
+                    checked={agreedToTerms}
+                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    className="mt-0.5 accent-turo-purple shrink-0 size-4 rounded cursor-pointer"
+                  />
+                  <span>
+                    I agree to the platform <Link href="/theme4/policies/terms" target="_blank" className="text-turo-purple hover:underline font-bold">Terms & Conditions</Link>, and the Rent-to-Own Provisions outlined above.
+                  </span>
+                </label>
+
+                {signatureError && (
+                  <p className="text-red-500 text-xs font-bold bg-red-50 p-3 rounded-xl">
+                    ⚠️ {signatureError}
+                  </p>
+                )}
               </div>
 
-              {/* Checkbox agreement */}
-              <label className="flex items-start gap-2.5 cursor-pointer text-xs text-gray-600 font-semibold select-none pt-1">
-                <input
-                  type="checkbox"
-                  checked={agreedToTerms}
-                  onChange={(e) => setAgreedToTerms(e.target.checked)}
-                  className="mt-0.5 accent-turo-purple shrink-0 size-4 rounded cursor-pointer"
-                />
-                <span>
-                  I agree to the platform <Link href="/theme4/policies/terms" target="_blank" className="text-turo-purple hover:underline font-bold">Terms & Conditions</Link>, and the Rent-to-Own Provisions outlined above.
-                </span>
-              </label>
-
-              {signatureError && (
-                <p className="text-red-500 text-xs font-bold bg-red-50 p-3 rounded-xl">
-                  ⚠️ {signatureError}
-                </p>
-              )}
-            </div>
-
-            {/* Modal actions */}
-            <div className="flex gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setIsRtoModalOpen(false)}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3.5 rounded-2xl transition-colors cursor-pointer text-xs uppercase tracking-wider"
-              >
-                Go Back
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (!typedSignature.trim()) {
-                    setSignatureError("Please type your name to sign the contract.");
-                    return;
-                  }
-                  if (!agreedToTerms) {
-                    setSignatureError("You must agree to the Terms & Conditions.");
-                    return;
-                  }
-                  
-                  setSignatureTimestamp(new Date().toLocaleString());
-                  setIsRtoSuccess(true);
-                  setIsRtoModalOpen(false);
-                }}
-                className="flex-1 bg-turo-purple hover:bg-turo-hover text-white font-black py-3.5 rounded-2xl transition-colors cursor-pointer text-xs uppercase tracking-wider shadow-lg shadow-turo-purple/20 flex items-center justify-center gap-1.5"
-              >
-                <PenTool className="size-3.5" />
-                Sign & Finalize
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              {/* Modal actions */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsRtoModalOpen(false)}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3.5 rounded-2xl transition-colors cursor-pointer text-xs uppercase tracking-wider"
+                >
+                  Go Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!typedSignature.trim()) {
+                      setSignatureError("Please type your name to sign the contract.");
+                      return;
+                    }
+                    if (!agreedToTerms) {
+                      setSignatureError("You must agree to the Terms & Conditions.");
+                      return;
+                    }
+                    
+                    setSignatureTimestamp(new Date().toLocaleString());
+                    setIsRtoSuccess(true);
+                    setIsRtoModalOpen(false);
+                  }}
+                  className="flex-1 bg-turo-purple hover:bg-turo-hover text-white font-black py-3.5 rounded-2xl transition-colors cursor-pointer text-xs uppercase tracking-wider shadow-lg shadow-turo-purple/20 flex items-center justify-center gap-1.5"
+                >
+                  <PenTool className="size-3.5" />
+                  Sign & Finalize
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* RTO Success Modal Receipt */}
-      {isRtoSuccess && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-lg rounded-3xl p-6 sm:p-8 text-center shadow-2xl border border-gray-100 space-y-6">
-            <div className="size-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
-              <CheckCircle2 className="size-8" />
-            </div>
-            <div>
-              <h3 className="font-black text-xl text-gray-900">
-                Rent-to-Own Agreement Signed!
-              </h3>
-              <p className="text-sm text-gray-500 mt-2 leading-relaxed">
-                Your payment option is active. Downpayment has been held in platform escrow, and contract terms are legally locked.
-              </p>
-            </div>
-
-            {/* Signed Receipt details */}
-            <div className="bg-gray-50 p-5 rounded-2xl text-left border border-gray-100 text-xs text-gray-600 space-y-3">
-              <div className="border-b border-gray-200/60 pb-2">
-                <span className="text-[10px] font-black text-gray-400 uppercase block">Vehicle Escrow Profile</span>
-                <span className="font-bold text-gray-900 text-sm mt-0.5 block">{car.name} ({car.year})</span>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="text-[9px] text-gray-400 font-bold block uppercase">Downpayment Paid</span>
-                  <span className="font-bold text-gray-900">${rtoMetrics.down.toLocaleString()} AUD</span>
-                </div>
-                <div>
-                  <span className="text-[9px] text-gray-400 font-bold block uppercase">Monthly Rent Rate</span>
-                  <span className="font-bold text-emerald-600">${rtoMetrics.monthlyRate.toLocaleString()} AUD/mo</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 border-t border-gray-200/60 pt-2">
-                <div>
-                  <span className="text-[9px] text-gray-400 font-bold block uppercase">Term Duration</span>
-                  <span className="font-semibold text-gray-850">{rtoMonths} Months</span>
-                </div>
-                <div>
-                  <span className="text-[9px] text-gray-400 font-bold block uppercase">Host Monthly Payout</span>
-                  <span className="font-semibold text-gray-800">${rtoMetrics.hostPayout.toLocaleString()} AUD (90%)</span>
-                </div>
-              </div>
-              <div className="border-t border-gray-200/60 pt-2 space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-[9px] text-gray-400 font-bold uppercase">Digital Escrow Signatory:</span>
-                  <span 
-                    style={{ fontFamily: "'Brush Script MT', 'Great Vibes', 'Lucida Handwriting', cursive" }} 
-                    className="text-base text-turo-purple font-medium"
-                  >
-                    {typedSignature}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[9px] text-gray-400 font-bold uppercase">Signed Timestamp:</span>
-                  <span className="font-mono text-[10px] text-gray-500">{signatureTimestamp}</span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                setIsRtoSuccess(false);
-                router.push("/theme4");
-              }}
-              className="w-full bg-turo-purple hover:bg-turo-hover text-white text-xs font-bold py-3.5 rounded-full transition-colors cursor-pointer"
+      <AnimatePresence>
+        {isRtoSuccess && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white w-full max-w-lg rounded-3xl p-6 sm:p-8 text-center shadow-2xl border border-gray-100 space-y-6"
             >
-              Back to Home
-            </button>
+              <div className="size-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
+                <CheckCircle2 className="size-8" />
+              </div>
+              <div>
+                <h3 className="font-black text-xl text-gray-900">
+                  Rent-to-Own Agreement Signed!
+                </h3>
+                <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+                  Your payment option is active. Downpayment has been held in platform escrow, and contract terms are legally locked.
+                </p>
+              </div>
+
+              {/* Signed Receipt details */}
+              <div className="bg-gray-50 p-5 rounded-2xl text-left border border-gray-100 text-xs text-gray-600 space-y-3">
+                <div className="border-b border-gray-200/60 pb-2">
+                  <span className="text-[10px] font-black text-gray-400 uppercase block">Vehicle Escrow Profile</span>
+                  <span className="font-bold text-gray-900 text-sm mt-0.5 block">{car.name} ({car.year})</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-[9px] text-gray-400 font-bold block uppercase">Downpayment Paid</span>
+                    <span className="font-bold text-gray-900">${rtoMetrics.down.toLocaleString()} AUD</span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] text-gray-400 font-bold block uppercase">Monthly Rent Rate</span>
+                    <span className="font-bold text-emerald-600">${rtoMetrics.monthlyRate.toLocaleString()} AUD/mo</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 border-t border-gray-200/60 pt-2">
+                  <div>
+                    <span className="text-[9px] text-gray-400 font-bold block uppercase">Term Duration</span>
+                    <span className="font-semibold text-gray-850">{rtoMonths} Months</span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] text-gray-400 font-bold block uppercase">Host Monthly Payout</span>
+                    <span className="font-semibold text-gray-800">${rtoMetrics.hostPayout.toLocaleString()} AUD (90%)</span>
+                  </div>
+                </div>
+                <div className="border-t border-gray-200/60 pt-2 space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-[9px] text-gray-400 font-bold uppercase">Digital Escrow Signatory:</span>
+                    <span 
+                      style={{ fontFamily: "'Brush Script MT', 'Great Vibes', 'Lucida Handwriting', cursive" }} 
+                      className="text-base text-turo-purple font-medium"
+                    >
+                      {typedSignature}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[9px] text-gray-400 font-bold uppercase">Signed Timestamp:</span>
+                    <span className="font-mono text-[10px] text-gray-500">{signatureTimestamp}</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setIsRtoSuccess(false);
+                  router.push("/theme4");
+                }}
+                className="w-full bg-turo-purple hover:bg-turo-hover text-white text-xs font-bold py-3.5 rounded-full transition-colors cursor-pointer"
+              >
+                Back to Home
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Sticky Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 p-4 shadow-[0_-8px_20px_rgba(0,0,0,0.06)] flex items-center justify-between lg:hidden">
+        <div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-lg font-black text-gray-900">
+              {bookingMode === "rto" ? `$${rtoMetrics.monthlyRate.toLocaleString()}` : `$${car.pricePerDay}`}
+            </span>
+            <span className="text-[10px] font-medium text-gray-500">
+              {bookingMode === "rto" ? "/mo" : "/day"}
+            </span>
           </div>
+          <span className="text-[10px] text-turo-purple font-bold block mt-0.5">
+            {bookingMode === "rto" ? "Option Lease" : "Free Cancellation"}
+          </span>
         </div>
-      )}
+        <button
+          onClick={() => {
+            const formElement = document.getElementById("booking-form-widget");
+            if (formElement) {
+              formElement.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+          }}
+          className="bg-turo-purple hover:bg-turo-hover text-white text-xs font-black px-6 py-3 rounded-xl uppercase tracking-wider transition-colors cursor-pointer shadow-md shadow-turo-purple/15"
+        >
+          {bookingMode === "rto" ? "Review Option" : "Book Trip"}
+        </button>
+      </div>
     </div>
   );
 }
