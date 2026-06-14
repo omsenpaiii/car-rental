@@ -134,10 +134,10 @@ function Theme4HomePageContent() {
                   loop
                   muted
                   playsInline
-                  className="w-full h-full object-cover opacity-60 filter saturate-50"
-                  src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4"
+                  className="w-full h-full object-cover opacity-50"
+                  src="https://assets.mixkit.co/videos/preview/mixkit-sports-car-driving-on-a-curved-road-43654-large.mp4"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
               </div>
 
               <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
@@ -430,10 +430,10 @@ function Theme4HomePageContent() {
                   loop
                   muted
                   playsInline
-                  className="w-full h-full object-cover opacity-60 filter saturate-50"
-                  src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4"
+                  className="w-full h-full object-cover opacity-50"
+                  src="https://assets.mixkit.co/videos/preview/mixkit-sports-car-driving-on-a-curved-road-43654-large.mp4"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
               </div>
 
               <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
