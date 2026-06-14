@@ -135,7 +135,7 @@ function Theme4HomePageContent() {
                   muted
                   playsInline
                   className="w-full h-full object-cover opacity-50"
-                  src="https://assets.mixkit.co/videos/preview/mixkit-sports-car-driving-on-a-curved-road-43654-large.mp4"
+                  src="/hero.mp4"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
               </div>
@@ -431,7 +431,7 @@ function Theme4HomePageContent() {
                   muted
                   playsInline
                   className="w-full h-full object-cover opacity-50"
-                  src="https://assets.mixkit.co/videos/preview/mixkit-sports-car-driving-on-a-curved-road-43654-large.mp4"
+                  src="/hero.mp4"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
               </div>
