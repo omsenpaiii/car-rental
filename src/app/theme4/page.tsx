@@ -10,6 +10,30 @@ import {
 } from "lucide-react";
 import { makeCategories, turoCars, hostFaqs, renterFaqs, TuroCar } from "@/lib/theme4-data";
 
+const heroContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const heroItemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+};
+
 function Theme4HomePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -128,7 +152,7 @@ function Theme4HomePageContent() {
             transition={{ duration: 0.3 }}
           >
             {/* Rent Hero Section */}
-            <section className="relative min-h-[580px] sm:h-[640px] flex items-center justify-center bg-gray-900 overflow-hidden pt-24 pb-12">
+            <section className="relative h-screen min-h-[620px] md:min-h-[720px] lg:h-[100dvh] flex items-center justify-center bg-gray-900 overflow-hidden pt-24 pb-12">
               <div className="absolute inset-0">
                 <video
                   autoPlay
@@ -141,85 +165,113 @@ function Theme4HomePageContent() {
                 <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/75" />
               </div>
 
-              <div className="relative z-10 max-w-4xl mx-auto px-4 text-center w-full flex flex-col items-center">
-                {renderSwitcher()}
+              <motion.div 
+                variants={heroContainerVariants}
+                initial="hidden"
+                animate="visible"
+                className="relative z-10 max-w-4xl mx-auto px-4 text-center w-full flex flex-col items-center"
+              >
+                <motion.div variants={heroItemVariants} className="w-full">
+                  {renderSwitcher()}
+                </motion.div>
 
-                <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mb-6">
+                <motion.h1 variants={heroItemVariants} className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mb-6">
                   Find the perfect car to <span className="text-turo-light text-turo-purple underline decoration-turo-purple underline-offset-4">rent</span> in Melbourne
-                </h1>
-                <p className="text-lg sm:text-xl text-gray-200 font-medium max-w-2xl mx-auto mb-10">
+                </motion.h1>
+                <motion.p variants={heroItemVariants} className="text-lg sm:text-xl text-gray-200 font-medium max-w-2xl mx-auto mb-10">
                   Skip the rental counter. Rent unique cars from local hosts, with custom delivery options.
-                </p>
+                </motion.p>
 
                 {/* Turo-style Search Widget */}
-                <form
-                  onSubmit={handleSearchSubmit}
-                  className="w-full bg-white rounded-3xl md:rounded-full shadow-2xl p-4 md:py-2 md:px-3 flex flex-col md:flex-row items-center gap-3 max-w-3xl mx-auto border border-gray-100"
-                >
-                  {/* Location Input */}
-                  <div className="flex items-center gap-3 px-3 py-2 w-full md:w-1/3 border-b md:border-b-0 md:border-r border-gray-200">
-                    <MapPin className="text-turo-purple size-5 shrink-0" />
-                    <div className="text-left w-full">
-                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                        Where
-                      </label>
-                      <input
-                        type="text"
-                        value={searchLocation}
-                        onChange={(e) => setSearchLocation(e.target.value)}
-                        placeholder="City, airport, or hotel"
-                        className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Dates Pickers */}
-                  <div className="flex items-center gap-3 px-3 py-2 w-full md:w-1/2">
-                    <Calendar className="text-turo-purple size-5 shrink-0" />
-                    <div className="flex gap-4 w-full justify-between">
-                      <div className="text-left w-1/2">
-                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                          From
-                        </label>
-                        <input
-                          type="date"
-                          value={pickupDate}
-                          min={new Date().toISOString().split('T')[0]}
-                          onChange={(e) => setPickupDate(e.target.value)}
-                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer focus:text-turo-purple transition-colors"
-                        />
-                      </div>
-                      <div className="h-8 w-px bg-gray-200 self-center hidden sm:block"></div>
-                      <div className="text-left w-1/2">
-                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                          Until
-                        </label>
-                        <input
-                          type="date"
-                          value={returnDate}
-                          min={pickupDate || new Date().toISOString().split('T')[0]}
-                          onChange={(e) => setReturnDate(e.target.value)}
-                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer focus:text-turo-purple transition-colors"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Search Button */}
-                  <button
-                    type="submit"
-                    className="w-full md:w-auto bg-turo-purple hover:bg-turo-hover text-white font-bold px-8 py-4 md:py-3.5 rounded-2xl md:rounded-full transition-colors flex items-center justify-center gap-2 shadow-lg shadow-turo-purple/20 cursor-pointer"
+                <motion.div variants={heroItemVariants} className="w-full max-w-3xl mx-auto">
+                  <form
+                    onSubmit={handleSearchSubmit}
+                    className="w-full bg-white rounded-3xl md:rounded-full shadow-2xl p-4 md:py-2 md:px-3 flex flex-col md:flex-row items-center gap-3 border border-gray-100"
                   >
-                    <Search className="size-4" />
-                    Search Cars
-                  </button>
-                </form>
+                    {/* Location Input */}
+                    <div className="flex items-center gap-3 px-4 py-2 w-full md:w-1/3 border-b md:border-b-0 md:border-r border-gray-200 focus-within:bg-gray-50/80 hover:bg-gray-50/40 rounded-2xl md:rounded-l-full md:rounded-r-none transition-all duration-300">
+                      <MapPin className="text-turo-purple size-5 shrink-0" />
+                      <div className="text-left w-full">
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                          Where
+                        </label>
+                        <input
+                          type="text"
+                          value={searchLocation}
+                          onChange={(e) => setSearchLocation(e.target.value)}
+                          placeholder="City, airport, or hotel"
+                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Dates Pickers */}
+                    <div className="flex items-center gap-3 px-4 py-2 w-full md:w-1/2 focus-within:bg-gray-50/80 hover:bg-gray-50/40 rounded-2xl md:rounded-r-full md:rounded-l-none transition-all duration-300">
+                      <Calendar className="text-turo-purple size-5 shrink-0" />
+                      <div className="flex gap-4 w-full justify-between">
+                        <div className="text-left w-1/2">
+                          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                            From
+                          </label>
+                          <input
+                            type="date"
+                            value={pickupDate}
+                            min={new Date().toISOString().split('T')[0]}
+                            onChange={(e) => setPickupDate(e.target.value)}
+                            className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer focus:text-turo-purple transition-colors"
+                          />
+                        </div>
+                        <div className="h-8 w-px bg-gray-200 self-center hidden sm:block"></div>
+                        <div className="text-left w-1/2">
+                          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                            Until
+                          </label>
+                          <input
+                            type="date"
+                            value={returnDate}
+                            min={pickupDate || new Date().toISOString().split('T')[0]}
+                            onChange={(e) => setReturnDate(e.target.value)}
+                            className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer focus:text-turo-purple transition-colors"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Search Button */}
+                    <button
+                      type="submit"
+                      className="w-full md:w-auto bg-turo-purple hover:bg-turo-hover text-white font-bold px-8 py-4 md:py-3.5 rounded-2xl md:rounded-full transition-colors flex items-center justify-center gap-2 shadow-lg shadow-turo-purple/20 cursor-pointer"
+                    >
+                      <Search className="size-4" />
+                      Search Cars
+                    </button>
+                  </form>
+                </motion.div>
+              </motion.div>
+
+              {/* Scroll Down Indicator */}
+              <div 
+                onClick={() => {
+                  document.getElementById("browse-brands-section")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 cursor-pointer group"
+              >
+                <span className="text-[10px] font-black text-white/50 tracking-widest uppercase group-hover:text-white transition-colors duration-300">
+                  Scroll to explore
+                </span>
+                <motion.div
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                  className="p-1.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm group-hover:border-white/45 group-hover:bg-white/10 transition-colors duration-300"
+                >
+                  <ChevronDown className="size-4 text-white" />
+                </motion.div>
               </div>
             </section>
 
             {/* Browse by Category (Turo Brand Carousel) */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+            <section id="browse-brands-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -455,7 +507,7 @@ function Theme4HomePageContent() {
             transition={{ duration: 0.3 }}
           >
             {/* Rent to Own Hero Section */}
-            <section className="relative min-h-[580px] sm:h-[640px] flex items-center justify-center bg-gray-900 overflow-hidden pt-24 pb-12">
+            <section className="relative h-screen min-h-[620px] md:min-h-[720px] lg:h-[100dvh] flex items-center justify-center bg-gray-900 overflow-hidden pt-24 pb-12">
               <div className="absolute inset-0">
                 <video
                   autoPlay
@@ -468,88 +520,116 @@ function Theme4HomePageContent() {
                 <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/75" />
               </div>
 
-              <div className="relative z-10 max-w-4xl mx-auto px-4 text-center w-full flex flex-col items-center">
-                {renderSwitcher()}
+              <motion.div 
+                variants={heroContainerVariants}
+                initial="hidden"
+                animate="visible"
+                className="relative z-10 max-w-4xl mx-auto px-4 text-center w-full flex flex-col items-center"
+              >
+                <motion.div variants={heroItemVariants} className="w-full">
+                  {renderSwitcher()}
+                </motion.div>
 
-                <span className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md mb-6">
+                <motion.span variants={heroItemVariants} className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md mb-6">
                   Rent to Own Program
-                </span>
-                <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mb-6">
+                </motion.span>
+                <motion.h1 variants={heroItemVariants} className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mb-6">
                   Own the car you <span className="text-turo-light text-turo-purple underline decoration-turo-purple underline-offset-4">drive</span>
-                </h1>
-                <p className="text-lg sm:text-xl text-gray-200 font-medium max-w-2xl mx-auto mb-10">
+                </motion.h1>
+                <motion.p variants={heroItemVariants} className="text-lg sm:text-xl text-gray-200 font-medium max-w-2xl mx-auto mb-10">
                   Drive your dream car today with flexible monthly payments, 10% downpayment, and guaranteed title transfer upon completion.
-                </p>
+                </motion.p>
 
                 {/* Turo-style Search Widget for RTO */}
-                <form
-                  onSubmit={handleRtoSearchSubmit}
-                  className="bg-white rounded-3xl md:rounded-full shadow-2xl p-4 md:py-2 md:px-3 flex flex-col md:flex-row items-center gap-3 max-w-3xl mx-auto border border-gray-100 animate-in fade-in zoom-in duration-300"
-                >
-                  {/* Location Input */}
-                  <div className="flex items-center gap-3 px-3 py-2 w-full md:w-1/3 border-b md:border-b-0 md:border-r border-gray-200">
-                    <MapPin className="text-turo-purple size-5 shrink-0" />
-                    <div className="text-left w-full">
-                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                        Where
-                      </label>
-                      <input
-                        type="text"
-                        value={searchLocation}
-                        onChange={(e) => setSearchLocation(e.target.value)}
-                        placeholder="City, airport, or hotel"
-                        className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Dates Pickers */}
-                  <div className="flex items-center gap-3 px-3 py-2 w-full md:w-1/2">
-                    <Calendar className="text-turo-purple size-5 shrink-0" />
-                    <div className="flex gap-4 w-full justify-between">
-                      <div className="text-left w-1/2">
-                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                          From
-                        </label>
-                        <input
-                          type="date"
-                          value={pickupDate}
-                          min={new Date().toISOString().split('T')[0]}
-                          onChange={(e) => setPickupDate(e.target.value)}
-                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer focus:text-turo-purple transition-colors"
-                        />
-                      </div>
-                      <div className="h-8 w-px bg-gray-200 self-center hidden sm:block"></div>
-                      <div className="text-left w-1/2">
-                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                          Until
-                        </label>
-                        <input
-                          type="date"
-                          value={returnDate}
-                          min={pickupDate || new Date().toISOString().split('T')[0]}
-                          onChange={(e) => setReturnDate(e.target.value)}
-                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer focus:text-turo-purple transition-colors"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Search Button */}
-                  <button
-                    type="submit"
-                    className="w-full md:w-auto bg-turo-purple hover:bg-turo-hover text-white font-bold px-8 py-4 md:py-3.5 rounded-2xl md:rounded-full transition-colors flex items-center justify-center gap-2 shadow-lg shadow-turo-purple/20 cursor-pointer"
+                <motion.div variants={heroItemVariants} className="w-full max-w-3xl mx-auto">
+                  <form
+                    onSubmit={handleRtoSearchSubmit}
+                    className="bg-white rounded-3xl md:rounded-full shadow-2xl p-4 md:py-2 md:px-3 flex flex-col md:flex-row items-center gap-3 border border-gray-100"
                   >
-                    <Search className="size-4" />
-                    Find RTO Cars
-                  </button>
-                </form>
+                    {/* Location Input */}
+                    <div className="flex items-center gap-3 px-4 py-2 w-full md:w-1/3 border-b md:border-b-0 md:border-r border-gray-200 focus-within:bg-gray-50/80 hover:bg-gray-50/40 rounded-2xl md:rounded-l-full md:rounded-r-none transition-all duration-300">
+                      <MapPin className="text-turo-purple size-5 shrink-0" />
+                      <div className="text-left w-full">
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                          Where
+                        </label>
+                        <input
+                          type="text"
+                          value={searchLocation}
+                          onChange={(e) => setSearchLocation(e.target.value)}
+                          placeholder="City, airport, or hotel"
+                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Dates Pickers */}
+                    <div className="flex items-center gap-3 px-4 py-2 w-full md:w-1/2 focus-within:bg-gray-50/80 hover:bg-gray-50/40 rounded-2xl md:rounded-r-full md:rounded-l-none transition-all duration-300">
+                      <Calendar className="text-turo-purple size-5 shrink-0" />
+                      <div className="flex gap-4 w-full justify-between">
+                        <div className="text-left w-1/2">
+                          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                            From
+                          </label>
+                          <input
+                            type="date"
+                            value={pickupDate}
+                            min={new Date().toISOString().split('T')[0]}
+                            onChange={(e) => setPickupDate(e.target.value)}
+                            className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer focus:text-turo-purple transition-colors"
+                          />
+                        </div>
+                        <div className="h-8 w-px bg-gray-200 self-center hidden sm:block"></div>
+                        <div className="text-left w-1/2">
+                          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                            Until
+                          </label>
+                          <input
+                            type="date"
+                            value={returnDate}
+                            min={pickupDate || new Date().toISOString().split('T')[0]}
+                            onChange={(e) => setReturnDate(e.target.value)}
+                            className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent cursor-pointer focus:text-turo-purple transition-colors"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Search Button */}
+                    <button
+                      type="submit"
+                      className="w-full md:w-auto bg-turo-purple hover:bg-turo-hover text-white font-bold px-8 py-4 md:py-3.5 rounded-2xl md:rounded-full transition-colors flex items-center justify-center gap-2 shadow-lg shadow-turo-purple/20 cursor-pointer"
+                    >
+                      <Search className="size-4" />
+                      Find RTO Cars
+                    </button>
+                  </form>
+                </motion.div>
+              </motion.div>
+
+              {/* Scroll Down Indicator */}
+              <div 
+                onClick={() => {
+                  document.getElementById("rto-estimator-section")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 cursor-pointer group"
+              >
+                <span className="text-[10px] font-black text-white/50 tracking-widest uppercase group-hover:text-white transition-colors duration-300">
+                  Scroll to explore
+                </span>
+                <motion.div
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                  className="p-1.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm group-hover:border-white/45 group-hover:bg-white/10 transition-colors duration-300"
+                >
+                  <ChevronDown className="size-4 text-white" />
+                </motion.div>
               </div>
             </section>
 
             {/* RTO Path to Ownership Estimator */}
-            <section className="max-w-4xl mx-auto px-4 sm:px-6 mt-20">
+            <section id="rto-estimator-section" className="max-w-4xl mx-auto px-4 sm:px-6 mt-20">
               <div className="bg-white border border-gray-200 rounded-3xl shadow-xl p-8 sm:p-10 relative -mt-24 z-20">
                 <div className="text-center mb-8">
                   <span className="text-xs font-bold text-turo-purple uppercase tracking-wider">
@@ -735,7 +815,7 @@ function Theme4HomePageContent() {
             transition={{ duration: 0.3 }}
           >
             {/* Lent Hero Section */}
-            <section className="relative min-h-[580px] sm:h-[640px] flex items-center justify-center bg-gray-900 overflow-hidden pt-24 pb-12">
+            <section className="relative h-screen min-h-[620px] md:min-h-[720px] lg:h-[100dvh] flex items-center justify-center bg-gray-900 overflow-hidden pt-24 pb-12">
               <div className="absolute inset-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -746,34 +826,62 @@ function Theme4HomePageContent() {
                 <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/65" />
               </div>
 
-              <div className="relative z-10 max-w-4xl mx-auto px-4 text-center w-full flex flex-col items-center">
-                {renderSwitcher()}
+              <motion.div 
+                variants={heroContainerVariants}
+                initial="hidden"
+                animate="visible"
+                className="relative z-10 max-w-4xl mx-auto px-4 text-center w-full flex flex-col items-center"
+              >
+                <motion.div variants={heroItemVariants} className="w-full">
+                  {renderSwitcher()}
+                </motion.div>
 
-                <span className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md mb-6">
+                <motion.span variants={heroItemVariants} className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md mb-6">
                   Phillip Cars Host Network
-                </span>
-                <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mt-6 mb-6">
+                </motion.span>
+                <motion.h1 variants={heroItemVariants} className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mt-6 mb-6">
                   Let your car work for you
-                </h1>
-                <p className="text-lg sm:text-xl text-gray-200 font-medium max-w-2xl mx-auto mb-10">
+                </motion.h1>
+                <motion.p variants={heroItemVariants} className="text-lg sm:text-xl text-gray-200 font-medium max-w-2xl mx-auto mb-10">
                   Lend your vehicle, cover your car payments, and build a scalable car sharing business on Melbourne&apos;s premium P2P platform.
-                </p>
+                </motion.p>
 
-                <button
-                  onClick={() => {
-                    setIsLendModalOpen(true);
-                    setLendStep(1);
-                  }}
-                  className="bg-turo-purple hover:bg-turo-hover text-white font-black px-10 py-5 rounded-full transition-colors flex items-center justify-center gap-2 mx-auto shadow-xl shadow-turo-purple/35 cursor-pointer text-base uppercase tracking-wider"
+                <motion.div variants={heroItemVariants}>
+                  <button
+                    onClick={() => {
+                      setIsLendModalOpen(true);
+                      setLendStep(1);
+                    }}
+                    className="bg-turo-purple hover:bg-turo-hover text-white font-black px-10 py-5 rounded-full transition-colors flex items-center justify-center gap-2 mx-auto shadow-xl shadow-turo-purple/35 cursor-pointer text-base uppercase tracking-wider"
+                  >
+                    <Plus className="size-5" />
+                    List your car now
+                  </button>
+                </motion.div>
+              </motion.div>
+
+              {/* Scroll Down Indicator */}
+              <div 
+                onClick={() => {
+                  document.getElementById("lent-calculator-section")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 cursor-pointer group"
+              >
+                <span className="text-[10px] font-black text-white/50 tracking-widest uppercase group-hover:text-white transition-colors duration-300">
+                  Scroll to explore
+                </span>
+                <motion.div
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                  className="p-1.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm group-hover:border-white/45 group-hover:bg-white/10 transition-colors duration-300"
                 >
-                  <Plus className="size-5" />
-                  List your car now
-                </button>
+                  <ChevronDown className="size-4 text-white" />
+                </motion.div>
               </div>
             </section>
 
             {/* Earnings Calculator */}
-            <section className="max-w-4xl mx-auto px-4 sm:px-6 mt-20">
+            <section id="lent-calculator-section" className="max-w-4xl mx-auto px-4 sm:px-6 mt-20">
               <div className="bg-white border border-gray-200 rounded-3xl shadow-xl p-8 sm:p-10 relative -mt-24 z-20">
                 <div className="text-center mb-8">
                   <span className="text-xs font-bold text-turo-purple uppercase tracking-wider">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { User, Bell, Globe, Search, Settings, HelpCircle, LogIn, Award, Check } from "lucide-react";
@@ -18,6 +18,23 @@ export default function Theme4Layout({
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("English (AU)");
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!isHome) return;
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initial call
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isHome]);
+
+  const isLightHeader = !isHome || isScrolled;
 
   const notifications = [
     { id: 1, text: "Welcome to Phillip Cars! Use code P2P15 for 15% off your first trip.", time: "2 hours ago", unread: true },
@@ -32,19 +49,21 @@ export default function Theme4Layout({
       {/* Sticky Custom Header */}
       <header className={`z-50 transition-all duration-300 ${
         isHome 
-          ? "absolute top-0 left-0 right-0 bg-transparent border-none" 
+          ? isScrolled 
+            ? "sticky top-0 bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm" 
+            : "absolute top-0 left-0 right-0 bg-transparent border-none" 
           : "sticky top-0 bg-white border-b border-gray-200"
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
           {/* Logo / Branding */}
           <Link href="/theme4" className="flex items-center gap-2">
             <span className={`text-xl sm:text-2xl font-black tracking-tight uppercase transition-colors duration-300 ${
-              isHome ? "text-white" : "text-turo-purple"
+              isLightHeader ? "text-turo-purple" : "text-white"
             }`}>
               PHILLIP CARS
             </span>
             <span className={`hidden sm:inline-block text-xs font-semibold px-2 py-0.5 rounded-full transition-colors duration-300 ${
-              isHome ? "bg-white/20 text-white" : "bg-turo-light text-turo-purple"
+              isLightHeader ? "bg-turo-light text-turo-purple" : "bg-white/20 text-white"
             }`}>
               P2P
             </span>
@@ -54,16 +73,16 @@ export default function Theme4Layout({
           <div 
             onClick={() => router.push("/theme4/search")}
             className={`hidden md:flex items-center border shadow-sm rounded-full py-1.5 px-4 gap-3 cursor-pointer transition-all duration-300 ${
-              isHome 
-                ? "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:border-white/30 backdrop-blur-sm" 
-                : "border-gray-200 bg-white text-gray-800 hover:shadow-md hover:border-turo-purple/20"
+              isLightHeader 
+                ? "border-gray-200 bg-white text-gray-800 hover:shadow-md hover:border-turo-purple/20" 
+                : "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:border-white/30 backdrop-blur-sm"
             }`}
           >
-            <span className={`text-sm font-semibold ${isHome ? "text-white" : "text-gray-800"}`}>Melbourne, VIC</span>
-            <span className={`h-4 w-px ${isHome ? "bg-white/20" : "bg-gray-200"}`}></span>
-            <span className={`text-sm font-medium ${isHome ? "text-white/80" : "text-gray-500"}`}>Dates & Times</span>
-            <span className={`h-4 w-px ${isHome ? "bg-white/20" : "bg-gray-200"}`}></span>
-            <div className={`p-1.5 rounded-full ${isHome ? "bg-white text-turo-purple" : "bg-turo-purple text-white"}`}>
+            <span className={`text-sm font-semibold transition-colors duration-300 ${isLightHeader ? "text-gray-800" : "text-white"}`}>Melbourne, VIC</span>
+            <span className={`h-4 w-px transition-colors duration-300 ${isLightHeader ? "bg-gray-200" : "bg-white/20"}`}></span>
+            <span className={`text-sm font-medium transition-colors duration-300 ${isLightHeader ? "text-gray-500" : "text-white/80"}`}>Dates & Times</span>
+            <span className={`h-4 w-px transition-colors duration-300 ${isLightHeader ? "bg-gray-200" : "bg-white/20"}`}></span>
+            <div className={`p-1.5 rounded-full transition-colors duration-300 ${isLightHeader ? "bg-turo-purple text-white" : "bg-white text-turo-purple"}`}>
               <Search className="size-3.5" />
             </div>
           </div>
@@ -73,7 +92,7 @@ export default function Theme4Layout({
             <Link
               href="/theme4?tab=lent"
               className={`text-sm font-bold px-3 py-2 rounded-full transition-colors hidden sm:block ${
-                isHome ? "text-white hover:bg-white/10" : "text-gray-800 hover:bg-gray-50"
+                isLightHeader ? "text-gray-800 hover:bg-gray-50" : "text-white hover:bg-white/10"
               }`}
             >
               Lend your car
@@ -88,10 +107,10 @@ export default function Theme4Layout({
                   setIsProfileOpen(false);
                 }}
                 className={`transition-colors p-1.5 rounded-full relative cursor-pointer ${
-                  isHome 
-                    ? "text-white/90 hover:text-white hover:bg-white/10" 
-                    : "text-gray-500 hover:text-turo-purple hover:bg-gray-50"
-                } ${isNotificationsOpen ? (isHome ? "bg-white/20 text-white" : "bg-gray-50 text-turo-purple") : ""}`} 
+                  isLightHeader 
+                    ? "text-gray-500 hover:text-turo-purple hover:bg-gray-50" 
+                    : "text-white/90 hover:text-white hover:bg-white/10"
+                } ${isNotificationsOpen ? (isLightHeader ? "bg-gray-55 text-turo-purple" : "bg-white/20 text-white") : ""}`} 
                 aria-label="Notifications"
               >
                 <Bell className="size-5" />
@@ -99,14 +118,14 @@ export default function Theme4Layout({
               </button>
 
               {isNotificationsOpen && (
-                <div className="absolute right-0 mt-2.5 w-80 bg-white border border-gray-200 rounded-2xl shadow-xl py-3 z-50 text-left animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute right-0 mt-2.5 z-55 w-80 bg-white border border-gray-200 rounded-2xl shadow-xl py-3 z-50 text-left animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="px-4 pb-2 border-b border-gray-100 flex justify-between items-center">
                     <span className="font-black text-sm text-gray-900">Notifications</span>
                     <button className="text-[10px] text-turo-purple font-bold hover:underline">Mark all read</button>
                   </div>
                   <div className="max-h-64 overflow-y-auto">
                     {notifications.map((n) => (
-                      <div key={n.id} className="px-4 py-3 hover:bg-gray-50 border-b border-gray-50 last:border-b-0 cursor-pointer transition-colors flex gap-2.5">
+                      <div key={n.id} className="px-4 py-3 hover:bg-gray-50 border-b border-gray-55 last:border-b-0 cursor-pointer transition-colors flex gap-2.5">
                         <div className="size-1.5 bg-turo-purple rounded-full shrink-0 mt-2"></div>
                         <div>
                           <p className="text-xs font-semibold text-gray-700 leading-normal">{n.text}</p>
@@ -128,17 +147,17 @@ export default function Theme4Layout({
                   setIsProfileOpen(false);
                 }}
                 className={`transition-colors p-1.5 rounded-full cursor-pointer hidden sm:block ${
-                  isHome 
-                    ? "text-white/90 hover:text-white hover:bg-white/10" 
-                    : "text-gray-500 hover:text-turo-purple hover:bg-gray-50"
-                } ${isLanguageOpen ? (isHome ? "bg-white/20 text-white" : "bg-gray-50 text-turo-purple") : ""}`} 
+                  isLightHeader 
+                    ? "text-gray-500 hover:text-turo-purple hover:bg-gray-55" 
+                    : "text-white/90 hover:text-white hover:bg-white/10"
+                } ${isLanguageOpen ? (isLightHeader ? "bg-gray-55 text-turo-purple" : "bg-white/20 text-white") : ""}`} 
                 aria-label="Language"
               >
                 <Globe className="size-5" />
               </button>
 
               {isLanguageOpen && (
-                <div className="absolute right-0 mt-2.5 w-48 bg-white border border-gray-200 rounded-2xl shadow-xl py-2 z-50 text-left animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute right-0 mt-2.5 z-55 w-48 bg-white border border-gray-200 rounded-2xl shadow-xl py-2 z-50 text-left animate-in fade-in slide-in-from-top-2 duration-200">
                   <span className="block px-4 py-1.5 text-[10px] font-black text-gray-400 uppercase tracking-wider">Select Language</span>
                   {languages.map((lang) => (
                     <button
@@ -166,15 +185,15 @@ export default function Theme4Layout({
                   setIsLanguageOpen(false);
                 }}
                 className={`flex items-center border rounded-full p-1.5 hover:shadow-sm transition-all gap-2 cursor-pointer ${
-                  isHome 
-                    ? "border-white/20 bg-white/10 hover:border-white/35 hover:bg-white/20" 
-                    : "border-gray-200 bg-gray-55 hover:border-turo-purple/20"
-                } ${isProfileOpen ? (isHome ? "border-white/35 bg-white/20" : "border-turo-purple/30 bg-turo-light/30 shadow-inner") : ""}`}
+                  isLightHeader 
+                    ? "border-gray-200 bg-gray-55 hover:border-turo-purple/20" 
+                    : "border-white/20 bg-white/10 hover:border-white/35 hover:bg-white/20"
+                } ${isProfileOpen ? (isLightHeader ? "border-turo-purple/30 bg-turo-light/30 shadow-inner" : "border-white/35 bg-white/20") : ""}`}
               >
-                <div className="bg-turo-purple text-white size-6 rounded-full flex items-center justify-center text-xs font-bold">
+                <div className="bg-turo-purple text-white size-6 rounded-full flex items-center justify-center text-xs font-bold animate-pulse">
                   P
                 </div>
-                <User className={`size-4 ${isHome ? "text-white/80" : "text-gray-500"}`} />
+                <User className={`size-4 transition-colors duration-300 ${isLightHeader ? "text-gray-500" : "text-white/80"}`} />
               </button>
 
               {isProfileOpen && (
