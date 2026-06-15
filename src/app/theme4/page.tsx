@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,6 +9,17 @@ import {
   ShieldCheck, HelpCircle, Star, Sparkles, Plus, AlertCircle, Info, ChevronDown 
 } from "lucide-react";
 import { makeCategories, turoCars, hostFaqs, renterFaqs, TuroCar } from "@/lib/theme4-data";
+
+const initialNewLendCar = {
+  make: "",
+  model: "",
+  year: "2023",
+  price: "80",
+  location: "Melbourne, VIC",
+  enableRentToOwn: false,
+  rentToOwnPrice: "35000",
+  rentToOwnMonths: "24",
+};
 
 const heroContainerVariants = {
   hidden: { opacity: 0 },
@@ -40,27 +51,64 @@ function Theme4HomePageContent() {
   const tabParam = searchParams.get("tab");
   
   // Set tab based on URL parameter or default to "rent"
-  const [activeTab, setActiveTab] = useState<"rent" | "rto" | "lent">("rent");
-  const [cars, setCars] = useState<TuroCar[]>(turoCars);
+  const activeTab: "rent" | "rto" | "lent" =
+    tabParam === "lent" ? "lent" : tabParam === "rto" ? "rto" : "rent";
+  const [personalCars, setPersonalCars] = useState<TuroCar[]>([]);
+  const cars = useMemo(() => [...personalCars, ...turoCars], [personalCars]);
   const [openRenterFaq, setOpenRenterFaq] = useState<number | null>(null);
   const [openHostFaq, setOpenHostFaq] = useState<number | null>(null);
+  const [isLoadingPersonalCars, setIsLoadingPersonalCars] = useState(true);
+  const [personalCarsError, setPersonalCarsError] = useState<string | null>(null);
+  const [listingError, setListingError] = useState<string | null>(null);
+  const [isSubmittingListing, setIsSubmittingListing] = useState(false);
 
   // RTO Calculator State
   const [rtoCalcValue, setRtoCalcValue] = useState(40000);
   const [rtoCalcMonths, setRtoCalcMonths] = useState(24);
   
   useEffect(() => {
-    if (tabParam === "lent") {
-      setActiveTab("lent");
-    } else if (tabParam === "rto") {
-      setActiveTab("rto");
-    } else {
-      setActiveTab("rent");
-    }
-  }, [tabParam]);
+    let isActive = true;
+
+    const loadPersonalCars = async () => {
+      try {
+        setIsLoadingPersonalCars(true);
+        setPersonalCarsError(null);
+
+        const response = await fetch("/api/theme4/personal-listings", {
+          cache: "no-store",
+        });
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload.error ?? "Unable to load personal car listings.");
+        }
+
+        if (isActive) {
+          setPersonalCars(Array.isArray(payload.listings) ? payload.listings : []);
+        }
+      } catch (error) {
+        if (isActive) {
+          setPersonalCarsError(
+            error instanceof Error
+              ? error.message
+              : "Unable to load personal car listings right now."
+          );
+        }
+      } finally {
+        if (isActive) {
+          setIsLoadingPersonalCars(false);
+        }
+      }
+    };
+
+    void loadPersonalCars();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   const handleTabChange = (tab: "rent" | "rto" | "lent") => {
-    setActiveTab(tab);
     router.push(`/theme4?tab=${tab}`, { scroll: false });
   };
 
@@ -92,16 +140,59 @@ function Theme4HomePageContent() {
   // Add a Car Mock Form Modal State
   const [isLendModalOpen, setIsLendModalOpen] = useState(false);
   const [lendStep, setLendStep] = useState(1);
-  const [newLendCar, setNewLendCar] = useState({
-    make: "",
-    model: "",
-    year: "2023",
-    price: "80",
-    location: "Melbourne, VIC",
-    enableRentToOwn: false,
-    rentToOwnPrice: "35000",
-    rentToOwnMonths: "24",
-  });
+  const [newLendCar, setNewLendCar] = useState(initialNewLendCar);
+
+  const resetLendModal = () => {
+    setIsLendModalOpen(false);
+    setLendStep(1);
+    setListingError(null);
+    setNewLendCar(initialNewLendCar);
+  };
+
+  const submitPersonalCarListing = async () => {
+    setIsSubmittingListing(true);
+    setListingError(null);
+
+    try {
+      const response = await fetch("/api/theme4/personal-listings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          make: newLendCar.make,
+          model: newLendCar.model,
+          year: Number(newLendCar.year),
+          location: newLendCar.location,
+          pricePerDay: Number(newLendCar.price),
+          enableRentToOwn: newLendCar.enableRentToOwn,
+          rentToOwnPrice: newLendCar.enableRentToOwn
+            ? Number(newLendCar.rentToOwnPrice)
+            : null,
+          rentToOwnMonths: newLendCar.enableRentToOwn
+            ? Number(newLendCar.rentToOwnMonths)
+            : null,
+        }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Unable to create your listing right now.");
+      }
+
+      setPersonalCars((currentCars) => [payload.listing as TuroCar, ...currentCars]);
+      setLendStep(3);
+    } catch (error) {
+      setListingError(
+        error instanceof Error
+          ? error.message
+          : "Unable to create your listing right now."
+      );
+    } finally {
+      setIsSubmittingListing(false);
+    }
+  };
 
   const renderSwitcher = () => (
     <div className="flex justify-center pb-8 max-w-full px-4 w-full z-20">
@@ -343,7 +434,7 @@ function Theme4HomePageContent() {
                       Find the perfect match
                     </h2>
                     <p className="text-sm font-medium text-gray-500 mt-1">
-                      Explore highly rated cars shared by Phillip Cars hosts.
+                      Explore highly rated cars shared by Phillips Car Rental hosts across Melbourne.
                     </p>
                   </div>
                   <Link
@@ -419,6 +510,14 @@ function Theme4HomePageContent() {
                     </motion.div>
                   ))}
                 </div>
+                {personalCarsError ? (
+                  <p className="mt-4 text-sm font-medium text-red-500">{personalCarsError}</p>
+                ) : null}
+                {isLoadingPersonalCars ? (
+                  <p className="mt-4 text-sm font-medium text-gray-400">
+                    Loading Melbourne host listings...
+                  </p>
+                ) : null}
               </motion.div>
             </section>
 
@@ -1079,7 +1178,7 @@ function Theme4HomePageContent() {
                   </p>
                 </div>
                 <button
-                  onClick={() => setIsLendModalOpen(false)}
+                  onClick={resetLendModal}
                   className="text-gray-400 hover:text-gray-700 transition-colors"
                 >
                   ✕
@@ -1268,6 +1367,11 @@ function Theme4HomePageContent() {
 
               {/* Modal Footer */}
               <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center">
+                {listingError ? (
+                  <p className="absolute left-6 right-6 -top-7 text-xs font-semibold text-red-500">
+                    {listingError}
+                  </p>
+                ) : null}
                 {lendStep > 1 && lendStep < 3 ? (
                   <button
                     onClick={() => setLendStep(lendStep - 1)}
@@ -1281,50 +1385,32 @@ function Theme4HomePageContent() {
 
                 {lendStep < 3 ? (
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       if (!newLendCar.make || !newLendCar.model) {
-                        alert("Please fill in the make and model fields.");
+                        setListingError("Please fill in the make and model fields.");
                         return;
                       }
+
                       if (lendStep === 2) {
-                        const newCarObj: TuroCar = {
-                          id: `${newLendCar.make.toLowerCase()}-${newLendCar.model.toLowerCase()}-${Date.now()}`,
-                          name: `${newLendCar.make} ${newLendCar.model} ${newLendCar.year}`,
-                          make: newLendCar.make,
-                          model: newLendCar.model,
-                          year: parseInt(newLendCar.year),
-                          category: "Sport",
-                          pricePerDay: parseInt(newLendCar.price) || 80,
-                          rating: 5.0,
-                          tripsCount: 0,
-                          isAllStarHost: true,
-                          hostName: "You (Host)",
-                          hostAvatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80",
-                          image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80",
-                          location: newLendCar.location,
-                          transmission: "Automatic",
-                          fuelType: "Petrol",
-                          seats: 5,
-                          description: "Listed by you. Feel the difference driving this personal vehicle.",
-                          features: ["Bluetooth", "USB Charger", "GPS"],
-                          ...(newLendCar.enableRentToOwn ? {
-                            rentToOwnAvailable: true,
-                            rentToOwnPrice: parseInt(newLendCar.rentToOwnPrice) || 35000,
-                            rentToOwnMonths: parseInt(newLendCar.rentToOwnMonths) || 24,
-                            downPayment: Math.round((parseInt(newLendCar.rentToOwnPrice) || 35000) * 0.1),
-                          } : {})
-                        };
-                        setCars([newCarObj, ...cars]);
+                        await submitPersonalCarListing();
+                        return;
                       }
+
+                      setListingError(null);
                       setLendStep(lendStep + 1);
                     }}
-                    className="bg-turo-purple hover:bg-turo-hover text-white text-sm font-bold px-6 py-2.5 rounded-full transition-colors cursor-pointer"
+                    disabled={isSubmittingListing}
+                    className="bg-turo-purple hover:bg-turo-hover disabled:bg-turo-purple/60 disabled:cursor-not-allowed text-white text-sm font-bold px-6 py-2.5 rounded-full transition-colors cursor-pointer"
                   >
-                    {lendStep === 2 ? "Finish Listing" : "Next Step"}
+                    {isSubmittingListing
+                      ? "Saving..."
+                      : lendStep === 2
+                        ? "Finish Listing"
+                        : "Next Step"}
                   </button>
                 ) : (
                   <button
-                    onClick={() => setIsLendModalOpen(false)}
+                    onClick={resetLendModal}
                     className="bg-turo-purple hover:bg-turo-hover text-white text-sm font-bold px-8 py-2.5 rounded-full transition-colors mx-auto cursor-pointer"
                   >
                     Done

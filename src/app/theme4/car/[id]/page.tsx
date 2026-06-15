@@ -15,11 +15,42 @@ export default function Theme4CarDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
+  const [personalCars, setPersonalCars] = useState<TuroCar[]>([]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadPersonalCars = async () => {
+      try {
+        const response = await fetch("/api/theme4/personal-listings", {
+          cache: "no-store",
+        });
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload.error ?? "Unable to load personal car listings.");
+        }
+
+        if (isActive) {
+          setPersonalCars(Array.isArray(payload.listings) ? payload.listings : []);
+        }
+      } catch (error) {
+        console.error("Failed to load personal cars for detail page", error);
+      }
+    };
+
+    void loadPersonalCars();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   // Find car by ID
   const car = useMemo(() => {
-    return turoCars.find((c) => c.id === id) || turoCars[0];
-  }, [id]);
+    const allCars = [...personalCars, ...turoCars];
+    return allCars.find((c) => c.id === id) || turoCars[0];
+  }, [id, personalCars]);
 
   // Gallery slider state
   const [activeImageIndex, setActiveImageIndex] = useState(0);

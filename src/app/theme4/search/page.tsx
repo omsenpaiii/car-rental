@@ -37,19 +37,56 @@ function Theme4SearchPageContent() {
   const [showMap, setShowMap] = useState<boolean>(true);
   const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
   const [hoveredCarId, setHoveredCarId] = useState<string | null>(null);
+  const [personalCars, setPersonalCars] = useState<TuroCar[]>([]);
 
-  // Sync state with URL params on load
   useEffect(() => {
-    if (initCategory) setSelectedCategory(initCategory);
+    let isActive = true;
+
+    const loadPersonalCars = async () => {
+      try {
+        const response = await fetch("/api/theme4/personal-listings", {
+          cache: "no-store",
+        });
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload.error ?? "Unable to load personal car listings.");
+        }
+
+        if (isActive) {
+          setPersonalCars(Array.isArray(payload.listings) ? payload.listings : []);
+        }
+      } catch (error) {
+        console.error("Failed to load personal cars for theme4 search", error);
+      }
+    };
+
+    void loadPersonalCars();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (initCategory) {
+      queueMicrotask(() => {
+        setSelectedCategory(initCategory);
+      });
+    }
   }, [initCategory]);
 
   useEffect(() => {
     if (initMode === "rto") {
-      setSearchMode("rto");
-      setMaxPrice(2500);
+      queueMicrotask(() => {
+        setSearchMode("rto");
+        setMaxPrice(2500);
+      });
     } else {
-      setSearchMode("rent");
-      setMaxPrice(300);
+      queueMicrotask(() => {
+        setSearchMode("rent");
+        setMaxPrice(300);
+      });
     }
   }, [initMode]);
 
@@ -72,7 +109,7 @@ function Theme4SearchPageContent() {
 
   // Filter & Sort Logic
   const filteredCars = useMemo(() => {
-    let result = [...turoCars];
+    let result = [...personalCars, ...turoCars];
 
     // Filter by Brand/Make (if search came from home make categories)
     if (initMake) {
@@ -143,7 +180,16 @@ function Theme4SearchPageContent() {
     }
 
     return result;
-  }, [initMake, selectedCategory, searchMode, maxPrice, selectedTransmission, selectedFuelType, sortBy]);
+  }, [
+    initMake,
+    maxPrice,
+    personalCars,
+    searchMode,
+    selectedCategory,
+    selectedFuelType,
+    selectedTransmission,
+    sortBy,
+  ]);
 
   return (
     <div className="bg-white min-h-screen flex flex-col">
@@ -267,7 +313,11 @@ function Theme4SearchPageContent() {
               {/* Sort selector */}
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) =>
+                  setSortBy(
+                    e.target.value as "relevance" | "priceLow" | "priceHigh" | "rating"
+                  )
+                }
                 className="text-xs font-bold border border-gray-200 px-3 py-2 rounded-full outline-none bg-white text-gray-700 hover:border-turo-purple cursor-pointer transition-colors"
               >
                 <option value="relevance">Relevance</option>
