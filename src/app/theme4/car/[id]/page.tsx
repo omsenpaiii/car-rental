@@ -74,7 +74,6 @@ export default function Theme4CarDetailsPage() {
   const [pickupDate, setPickupDate] = useState("2026-06-15");
   const [returnDate, setReturnDate] = useState("2026-06-18");
   const [deliveryLocation, setDeliveryLocation] = useState("Melbourne Airport");
-  const [protectionPlan, setProtectionPlan] = useState<"standard" | "minimum" | "none">("standard");
   const [requesterPhone, setRequesterPhone] = useState("");
   const [enquiryMessage, setEnquiryMessage] = useState("");
   const [enquiryError, setEnquiryError] = useState<string | null>(null);
@@ -99,21 +98,16 @@ export default function Theme4CarDetailsPage() {
     const tripPrice = car.pricePerDay * daysCount;
     const deliveryFee = deliveryLocation === "Host Location" ? 0 : 40;
     
-    let protectionFee = 0;
-    if (protectionPlan === "standard") protectionFee = 25 * daysCount;
-    if (protectionPlan === "minimum") protectionFee = 12 * daysCount;
-
     const serviceFee = Math.round(tripPrice * 0.08);
-    const total = tripPrice + deliveryFee + protectionFee + serviceFee;
+    const total = tripPrice + deliveryFee + serviceFee;
 
     return {
       tripPrice,
       deliveryFee,
-      protectionFee,
       serviceFee,
       total,
     };
-  }, [car, daysCount, deliveryLocation, protectionPlan]);
+  }, [car, daysCount, deliveryLocation]);
 
   // Handle Checkout Modal
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -388,6 +382,24 @@ export default function Theme4CarDetailsPage() {
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Fuel/Battery</span>
                 <span className="font-bold text-sm text-gray-800 mt-1 block">{car.fuelType}</span>
               </div>
+              {car.bodyType ? (
+                <div className="border border-gray-100 p-4 rounded-xl text-center">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Body Style</span>
+                  <span className="font-bold text-sm text-gray-800 mt-1 block">{car.bodyType}</span>
+                </div>
+              ) : null}
+              {car.colour ? (
+                <div className="border border-gray-100 p-4 rounded-xl text-center">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Colour</span>
+                  <span className="font-bold text-sm text-gray-800 mt-1 block">{car.colour}</span>
+                </div>
+              ) : null}
+              {car.odometer != null ? (
+                <div className="border border-gray-100 p-4 rounded-xl text-center">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Odometer</span>
+                  <span className="font-bold text-sm text-gray-800 mt-1 block">{car.odometer.toLocaleString()} km</span>
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -540,7 +552,7 @@ export default function Theme4CarDetailsPage() {
               </div>
               <span className="text-xs text-turo-purple font-bold flex items-center gap-0.5">
                 <Shield className="size-3.5" />
-                {bookingMode === "rto" ? "Escrow Protected" : "Free cancellation"}
+                {bookingMode === "rto" ? "Escrow enquiry" : "Verified enquiry"}
               </span>
             </div>
 
@@ -593,43 +605,8 @@ export default function Theme4CarDetailsPage() {
                     </select>
                   </div>
 
-                  {/* Protection Plan Selector */}
-                  <div>
-                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
-                      Protection Plan
-                    </label>
-                    <div className="space-y-2.5">
-                      <label className={`flex items-start gap-3 border p-3 rounded-xl cursor-pointer transition-colors ${
-                        protectionPlan === "standard" ? "border-turo-purple bg-turo-light text-turo-purple" : "border-gray-200"
-                      }`}>
-                        <input
-                          type="radio"
-                          name="protection"
-                          checked={protectionPlan === "standard"}
-                          onChange={() => setProtectionPlan("standard")}
-                          className="mt-0.5 accent-turo-purple"
-                        />
-                        <div className="text-xs">
-                          <span className="font-bold block text-gray-800">Standard Protection (+$25/day)</span>
-                          <span className="text-gray-500 block mt-0.5">Reduces physical damage out-of-pocket maximum to $500.</span>
-                        </div>
-                      </label>
-                      <label className={`flex items-start gap-3 border p-3 rounded-xl cursor-pointer transition-colors ${
-                        protectionPlan === "minimum" ? "border-turo-purple bg-turo-light text-turo-purple" : "border-gray-200"
-                      }`}>
-                        <input
-                          type="radio"
-                          name="protection"
-                          checked={protectionPlan === "minimum"}
-                          onChange={() => setProtectionPlan("minimum")}
-                          className="mt-0.5 accent-turo-purple"
-                        />
-                        <div className="text-xs">
-                          <span className="font-bold block text-gray-800">Minimum Protection (+$12/day)</span>
-                          <span className="text-gray-500 block mt-0.5">Reduces physical damage out-of-pocket maximum to $3,000.</span>
-                        </div>
-                      </label>
-                    </div>
+                  <div className="rounded-2xl border border-amber-200/70 bg-amber-50 p-4 text-[11px] font-medium leading-relaxed text-amber-900">
+                    <strong className="font-black">Insurance responsibility:</strong> Phillips Car Rental connects renters, buyers, and owners. We do not provide vehicle insurance, damage cover, warranty, or liability protection. Each party must confirm their own suitable cover before handover.
                   </div>
 
                   {/* Cost breakdown */}
@@ -642,12 +619,6 @@ export default function Theme4CarDetailsPage() {
                       <div className="flex justify-between">
                         <span>Delivery fee</span>
                         <span className="text-gray-800">${pricing.deliveryFee}</span>
-                      </div>
-                    )}
-                    {pricing.protectionFee > 0 && (
-                      <div className="flex justify-between">
-                        <span>Protection plan fee</span>
-                        <span className="text-gray-800">${pricing.protectionFee}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
@@ -802,12 +773,12 @@ export default function Theme4CarDetailsPage() {
 
             <div className="text-center">
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">
-                {bookingMode === "rto" ? "Platform Escrow System" : "Free cancellation"}
+                {bookingMode === "rto" ? "Enquiry-first process" : "Verified request"}
               </span>
               <p className="text-[10px] text-gray-400 mt-1 max-w-[240px] mx-auto leading-relaxed">
                 {bookingMode === "rto" 
-                  ? "All monthly rent payments are secured in escrow. Commission is handled automatically by Phillips Car Rental." 
-                  : "Full refund up to 24 hours before your trip starts. 24/7 support is available."
+                  ? "Phillips Car Rental records your interest and follows up before any agreement, handover, or payment is arranged." 
+                  : "This creates an enquiry only. Insurance, damage responsibility, and handover details must be confirmed directly before a trip."
                 }
               </p>
             </div>

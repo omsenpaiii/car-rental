@@ -16,6 +16,11 @@ export type TuroCar = {
   transmission: "Automatic" | "Manual";
   fuelType: "Electric" | "Petrol" | "Hybrid";
   seats: number;
+  bodyType?: string;
+  colour?: string;
+  odometer?: number;
+  hasLeatherSeats?: boolean;
+  hasFourByFour?: boolean;
   description: string;
   features: string[];
   rentToOwnAvailable?: boolean;

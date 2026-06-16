@@ -16,6 +16,11 @@ const initialNewLendCar = {
   make: "",
   model: "",
   year: "2023",
+  bodyType: "Sedan",
+  colour: "",
+  odometer: "45000",
+  hasLeatherSeats: false,
+  hasFourByFour: false,
   price: "80",
   location: "Melbourne, VIC",
   enableRent: true,
@@ -192,6 +197,11 @@ function Theme4HomePageContent() {
           make: newLendCar.make,
           model: newLendCar.model,
           year: Number(newLendCar.year),
+          bodyType: newLendCar.bodyType,
+          colour: newLendCar.colour,
+          odometer: newLendCar.odometer ? Number(newLendCar.odometer) : null,
+          hasLeatherSeats: newLendCar.hasLeatherSeats,
+          hasFourByFour: newLendCar.hasFourByFour,
           location: newLendCar.location,
           pricePerDay: newLendCar.enableRent ? Number(newLendCar.price) : null,
           enableRent: newLendCar.enableRent,
@@ -579,7 +589,7 @@ function Theme4HomePageContent() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                   {[
                     { icon: <Compass className="size-8" />, title: "Endless Choice", desc: "Choose from electric sedans, muscular sports convertibles, clean family SUVs, or rugged 4x4s." },
-                    { icon: <ShieldCheck className="size-8" />, title: "Total Safety", desc: "Rent confidently knowing every trip includes comprehensive third-party insurance and 24/7 roadside assist." },
+                    { icon: <ShieldCheck className="size-8" />, title: "Verified Marketplace", desc: "Every enquiry is routed through account checks, owner review, and clear handover expectations before anyone exchanges keys." },
                     { icon: <DollarSign className="size-8" />, title: "Locally Owned", desc: "Skip rental corporation counters. Support local Melbourne car owners and get a more customized experience." }
                   ].map((prop, idx) => (
                     <motion.div
@@ -1133,25 +1143,25 @@ function Theme4HomePageContent() {
               </div>
             </section>
 
-            {/* Insurance details */}
+            {/* Trust details */}
             <section className="bg-turo-purple text-white mt-24 py-20">
               <div className="max-w-4xl mx-auto px-4 text-center">
                 <ShieldCheck className="size-16 text-white mb-6 mx-auto" />
                 <h2 className="text-3xl sm:text-4xl font-black mb-6">
-                  You are backed by comprehensive host protection
+                  A marketplace you can trust
                 </h2>
                 <p className="text-lg text-white/90 leading-relaxed max-w-2xl mx-auto mb-10">
-                  Every P2P listing at Phillips Car Rental is backed by $20 Million in comprehensive damage liability coverage, roadside assistance, and renter screening.
+                  Phillips Car Rental helps Melbourne hosts, renters, sellers, and buyers connect through reviewed listings, clear records, and direct admin support. We do not provide vehicle insurance, warranty, damage cover, or liability protection.
                 </p>
                 <div className="flex flex-wrap justify-center gap-6 text-sm font-bold uppercase tracking-wider">
                   <span className="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
-                    $20M Liability Cover
+                    Reviewed Listings
                   </span>
                   <span className="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
-                    24/7 Roadside Assist
+                    Account-Based Enquiries
                   </span>
                   <span className="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
-                    Prequalified Guests
+                    Admin Follow-Up
                   </span>
                 </div>
               </div>
@@ -1304,6 +1314,66 @@ function Theme4HomePageContent() {
                           className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
                         />
                       </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                          Body Style
+                        </label>
+                        <select
+                          value={newLendCar.bodyType}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, bodyType: e.target.value })}
+                          className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                        >
+                          {["SUV", "Sedan", "Hatchback", "Ute", "Van", "Wagon", "Coupe", "Convertible", "Other"].map((style) => (
+                            <option key={style} value={style}>{style}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                          Colour
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. White, Black, Silver"
+                          value={newLendCar.colour}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, colour: e.target.value })}
+                          className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                          Odometer (km)
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={newLendCar.odometer}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, odometer: e.target.value })}
+                          className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                        />
+                      </div>
+                      <label className="flex items-center gap-3 cursor-pointer p-3 bg-gray-50 rounded-2xl border border-gray-200/60 hover:border-turo-purple/20 transition-all sm:mt-6">
+                        <input
+                          type="checkbox"
+                          checked={newLendCar.hasLeatherSeats}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, hasLeatherSeats: e.target.checked })}
+                          className="accent-turo-purple size-4 shrink-0"
+                        />
+                        <span className="text-xs font-bold text-gray-800">Leather seats</span>
+                      </label>
+                      <label className="flex items-center gap-3 cursor-pointer p-3 bg-gray-50 rounded-2xl border border-gray-200/60 hover:border-turo-purple/20 transition-all sm:mt-6">
+                        <input
+                          type="checkbox"
+                          checked={newLendCar.hasFourByFour}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, hasFourByFour: e.target.checked })}
+                          className="accent-turo-purple size-4 shrink-0"
+                        />
+                        <span className="text-xs font-bold text-gray-800">4x4</span>
+                      </label>
                     </div>
                   </div>
                 )}

@@ -120,15 +120,15 @@ export default function Theme4TermsPage() {
 
                 <div>
                   <h2 className="text-xl font-black text-gray-900 border-b border-gray-100 pb-3">
-                    3. Financial Responsibility & Protection Plans
+                    3. Financial Responsibility & Insurance
                   </h2>
                   <p className="text-sm text-gray-600 leading-relaxed mt-4 font-medium">
-                    The guest is financially responsible for any physical damage, towing, roadside calls, or vehicle theft during the active booking period:
+                    The guest, host, buyer, and seller are responsible for confirming their own suitable insurance and financial arrangements before handover. Phillips Car Rental does not provide vehicle insurance, damage cover, roadside cover, warranty, or liability protection:
                   </p>
                   <ul className="list-disc list-inside text-xs text-gray-500 space-y-2 mt-3 pl-2 leading-relaxed">
-                    <li><strong>Standard Protection:</strong> Limits guest out-of-pocket exposure to $500 for collision damage.</li>
-                    <li><strong>Minimum Protection:</strong> Limits guest out-of-pocket exposure to $3,000.</li>
-                    <li><strong>Personal Auto Insurance:</strong> The guest&apos;s personal policy is treated as primary in states where permitted.</li>
+                    <li><strong>No platform insurance:</strong> Phillips Car Rental does not limit out-of-pocket exposure for damage, theft, towing, roadside calls, or claims.</li>
+                    <li><strong>Private cover required:</strong> Each party should confirm their own private or commercial policy applies before any trip, sale inspection, or rent-to-own handover.</li>
+                    <li><strong>Written agreement recommended:</strong> Hosts, renters, buyers, and sellers should document condition, identity, payment, and responsibility terms before exchanging keys.</li>
                   </ul>
                 </div>
               </motion.div>
@@ -163,7 +163,7 @@ export default function Theme4TermsPage() {
                     2. Platform Commissions & Earnings Deductions
                   </h2>
                   <p className="text-sm text-gray-600 leading-relaxed mt-4 font-medium">
-                    In exchange for matchmaking, billing, insurance administration, and dispute protection:
+                    In exchange for marketplace listing, enquiry routing, admin review, and operational support:
                   </p>
                   <ul className="list-disc list-inside text-xs text-gray-500 space-y-2 mt-3 pl-2 leading-relaxed">
                     <li><strong>Standard Rental Commission:</strong> The platform keeps a **10% commission** from the host&apos;s daily earnings.</li>
@@ -215,7 +215,7 @@ export default function Theme4TermsPage() {
                     Unlike short-term car rentals, RTO contracts delegate responsibility directly to the buyer:
                   </p>
                   <ul className="list-disc list-inside text-xs text-gray-500 space-y-2 mt-3 pl-2 leading-relaxed">
-                    <li><strong>Mandatory Buyer Insurance:</strong> The buyer must maintain a comprehensive and collision auto policy. Both the host (lienholder) and Phillips Car Rental must be named as additional insureds/loss payees.</li>
+                    <li><strong>Buyer insurance responsibility:</strong> The buyer must confirm their own comprehensive, collision, finance, or commercial policy requirements directly with the owner, lender, or insurer. Phillips Car Rental does not act as an insurer or loss payee.</li>
                     <li><strong>Routine Maintenance:</strong> The buyer must cover all routine upkeep (oil changes, tires, brake pads) to maintain vehicle value.</li>
                     <li><strong>Platform Escrow for Title:</strong> The vehicle title is registered under escrow terms during the RTO contract, ensuring clean transfer upon final contract completion.</li>
                   </ul>

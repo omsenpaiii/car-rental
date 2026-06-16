@@ -15,6 +15,17 @@ export type ListingStatus = (typeof LISTING_STATUSES)[number];
 export const VEHICLE_CATEGORIES = ["Electric", "Sport", "SUV", "Luxury", "Classic"] as const;
 export const TRANSMISSIONS = ["Automatic", "Manual"] as const;
 export const FUEL_TYPES = ["Electric", "Petrol", "Hybrid"] as const;
+export const BODY_TYPES = [
+  "SUV",
+  "Sedan",
+  "Hatchback",
+  "Ute",
+  "Van",
+  "Wagon",
+  "Coupe",
+  "Convertible",
+  "Other",
+] as const;
 
 export const vehicleListingInputSchema = z
   .object({
@@ -26,6 +37,11 @@ export const vehicleListingInputSchema = z
     transmission: z.enum(TRANSMISSIONS).default("Automatic"),
     fuelType: z.enum(FUEL_TYPES).optional(),
     seats: z.coerce.number().int().min(2).max(12).default(5),
+    bodyType: z.enum(BODY_TYPES).default("Sedan"),
+    colour: z.string().trim().max(40).optional(),
+    odometer: z.coerce.number().int().min(0).max(1000000).nullable().optional(),
+    hasLeatherSeats: z.coerce.boolean().default(false),
+    hasFourByFour: z.coerce.boolean().default(false),
     description: z.string().trim().max(1200).optional(),
     imageUrl: z.string().trim().url("Image must be a valid URL.").optional().or(z.literal("")),
     pricePerDay: z.coerce.number().int().min(30).max(5000).nullable().optional(),
@@ -105,6 +121,11 @@ export type VehicleListingRow = {
   transmission: TuroCar["transmission"];
   fuel_type: TuroCar["fuelType"];
   seats: number;
+  body_type?: string | null;
+  colour?: string | null;
+  odometer?: number | null;
+  has_leather_seats?: boolean | null;
+  has_4x4?: boolean | null;
   description: string | null;
   features: string[] | null;
   image_url: string | null;
@@ -231,7 +252,21 @@ export function toVehicleListingInsert(input: VehicleListingInput, ownerId: stri
     transmission: input.transmission,
     fuel_type: fuelType,
     seats: input.seats,
+    body_type: input.bodyType,
+    colour: input.colour?.trim() || null,
+    odometer: input.odometer ?? null,
+    has_leather_seats: input.hasLeatherSeats,
+    has_4x4: input.hasFourByFour,
     description: input.description?.trim() || null,
+    features: [
+      input.bodyType,
+      input.colour?.trim() ? `${input.colour.trim()} exterior` : null,
+      input.odometer != null ? `${input.odometer.toLocaleString()} km odometer` : null,
+      input.hasLeatherSeats ? "Leather seats" : null,
+      input.hasFourByFour ? "4x4" : null,
+      "Bluetooth",
+      "GPS",
+    ].filter(Boolean),
     image_url: input.imageUrl?.trim() || inferImage(input.make),
     owner_display_name: input.contactName.trim(),
     owner_email: input.contactEmail.trim().toLowerCase(),
@@ -242,6 +277,13 @@ export function toVehicleListingInsert(input: VehicleListingInput, ownerId: stri
 export function mapVehicleListingRowToCar(row: VehicleListingRow): TuroCar {
   const name = `${row.make} ${row.model} ${row.year}`;
   const rentToOwnPrice = row.rent_to_own_price ?? undefined;
+  const generatedFeatures = [
+    row.body_type,
+    row.colour ? `${row.colour} exterior` : null,
+    row.odometer != null ? `${row.odometer.toLocaleString()} km odometer` : null,
+    row.has_leather_seats ? "Leather seats" : null,
+    row.has_4x4 ? "4x4" : null,
+  ].filter(Boolean) as string[];
 
   return {
     id: row.id,
@@ -261,10 +303,17 @@ export function mapVehicleListingRowToCar(row: VehicleListingRow): TuroCar {
     transmission: row.transmission,
     fuelType: row.fuel_type,
     seats: row.seats,
+    bodyType: row.body_type ?? undefined,
+    colour: row.colour ?? undefined,
+    odometer: row.odometer ?? undefined,
+    hasLeatherSeats: Boolean(row.has_leather_seats),
+    hasFourByFour: Boolean(row.has_4x4),
     description:
       row.description ||
       "Listed on Phillips Car Rental in Melbourne. This owner-hosted vehicle is ready for local rentals, sales enquiries, and weekend drives across Victoria.",
-    features: row.features?.length ? row.features : ["Bluetooth", "USB Charger", "GPS"],
+    features: row.features?.length
+      ? Array.from(new Set([...generatedFeatures, ...row.features]))
+      : [...generatedFeatures, "Bluetooth", "USB Charger", "GPS"],
     rentToOwnAvailable: row.enable_rent_to_own,
     rentToOwnPrice,
     rentToOwnMonths: row.rent_to_own_months ?? undefined,

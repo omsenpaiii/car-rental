@@ -190,6 +190,11 @@ create table if not exists public.vehicle_listings (
   transmission text not null default 'Automatic' check (transmission in ('Automatic', 'Manual')),
   fuel_type text not null default 'Petrol' check (fuel_type in ('Electric', 'Petrol', 'Hybrid')),
   seats integer not null default 5 check (seats between 2 and 12),
+  body_type text not null default 'Sedan' check (body_type in ('SUV', 'Sedan', 'Hatchback', 'Ute', 'Van', 'Wagon', 'Coupe', 'Convertible', 'Other')),
+  colour text,
+  odometer integer check (odometer is null or odometer between 0 and 1000000),
+  has_leather_seats boolean not null default false,
+  has_4x4 boolean not null default false,
   description text,
   features text[] not null default array['Bluetooth', 'USB Charger', 'GPS'],
   image_url text,
@@ -213,6 +218,12 @@ create table if not exists public.vehicle_listings (
     or sale_price is not null
   )
 );
+
+alter table public.vehicle_listings add column if not exists body_type text not null default 'Sedan';
+alter table public.vehicle_listings add column if not exists colour text;
+alter table public.vehicle_listings add column if not exists odometer integer;
+alter table public.vehicle_listings add column if not exists has_leather_seats boolean not null default false;
+alter table public.vehicle_listings add column if not exists has_4x4 boolean not null default false;
 
 create table if not exists public.listing_photos (
   id uuid primary key default gen_random_uuid(),
@@ -407,6 +418,11 @@ try {
         transmission,
         fuel_type,
         seats,
+        body_type,
+        colour,
+        odometer,
+        has_leather_seats,
+        has_4x4,
         description,
         image_url,
         owner_display_name,
@@ -414,7 +430,7 @@ try {
         owner_phone
       ) values (
         $1, null, 'phillips', $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,
-        $13, 'approved', $14, $15, $16, $17, $18, $19, $20, $21
+        $13, 'approved', $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26
       )
       on conflict (id) do update set
         source = 'phillips',
@@ -426,6 +442,11 @@ try {
         rent_to_own_months = excluded.rent_to_own_months,
         enable_direct_sale = excluded.enable_direct_sale,
         sale_price = excluded.sale_price,
+        body_type = excluded.body_type,
+        colour = excluded.colour,
+        odometer = excluded.odometer,
+        has_leather_seats = excluded.has_leather_seats,
+        has_4x4 = excluded.has_4x4,
         description = excluded.description,
         image_url = excluded.image_url,
         updated_at = timezone('utc', now())`,
@@ -446,6 +467,11 @@ try {
         car.transmission,
         car.fuel_type,
         car.seats,
+        car.category === "SUV" ? "SUV" : car.category === "Sport" ? "Coupe" : "Sedan",
+        null,
+        null,
+        car.category === "Luxury",
+        car.category === "SUV",
         car.description,
         car.image_url,
         car.owner_display_name,
@@ -476,6 +502,11 @@ try {
       transmission,
       fuel_type,
       seats,
+      body_type,
+      colour,
+      odometer,
+      has_leather_seats,
+      has_4x4,
       description,
       image_url,
       owner_display_name,
@@ -508,6 +539,15 @@ try {
       'Automatic',
       case when lower(pcl.make) like '%tesla%' then 'Electric' else 'Petrol' end,
       5,
+      case
+        when lower(pcl.model) like '%hatch%' then 'Hatchback'
+        when lower(pcl.model) like '%suv%' then 'SUV'
+        else 'Sedan'
+      end,
+      null,
+      null,
+      false,
+      false,
       'Migrated owner listing awaiting Phillips Car Rental admin review.',
       null,
       'Legacy Melbourne host',
