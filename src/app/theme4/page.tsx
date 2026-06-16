@@ -253,16 +253,6 @@ function Theme4HomePageContent() {
           Rent to Own
         </button>
         <button
-          onClick={() => handleTabChange("sell")}
-          className={`px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
-            activeTab === "sell"
-              ? "bg-turo-purple text-white shadow-md scale-105"
-              : "text-white/80 hover:text-white hover:bg-white/10"
-          }`}
-        >
-          Sell your Car
-        </button>
-        <button
           onClick={() => handleTabChange("lent")}
           className={`px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
             activeTab === "lent"
@@ -271,6 +261,16 @@ function Theme4HomePageContent() {
           }`}
         >
           Lend your Car
+        </button>
+        <button
+          onClick={() => handleTabChange("sell")}
+          className={`px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
+            activeTab === "sell"
+              ? "bg-turo-purple text-white shadow-md scale-105"
+              : "text-white/80 hover:text-white hover:bg-white/10"
+          }`}
+        >
+          Sell your Car
         </button>
       </div>
     </div>

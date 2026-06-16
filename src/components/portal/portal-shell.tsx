@@ -95,20 +95,20 @@ export function PortalShell({
           {/* Right Nav Options */}
           <div className="flex items-center gap-4 sm:gap-6 relative">
             <Link
-              href="/?tab=sell"
-              className={`text-sm font-bold px-3 py-2 rounded-full transition-colors hidden sm:block ${
-                isLightHeader ? "text-gray-800 hover:bg-gray-55" : "text-white hover:bg-white/10"
-              }`}
-            >
-              Sell your car
-            </Link>
-            <Link
               href="/?tab=lent"
               className={`text-sm font-bold px-3 py-2 rounded-full transition-colors hidden sm:block ${
                 isLightHeader ? "text-gray-800 hover:bg-gray-55" : "text-white hover:bg-white/10"
               }`}
             >
               Lend your car
+            </Link>
+            <Link
+              href="/?tab=sell"
+              className={`text-sm font-bold px-3 py-2 rounded-full transition-colors hidden sm:block ${
+                isLightHeader ? "text-gray-800 hover:bg-gray-55" : "text-white hover:bg-white/10"
+              }`}
+            >
+              Sell your car
             </Link>
 
             {/* Notifications Dropdown Button */}
