@@ -765,16 +765,36 @@ export default function Theme4CarDetailsPage() {
                   </div>
                 </>
               ) : (
-                <div className="rounded-2xl border border-purple-100 bg-purple-50/50 p-4 text-xs font-medium leading-relaxed text-purple-900">
-                  <div className="flex items-center gap-2 font-black text-turo-purple">
-                    <MessageSquare className="size-4" />
-                    Sale enquiry
+                <div className="space-y-4">
+                  {/* Cost breakdown for Direct Sale */}
+                  <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-2xl text-[11px] text-emerald-950 leading-relaxed font-medium">
+                    <div className="font-bold flex gap-1 items-center mb-1 text-emerald-800">
+                      <Shield className="size-4 shrink-0" />
+                      Direct Sale Purchase & Escrow
+                    </div>
+                    <p>
+                      Phillip Cars secures funds in digital escrow. Once the signed Bill of Sale is processed, our admin team facilitates title transfer from host to buyer.
+                    </p>
                   </div>
-                  <p className="mt-2">
-                    Submit your buying interest and Phillips Car Rental will connect you with the listing owner after identity and availability checks.
-                  </p>
-                  <div className="mt-3 text-2xl font-black text-gray-950">
-                    ${(car.salePrice ?? 0).toLocaleString()} AUD
+
+                  <div className="border-t border-gray-100 pt-4 space-y-2.5 text-xs text-gray-600 font-medium">
+                    <div className="flex justify-between">
+                      <span>Vehicle Purchase Price</span>
+                      <span className="text-gray-800 font-bold">${(car.salePrice ?? car.sale_price ?? 0).toLocaleString()} AUD</span>
+                    </div>
+                    <div className="flex justify-between text-gray-400">
+                      <span>Platform Commission (5% - paid by seller)</span>
+                      <span>-${Math.round((car.salePrice ?? car.sale_price ?? 0) * 0.05).toLocaleString()} AUD</span>
+                    </div>
+                    <div className="flex justify-between text-gray-400 border-t border-dashed border-gray-150 pt-2 text-[10px]">
+                      <span>Seller Net Payout</span>
+                      <span>${Math.round((car.salePrice ?? car.sale_price ?? 0) * 0.95).toLocaleString()} AUD</span>
+                    </div>
+                    
+                    <div className="flex justify-between border-t border-gray-100 pt-3 text-sm font-black text-gray-900">
+                      <span>Total Purchase Price Due</span>
+                      <span className="text-emerald-600">${(car.salePrice ?? car.sale_price ?? 0).toLocaleString()} AUD</span>
+                    </div>
                   </div>
                 </div>
               )}
@@ -817,12 +837,12 @@ export default function Theme4CarDetailsPage() {
                 ) : bookingMode === "rto" ? (
                   <>
                     <FileText className="size-4" />
-                    Send Rent-to-Own Enquiry
+                    Review & Sign Lease Contract
                   </>
                 ) : bookingMode === "sale" ? (
                   <>
-                    <MessageSquare className="size-4" />
-                    Send Sale Enquiry
+                    <PenTool className="size-4" />
+                    Review & Sign Bill of Sale
                   </>
                 ) : (
                   "Send Rental Enquiry"
