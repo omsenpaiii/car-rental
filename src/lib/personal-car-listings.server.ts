@@ -1,7 +1,5 @@
 import "server-only";
 
-import { Pool } from "pg";
-
 import {
   mapPersonalListingRowToCar,
   sanitizePersonalCarListingInput,
@@ -9,40 +7,13 @@ import {
   type PersonalCarListingInput,
   type PersonalCarListingRow,
 } from "@/lib/personal-car-listings";
-
-declare global {
-  var __phillipsPersonalCarsPool: Pool | undefined;
-}
-
-function getDatabaseUrl() {
-  const databaseUrl = process.env.SUPABASE_DB_URL;
-
-  if (!databaseUrl) {
-    throw new Error("SUPABASE_DB_URL is not configured.");
-  }
-
-  const parsed = new URL(databaseUrl);
-  parsed.searchParams.delete("sslmode");
-
-  return parsed.toString();
-}
-
-function getPool() {
-  if (!globalThis.__phillipsPersonalCarsPool) {
-    globalThis.__phillipsPersonalCarsPool = new Pool({
-      connectionString: getDatabaseUrl(),
-      ssl: { rejectUnauthorized: false },
-      max: 5,
-    });
-  }
-
-  return globalThis.__phillipsPersonalCarsPool;
-}
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function listPersonalCarListingRows() {
-  const pool = getPool();
-  const result = await pool.query<PersonalCarListingRow>(
-    `select
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("personal_car_listings")
+    .select(`
       id,
       make,
       model,
@@ -56,11 +27,14 @@ export async function listPersonalCarListingRows() {
       sale_price,
       status,
       created_at
-    from public.personal_car_listings
-    order by created_at desc`
-  );
+    `)
+    .order("created_at", { ascending: false });
 
-  return result.rows;
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? []) as PersonalCarListingRow[];
 }
 
 export async function listPersonalCarListings() {
@@ -71,22 +45,23 @@ export async function listPersonalCarListings() {
 export async function createPersonalCarListing(input: unknown) {
   const parsed = sanitizePersonalCarListingInput(input);
   const values = toPersonalCarInsert(parsed);
-  const pool = getPool();
+  const supabase = await createSupabaseServerClient();
 
-  const result = await pool.query<PersonalCarListingRow>(
-    `insert into public.personal_car_listings (
-      make,
-      model,
-      year,
-      location,
-      price_per_day,
-      enable_rent_to_own,
-      rent_to_own_price,
-      rent_to_own_months,
-      enable_direct_sale,
-      sale_price
-    ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-    returning
+  const { data, error } = await supabase
+    .from("personal_car_listings")
+    .insert({
+      make: values.make,
+      model: values.model,
+      year: values.year,
+      location: values.location,
+      price_per_day: values.price_per_day,
+      enable_rent_to_own: values.enable_rent_to_own,
+      rent_to_own_price: values.rent_to_own_price,
+      rent_to_own_months: values.rent_to_own_months,
+      enable_direct_sale: values.enable_direct_sale,
+      sale_price: values.sale_price,
+    })
+    .select(`
       id,
       make,
       model,
@@ -99,22 +74,15 @@ export async function createPersonalCarListing(input: unknown) {
       enable_direct_sale,
       sale_price,
       status,
-      created_at`,
-    [
-      values.make,
-      values.model,
-      values.year,
-      values.location,
-      values.price_per_day,
-      values.enable_rent_to_own,
-      values.rent_to_own_price,
-      values.rent_to_own_months,
-      values.enable_direct_sale,
-      values.sale_price,
-    ]
-  );
+      created_at
+    `)
+    .single();
 
-  return mapPersonalListingRowToCar(result.rows[0]);
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return mapPersonalListingRowToCar(data as PersonalCarListingRow);
 }
 
 export function buildPersonalListingPayload(input: PersonalCarListingInput) {

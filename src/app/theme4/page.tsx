@@ -960,6 +960,219 @@ function Theme4HomePageContent() {
               </div>
             </section>
           </motion.div>
+        ) : activeTab === "sell" ? (
+          <motion.div
+            key="sell-tab"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Sell Hero Section */}
+            <section className="relative h-screen min-h-[620px] md:min-h-[720px] lg:h-[100dvh] flex items-center justify-center bg-gray-900 overflow-hidden pt-24 pb-12">
+              <div className="absolute inset-0">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover opacity-50"
+                  src="/hero.mp4"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/75" />
+              </div>
+
+              <motion.div 
+                variants={heroContainerVariants}
+                initial="hidden"
+                animate="visible"
+                className="relative z-10 max-w-4xl mx-auto px-4 text-center w-full flex flex-col items-center"
+              >
+                <motion.div variants={heroItemVariants} className="w-full">
+                  {renderSwitcher()}
+                </motion.div>
+
+                <motion.span variants={heroItemVariants} className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md mb-6">
+                  Direct Sales Marketplace
+                </motion.span>
+                <motion.h1 variants={heroItemVariants} className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mb-6">
+                  Buy or sell your car with <span className="text-turo-light text-turo-purple underline decoration-turo-purple underline-offset-4">zero</span> dealer markup
+                </motion.h1>
+                <motion.p variants={heroItemVariants} className="text-lg sm:text-xl text-gray-200 font-medium max-w-2xl mx-auto mb-10">
+                  Browse verified private listings for direct purchase, or list your car for sale with a flat 5% seller commission.
+                </motion.p>
+
+                {/* Sell Search Widget */}
+                <motion.div variants={heroItemVariants} className="w-full max-w-3xl mx-auto">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      router.push(`/theme4/search?mode=sale&location=${encodeURIComponent(searchLocation)}`);
+                    }}
+                    className="bg-white rounded-3xl md:rounded-full shadow-2xl p-4 md:py-2 md:px-3 flex flex-col md:flex-row items-center gap-3 border border-gray-100"
+                  >
+                    {/* Location Input */}
+                    <div className="flex items-center gap-3 px-4 py-2 w-full md:w-1/2 border-b md:border-b-0 md:border-r border-gray-200 focus-within:bg-gray-50/80 hover:bg-gray-50/40 rounded-2xl md:rounded-l-full md:rounded-r-none transition-all duration-300">
+                      <MapPin className="text-turo-purple size-5 shrink-0" />
+                      <div className="text-left w-full">
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                          Where
+                        </label>
+                        <input
+                          type="text"
+                          value={searchLocation}
+                          onChange={(e) => setSearchLocation(e.target.value)}
+                          placeholder="City, airport, or hotel"
+                          className="w-full text-sm font-semibold text-gray-800 outline-none bg-transparent"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Price Range Input (Simple Indicator) */}
+                    <div className="flex items-center gap-3 px-4 py-2 w-full md:w-1/3 focus-within:bg-gray-50/80 hover:bg-gray-50/40 rounded-2xl transition-all duration-300">
+                      <DollarSign className="text-turo-purple size-5 shrink-0" />
+                      <div className="text-left w-full">
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                          Max Price
+                        </label>
+                        <span className="text-sm font-semibold text-gray-800">
+                          Any Price
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Search Button */}
+                    <button
+                      type="submit"
+                      className="w-full md:w-auto bg-turo-purple hover:bg-turo-hover text-white font-bold px-8 py-4 md:py-3.5 rounded-2xl md:rounded-full transition-colors flex items-center justify-center gap-2 shadow-lg shadow-turo-purple/20 cursor-pointer"
+                    >
+                      <Search className="size-4" />
+                      Search For Sale
+                    </button>
+                  </form>
+                </motion.div>
+              </motion.div>
+
+              {/* Scroll Down Indicator */}
+              <div 
+                onClick={() => {
+                  document.getElementById("sell-featured-section")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 cursor-pointer group"
+              >
+                <span className="text-[10px] font-black text-white/50 tracking-widest uppercase group-hover:text-white transition-colors duration-300">
+                  Scroll to explore
+                </span>
+                <motion.div
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                  className="p-1.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm group-hover:border-white/45 group-hover:bg-white/10 transition-colors duration-300"
+                >
+                  <ChevronDown className="size-4 text-white" />
+                </motion.div>
+              </div>
+            </section>
+
+            {/* Featured Cars for Sale Grid */}
+            <section id="sell-featured-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+              <div className="text-center mb-12">
+                <span className="text-xs font-bold text-turo-purple uppercase tracking-wider">
+                  Featured Vehicles
+                </span>
+                <h2 className="text-3xl font-black text-gray-900 mt-2">
+                  Premium Cars Available for Direct Purchase
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Private listings backed by independent mechanical checks and escrow payment protection.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {cars.filter(car => car.saleAvailable || car.salePrice).map((car, idx) => {
+                  const salePriceVal = car.salePrice ?? 0;
+                  return (
+                    <motion.div
+                      key={car.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: idx * 0.08 }}
+                      className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group"
+                    >
+                      <Link href={`/theme4/car/${car.id}?mode=sale`} className="relative block h-48 overflow-hidden bg-gray-100">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={car.image}
+                          alt={car.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-4 left-4 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-md">
+                          For Sale
+                        </div>
+                      </Link>
+                      <div className="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                          <div className="flex justify-between items-start gap-2 mb-2">
+                            <h3 className="font-black text-lg text-gray-900 leading-tight">
+                              {car.name}
+                            </h3>
+                            <span className="text-lg font-black text-turo-purple whitespace-nowrap">
+                              ${salePriceVal.toLocaleString()}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-4">
+                            {car.location}
+                          </p>
+                          <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed mb-6">
+                            {car.description}
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-between border-t border-gray-100 pt-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-black text-gray-800">
+                              {car.transmission}
+                            </span>
+                            <span className="text-gray-300">•</span>
+                            <span className="text-xs font-black text-gray-800">
+                              {car.fuelType}
+                            </span>
+                          </div>
+                          <Link
+                            href={`/theme4/car/${car.id}?mode=sale`}
+                            className="text-xs font-black text-turo-purple hover:underline"
+                          >
+                            Buy Car &rarr;
+                          </Link>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* Sell Commission Explainer Banner */}
+              <div className="bg-gradient-to-r from-turo-purple to-indigo-950 rounded-3xl p-8 sm:p-12 text-white mt-20 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-xl">
+                <div className="text-left space-y-3 max-w-2xl">
+                  <span className="text-xs font-black text-turo-light uppercase tracking-wider bg-white/10 px-3 py-1.5 rounded-full border border-white/20">
+                    Host Benefits
+                  </span>
+                  <h3 className="text-2xl sm:text-3xl font-black">
+                    Sell Your Car with Only 5% Platform Commission
+                  </h3>
+                  <p className="text-sm text-white/80 leading-relaxed">
+                    Avoid high dealership commissions and private listing fees. List your car on Melbourne&apos;s most active peer-to-peer marketplace. We secure funds in escrow, verify buyer identity, and assist with title sign-offs.
+                  </p>
+                </div>
+                <button
+                  onClick={() => openListingModal("sale")}
+                  className="bg-white hover:bg-gray-100 text-turo-purple font-black px-8 py-4 rounded-full shadow-lg transition-transform hover:scale-105 whitespace-nowrap cursor-pointer text-sm uppercase tracking-wider"
+                >
+                  List For Sale
+                </button>
+              </div>
+            </section>
+          </motion.div>
         ) : (
           <motion.div
             key="lent-tab"
@@ -1002,11 +1215,11 @@ function Theme4HomePageContent() {
 
                 <motion.div variants={heroItemVariants}>
                   <button
-                    onClick={() => openListingModal(activeTab === "sell" ? "sale" : "rent")}
+                    onClick={() => openListingModal("rent")}
                     className="bg-turo-purple hover:bg-turo-hover text-white font-black px-10 py-5 rounded-full transition-colors flex items-center justify-center gap-2 mx-auto shadow-xl shadow-turo-purple/35 cursor-pointer text-base uppercase tracking-wider"
                   >
                     <Plus className="size-5" />
-                    {activeTab === "sell" ? "Start sale listing" : "List your car now"}
+                    List your car now
                   </button>
                 </motion.div>
               </motion.div>
@@ -1143,25 +1356,25 @@ function Theme4HomePageContent() {
               </div>
             </section>
 
-            {/* Trust details */}
-            <section className="bg-turo-purple text-white mt-24 py-20">
+            {/* Insurance details */}
+            <section className="bg-gray-950 text-white mt-24 py-20 border-t border-gray-900">
               <div className="max-w-4xl mx-auto px-4 text-center">
-                <ShieldCheck className="size-16 text-white mb-6 mx-auto" />
+                <AlertCircle className="size-16 text-amber-500 mb-6 mx-auto animate-pulse" />
                 <h2 className="text-3xl sm:text-4xl font-black mb-6">
-                  A marketplace you can trust
+                  Important Insurance & Liability Notice
                 </h2>
-                <p className="text-lg text-white/90 leading-relaxed max-w-2xl mx-auto mb-10">
-                  Phillips Car Rental helps Melbourne hosts, renters, sellers, and buyers connect through reviewed listings, clear records, and direct admin support. We do not provide vehicle insurance, warranty, damage cover, or liability protection.
+                <p className="text-base text-gray-300 leading-relaxed max-w-2xl mx-auto mb-10">
+                  Phillip Cars is a listing and transaction platform. <strong className="text-white">We do not provide physical damage protection, collision coverage, liability insurance, or warranties.</strong> All hosts, sellers, renters, and buyers are required to carry, verify, and maintain their own comprehensive personal or commercial motor vehicle insurance.
                 </p>
                 <div className="flex flex-wrap justify-center gap-6 text-sm font-bold uppercase tracking-wider">
-                  <span className="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
-                    Reviewed Listings
+                  <span className="bg-white/5 px-4 py-2.5 rounded-lg border border-white/10 text-amber-400">
+                    No Platform Coverage
                   </span>
-                  <span className="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
-                    Account-Based Enquiries
+                  <span className="bg-white/5 px-4 py-2.5 rounded-lg border border-white/10 text-gray-300">
+                    Hosts Insure Own Cars
                   </span>
-                  <span className="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
-                    Admin Follow-Up
+                  <span className="bg-white/5 px-4 py-2.5 rounded-lg border border-white/10 text-gray-300">
+                    Renters Must Carry Cover
                   </span>
                 </div>
               </div>

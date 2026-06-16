@@ -112,11 +112,15 @@ export default function Theme4CarDetailsPage() {
   // Handle Checkout Modal
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
-  // Rent-to-Own States
+  // Rent-to-Own & Direct Sale States
   const searchParams = useSearchParams();
   const initMode = searchParams.get("mode") || "rent";
   const [bookingMode, setBookingMode] = useState<"rent" | "rto" | "sale">(
-    initMode === "rto" && car.rentToOwnAvailable ? "rto" : "rent"
+    initMode === "sale" && (car.saleAvailable || car.sale_price)
+      ? "sale"
+      : initMode === "rto" && car.rentToOwnAvailable
+        ? "rto"
+        : "rent"
   );
   const [rtoMonths, setRtoMonths] = useState<number>(car.rentToOwnMonths || 24);
   const [typedSignature, setTypedSignature] = useState("");
@@ -125,6 +129,8 @@ export default function Theme4CarDetailsPage() {
   const [signatureError, setSignatureError] = useState("");
   const [isRtoModalOpen, setIsRtoModalOpen] = useState(false);
   const [isRtoSuccess, setIsRtoSuccess] = useState(false);
+  const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
+  const [isSaleSuccess, setIsSaleSuccess] = useState(false);
 
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -208,11 +214,64 @@ export default function Theme4CarDetailsPage() {
     };
   }, [car, rtoMonths]);
 
+  const submitContractEnquiry = async (mode: "rto" | "sale") => {
+    setIsSubmittingEnquiry(true);
+    setSignatureError("");
+
+    try {
+      const response = await fetch("/api/portal/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          listingId: car.id,
+          mode: mode === "rto" ? "rent_to_own" : "sale",
+          pickupDate: new Date().toISOString().split('T')[0],
+          returnDate: new Date().toISOString().split('T')[0],
+          deliveryLocation: "Direct Escrow",
+          requesterName: profile?.full_name || profile?.email || "",
+          requesterPhone: requesterPhone || profile?.phone || "",
+          message: mode === "rto" 
+            ? `Signed Rent-to-Own contract. Term: ${rtoMonths} months. Digital signature: ${typedSignature}`
+            : `Signed Bill of Sale. Total purchase price: $${(car.salePrice ?? car.sale_price ?? 0).toLocaleString()} AUD. Digital signature: ${typedSignature}`,
+        }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Unable to submit contract.");
+      }
+
+      setSignatureTimestamp(new Date().toLocaleString());
+      if (mode === "rto") {
+        setIsRtoSuccess(true);
+        setIsRtoModalOpen(false);
+      } else {
+        setIsSaleSuccess(true);
+        setIsSaleModalOpen(false);
+      }
+    } catch (error) {
+      setSignatureError(error instanceof Error ? error.message : "Unable to submit contract.");
+    } finally {
+      setIsSubmittingEnquiry(false);
+    }
+  };
+
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!user) {
       setIsAuthModalOpen(true);
+      return;
+    }
+
+    if (bookingMode === "rto") {
+      setIsRtoModalOpen(true);
+      return;
+    }
+
+    if (bookingMode === "sale") {
+      setIsSaleModalOpen(true);
       return;
     }
 

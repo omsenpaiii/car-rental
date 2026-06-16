@@ -3,7 +3,6 @@ import "server-only";
 import type { User } from "@supabase/supabase-js";
 
 import { isConfiguredAdminEmail } from "@/lib/admin";
-import { getPortalPool } from "@/lib/portal-db.server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type PortalProfile = {
@@ -33,35 +32,37 @@ export async function ensureProfileForUser(user: User) {
   }
 
   const role = isConfiguredAdminEmail(email) ? "admin" : "user";
-  const pool = getPortalPool();
+  const supabase = await createSupabaseServerClient();
 
-  const result = await pool.query<PortalProfile>(
-    `insert into public.profiles (
-      id,
-      email,
-      full_name,
-      phone,
-      role
-    ) values ($1, $2, $3, $4, $5)
-    on conflict (id) do update set
-      email = excluded.email,
-      full_name = coalesce(public.profiles.full_name, excluded.full_name),
-      role = case
-        when excluded.role = 'admin' then 'admin'
-        else public.profiles.role
-      end,
-      updated_at = timezone('utc', now())
-    returning id, email, full_name, phone, role, created_at, updated_at`,
-    [
-      user.id,
-      email,
-      getDisplayName(user),
-      typeof user.user_metadata?.phone === "string" ? user.user_metadata.phone : null,
-      role,
-    ]
-  );
+  // Fetch existing profile to handle coalesce for full_name and conditionally update role
+  const { data: existingProfile } = await supabase
+    .from("profiles")
+    .select("full_name, role")
+    .eq("id", user.id)
+    .maybeSingle();
 
-  return result.rows[0];
+  const existing = existingProfile as { full_name: string | null; role: "user" | "admin" } | null;
+  const fullNameValue = existing?.full_name || getDisplayName(user);
+  const finalRole = existing?.role === "admin" || role === "admin" ? "admin" : "user";
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .upsert({
+      id: user.id,
+      email,
+      full_name: fullNameValue,
+      phone: typeof user.user_metadata?.phone === "string" ? user.user_metadata.phone : null,
+      role: finalRole,
+      updated_at: new Date().toISOString(),
+    })
+    .select("id, email, full_name, phone, role, created_at, updated_at")
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data as PortalProfile;
 }
 
 export async function getCurrentSessionProfile() {
