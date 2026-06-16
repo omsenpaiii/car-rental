@@ -8,6 +8,8 @@ import {
   Search, Calendar, Clock, MapPin, Compass, DollarSign, 
   ShieldCheck, HelpCircle, Star, Sparkles, Plus, AlertCircle, Info, ChevronDown 
 } from "lucide-react";
+import { AuthPanel } from "@/components/portal/auth-panel";
+import { useAuth } from "@/components/portal/auth-provider";
 import { makeCategories, turoCars, hostFaqs, renterFaqs, TuroCar } from "@/lib/theme4-data";
 
 const initialNewLendCar = {
@@ -16,9 +18,16 @@ const initialNewLendCar = {
   year: "2023",
   price: "80",
   location: "Melbourne, VIC",
+  enableRent: true,
   enableRentToOwn: false,
   rentToOwnPrice: "35000",
   rentToOwnMonths: "24",
+  enableDirectSale: false,
+  salePrice: "32000",
+  contactName: "",
+  contactEmail: "",
+  contactPhone: "",
+  imageUrl: "",
 };
 
 const heroContainerVariants = {
@@ -48,13 +57,14 @@ const heroItemVariants = {
 function Theme4HomePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user, profile, refresh } = useAuth();
   const tabParam = searchParams.get("tab");
   
   // Set tab based on URL parameter or default to "rent"
-  const activeTab: "rent" | "rto" | "lent" =
-    tabParam === "lent" ? "lent" : tabParam === "rto" ? "rto" : "rent";
+  const activeTab: "rent" | "rto" | "sell" | "lent" =
+    tabParam === "lent" ? "lent" : tabParam === "rto" ? "rto" : tabParam === "sell" ? "sell" : "rent";
   const [personalCars, setPersonalCars] = useState<TuroCar[]>([]);
-  const cars = useMemo(() => [...personalCars, ...turoCars], [personalCars]);
+  const cars = useMemo(() => (personalCars.length ? personalCars : turoCars), [personalCars]);
   const [openRenterFaq, setOpenRenterFaq] = useState<number | null>(null);
   const [openHostFaq, setOpenHostFaq] = useState<number | null>(null);
   const [isLoadingPersonalCars, setIsLoadingPersonalCars] = useState(true);
@@ -74,7 +84,7 @@ function Theme4HomePageContent() {
         setIsLoadingPersonalCars(true);
         setPersonalCarsError(null);
 
-        const response = await fetch("/api/theme4/personal-listings", {
+        const response = await fetch("/api/portal/listings", {
           cache: "no-store",
         });
         const payload = await response.json();
@@ -108,8 +118,8 @@ function Theme4HomePageContent() {
     };
   }, []);
 
-  const handleTabChange = (tab: "rent" | "rto" | "lent") => {
-    router.push(`/theme4?tab=${tab}`, { scroll: false });
+  const handleTabChange = (tab: "rent" | "rto" | "sell" | "lent") => {
+    router.push(`/?tab=${tab}`, { scroll: false });
   };
 
   // Rent Search State
@@ -126,14 +136,14 @@ function Theme4HomePageContent() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     router.push(
-      `/theme4/search?location=${encodeURIComponent(searchLocation)}&pickup=${pickupDate}&return=${returnDate}`
+      `/search?location=${encodeURIComponent(searchLocation)}&pickup=${pickupDate}&return=${returnDate}`
     );
   };
 
   const handleRtoSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     router.push(
-      `/theme4/search?mode=rto&location=${encodeURIComponent(searchLocation)}&pickup=${pickupDate}&return=${returnDate}`
+      `/search?mode=rto&location=${encodeURIComponent(searchLocation)}&pickup=${pickupDate}&return=${returnDate}`
     );
   };
 
@@ -149,12 +159,31 @@ function Theme4HomePageContent() {
     setNewLendCar(initialNewLendCar);
   };
 
+  const openListingModal = (intent: "rent" | "sale") => {
+    setListingError(null);
+    setIsLendModalOpen(true);
+    setLendStep(user ? 1 : 0);
+    setNewLendCar({
+      ...initialNewLendCar,
+      enableRent: intent === "rent",
+      enableDirectSale: intent === "sale",
+      contactName: profile?.full_name || "",
+      contactEmail: profile?.email || "",
+      contactPhone: profile?.phone || "",
+    });
+  };
+
   const submitPersonalCarListing = async () => {
+    if (!user) {
+      setLendStep(0);
+      return;
+    }
+
     setIsSubmittingListing(true);
     setListingError(null);
 
     try {
-      const response = await fetch("/api/theme4/personal-listings", {
+      const response = await fetch("/api/portal/listings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -164,7 +193,8 @@ function Theme4HomePageContent() {
           model: newLendCar.model,
           year: Number(newLendCar.year),
           location: newLendCar.location,
-          pricePerDay: Number(newLendCar.price),
+          pricePerDay: newLendCar.enableRent ? Number(newLendCar.price) : null,
+          enableRent: newLendCar.enableRent,
           enableRentToOwn: newLendCar.enableRentToOwn,
           rentToOwnPrice: newLendCar.enableRentToOwn
             ? Number(newLendCar.rentToOwnPrice)
@@ -172,6 +202,12 @@ function Theme4HomePageContent() {
           rentToOwnMonths: newLendCar.enableRentToOwn
             ? Number(newLendCar.rentToOwnMonths)
             : null,
+          enableDirectSale: newLendCar.enableDirectSale,
+          salePrice: newLendCar.enableDirectSale ? Number(newLendCar.salePrice) : null,
+          contactName: newLendCar.contactName,
+          contactEmail: newLendCar.contactEmail,
+          contactPhone: newLendCar.contactPhone,
+          imageUrl: newLendCar.imageUrl,
         }),
       });
 
@@ -181,7 +217,6 @@ function Theme4HomePageContent() {
         throw new Error(payload.error ?? "Unable to create your listing right now.");
       }
 
-      setPersonalCars((currentCars) => [payload.listing as TuroCar, ...currentCars]);
       setLendStep(3);
     } catch (error) {
       setListingError(
@@ -199,7 +234,7 @@ function Theme4HomePageContent() {
       <div className="inline-flex bg-white/10 backdrop-blur-md p-1 rounded-full border border-white/20 max-w-full overflow-x-auto scrollbar-hide shadow-lg">
         <button
           onClick={() => handleTabChange("rent")}
-          className={`px-4 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
+          className={`px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
             activeTab === "rent"
               ? "bg-turo-purple text-white shadow-md scale-105"
               : "text-white/80 hover:text-white hover:bg-white/10"
@@ -209,7 +244,7 @@ function Theme4HomePageContent() {
         </button>
         <button
           onClick={() => handleTabChange("rto")}
-          className={`px-4 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
+          className={`px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
             activeTab === "rto"
               ? "bg-turo-purple text-white shadow-md scale-105"
               : "text-white/80 hover:text-white hover:bg-white/10"
@@ -218,8 +253,18 @@ function Theme4HomePageContent() {
           Rent to Own
         </button>
         <button
+          onClick={() => handleTabChange("sell")}
+          className={`px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
+            activeTab === "sell"
+              ? "bg-turo-purple text-white shadow-md scale-105"
+              : "text-white/80 hover:text-white hover:bg-white/10"
+          }`}
+        >
+          Sell your Car
+        </button>
+        <button
           onClick={() => handleTabChange("lent")}
-          className={`px-4 sm:px-8 py-2.5 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
+          className={`px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
             activeTab === "lent"
               ? "bg-turo-purple text-white shadow-md scale-105"
               : "text-white/80 hover:text-white hover:bg-white/10"
@@ -399,7 +444,7 @@ function Theme4HomePageContent() {
                       transition={{ type: "spring", stiffness: 100, damping: 15 }}
                     >
                       <Link
-                        href={`/theme4/search?make=${make.name}`}
+                        href={`/search?make=${make.name}`}
                         className="flex flex-col items-center gap-3 shrink-0 p-4 border border-gray-100 rounded-2xl bg-white shadow-sm hover:shadow-md hover:border-turo-purple/30 transition-all duration-300 group cursor-pointer"
                       >
                         <div className="size-20 rounded-full overflow-hidden bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:scale-105 transition-transform">
@@ -438,7 +483,7 @@ function Theme4HomePageContent() {
                     </p>
                   </div>
                   <Link
-                    href="/theme4/search"
+                    href="/search"
                     className="text-sm font-bold text-turo-purple hover:underline"
                   >
                     View all cars →
@@ -455,7 +500,7 @@ function Theme4HomePageContent() {
                       transition={{ duration: 0.5, delay: index * 0.08 }}
                     >
                       <Link
-                        href={`/theme4/car/${car.id}`}
+                        href={`/car/${car.id}`}
                         className="flex flex-col h-full overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
                       >
                         {/* Car Image container */}
@@ -525,7 +570,7 @@ function Theme4HomePageContent() {
             <section className="bg-turo-gray mt-24 py-20 border-y border-gray-200">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <span className="text-xs font-black text-turo-purple uppercase tracking-widest bg-turo-light px-3 py-1.5 rounded-full">
-                  Why Phillip Cars
+                  Why Phillips Car Rental
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mt-6 mb-16">
                   P2P car sharing, redesigned for people
@@ -832,7 +877,7 @@ function Theme4HomePageContent() {
                   </p>
                 </div>
                 <Link
-                  href="/theme4/search?mode=rto"
+                  href="/search?mode=rto"
                   className="text-sm font-bold text-turo-purple hover:underline"
                 >
                   View RTO Catalog →
@@ -851,7 +896,7 @@ function Theme4HomePageContent() {
                       transition={{ duration: 0.5, delay: index * 0.08 }}
                     >
                       <Link
-                        href={`/theme4/car/${car.id}?mode=rto`}
+                        href={`/car/${car.id}?mode=rto`}
                         className="flex flex-col h-full overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
                       >
                         {/* Image */}
@@ -936,7 +981,7 @@ function Theme4HomePageContent() {
                 </motion.div>
 
                 <motion.span variants={heroItemVariants} className="text-xs font-black text-white uppercase tracking-widest bg-turo-purple px-4 py-2 rounded-full shadow-md mb-6">
-                  Phillip Cars Host Network
+                  Phillips Car Rental Host Network
                 </motion.span>
                 <motion.h1 variants={heroItemVariants} className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none mt-6 mb-6">
                   Let your car work for you
@@ -947,14 +992,11 @@ function Theme4HomePageContent() {
 
                 <motion.div variants={heroItemVariants}>
                   <button
-                    onClick={() => {
-                      setIsLendModalOpen(true);
-                      setLendStep(1);
-                    }}
+                    onClick={() => openListingModal(activeTab === "sell" ? "sale" : "rent")}
                     className="bg-turo-purple hover:bg-turo-hover text-white font-black px-10 py-5 rounded-full transition-colors flex items-center justify-center gap-2 mx-auto shadow-xl shadow-turo-purple/35 cursor-pointer text-base uppercase tracking-wider"
                   >
                     <Plus className="size-5" />
-                    List your car now
+                    {activeTab === "sell" ? "Start sale listing" : "List your car now"}
                   </button>
                 </motion.div>
               </motion.div>
@@ -1099,7 +1141,7 @@ function Theme4HomePageContent() {
                   You are backed by comprehensive host protection
                 </h2>
                 <p className="text-lg text-white/90 leading-relaxed max-w-2xl mx-auto mb-10">
-                  Every P2P listing at Phillip Cars is backed by $20 Million in comprehensive damage liability coverage, roadside assistance, and renter screening.
+                  Every P2P listing at Phillips Car Rental is backed by $20 Million in comprehensive damage liability coverage, roadside assistance, and renter screening.
                 </p>
                 <div className="flex flex-wrap justify-center gap-6 text-sm font-bold uppercase tracking-wider">
                   <span className="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
@@ -1171,10 +1213,10 @@ function Theme4HomePageContent() {
               <div className="px-6 py-5 border-b border-gray-200 flex justify-between items-center bg-gray-50">
                 <div>
                   <h3 className="font-black text-lg text-gray-900">
-                    List Your Personal Car
+                    {newLendCar.enableDirectSale && !newLendCar.enableRent ? "Sell Your Personal Car" : "List Your Personal Car"}
                   </h3>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    Step {lendStep} of 3
+                    Step {lendStep === 0 ? 1 : lendStep} of 3
                   </p>
                 </div>
                 <button
@@ -1187,6 +1229,26 @@ function Theme4HomePageContent() {
 
               {/* Modal Body */}
               <div className="p-6 flex-1">
+                {lendStep === 0 && (
+                  <div className="space-y-4">
+                    <div className="rounded-2xl border border-turo-purple/15 bg-turo-light/40 p-4">
+                      <h4 className="text-sm font-black text-gray-950">
+                        Log in first, then keep listing here
+                      </h4>
+                      <p className="mt-1 text-xs font-medium leading-relaxed text-gray-500">
+                        Phillips Car Rental needs a real account before you can lend or sell a car, so your listing, contact details, and enquiries stay attached to you.
+                      </p>
+                    </div>
+                    <AuthPanel
+                      compact
+                      onAuthenticated={async () => {
+                        await refresh();
+                        setLendStep(1);
+                      }}
+                    />
+                  </div>
+                )}
+
                 {lendStep === 1 && (
                   <div className="space-y-4">
                     <h4 className="font-bold text-gray-900 text-sm mb-2">
@@ -1249,8 +1311,28 @@ function Theme4HomePageContent() {
                 {lendStep === 2 && (
                   <div className="space-y-4">
                     <h4 className="font-bold text-gray-900 text-sm mb-2">
-                      Set pricing & settings
+                      Set pricing, modes & contact
                     </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <label className="flex items-center gap-3 cursor-pointer p-3 bg-gray-50 rounded-2xl border border-gray-200/60 hover:border-turo-purple/20 transition-all">
+                        <input
+                          type="checkbox"
+                          checked={newLendCar.enableRent}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, enableRent: e.target.checked })}
+                          className="accent-turo-purple size-4 shrink-0"
+                        />
+                        <span className="text-xs font-bold text-gray-800">Rent this car</span>
+                      </label>
+                      <label className="flex items-center gap-3 cursor-pointer p-3 bg-gray-50 rounded-2xl border border-gray-200/60 hover:border-turo-purple/20 transition-all">
+                        <input
+                          type="checkbox"
+                          checked={newLendCar.enableDirectSale}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, enableDirectSale: e.target.checked })}
+                          className="accent-turo-purple size-4 shrink-0"
+                        />
+                        <span className="text-xs font-bold text-gray-800">Sell this car</span>
+                      </label>
+                    </div>
                     <div>
                       <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
                         Daily Rental Rate (AUD)
@@ -1273,11 +1355,29 @@ function Theme4HomePageContent() {
                         Based on similar vehicles, we suggest $65 - $90/day. You receive up to 75%.
                       </p>
                     </div>
+                    {newLendCar.enableDirectSale && (
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                          Sale Price (AUD)
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-sm">
+                            $
+                          </span>
+                          <input
+                            type="number"
+                            value={newLendCar.salePrice}
+                            onChange={(e) => setNewLendCar({ ...newLendCar, salePrice: e.target.value })}
+                            className="w-full border border-gray-200 pl-8 pr-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <div className="flex gap-4 p-4 border border-turo-purple/20 bg-turo-light rounded-2xl text-turo-purple items-start">
                       <Info className="size-5 shrink-0 mt-0.5" />
                       <div className="text-xs font-medium leading-relaxed text-left">
-                        <strong className="font-bold">Insurance & Protection:</strong> You are protected by our $20M third-party property cover. Renter pays direct insurance fee during booking.
+                        <strong className="font-bold">Insurance note:</strong> Phillips Car Rental does not provide vehicle insurance. Hosts, sellers, renters, and buyers must keep suitable cover in place.
                       </div>
                     </div>
 
@@ -1345,6 +1445,52 @@ function Theme4HomePageContent() {
                         </div>
                       </div>
                     )}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1.5">
+                          Contact Name
+                        </label>
+                        <input
+                          value={newLendCar.contactName}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, contactName: e.target.value })}
+                          className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1.5">
+                          Contact Phone
+                        </label>
+                        <input
+                          value={newLendCar.contactPhone}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, contactPhone: e.target.value })}
+                          className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1.5">
+                        Contact Email
+                      </label>
+                      <input
+                        type="email"
+                        value={newLendCar.contactEmail}
+                        onChange={(e) => setNewLendCar({ ...newLendCar, contactEmail: e.target.value })}
+                        className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1.5">
+                        Vehicle Photo URL
+                      </label>
+                      <input
+                        type="url"
+                        placeholder="https://..."
+                        value={newLendCar.imageUrl}
+                        onChange={(e) => setNewLendCar({ ...newLendCar, imageUrl: e.target.value })}
+                        className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                      />
+                    </div>
                   </div>
                 )}
 
@@ -1366,7 +1512,8 @@ function Theme4HomePageContent() {
               </div>
 
               {/* Modal Footer */}
-              <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center">
+              {lendStep !== 0 ? (
+              <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center relative">
                 {listingError ? (
                   <p className="absolute left-6 right-6 -top-7 text-xs font-semibold text-red-500">
                     {listingError}
@@ -1417,6 +1564,7 @@ function Theme4HomePageContent() {
                   </button>
                 )}
               </div>
+              ) : null}
             </motion.div>
           </div>
         )}
@@ -1427,7 +1575,7 @@ function Theme4HomePageContent() {
 
 export default function Theme4HomePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-turo-purple font-bold">Loading Phillip Cars...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-turo-purple font-bold">Loading Phillips Car Rental...</div>}>
       <Theme4HomePageContent />
     </Suspense>
   );

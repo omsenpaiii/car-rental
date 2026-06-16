@@ -15,7 +15,7 @@ export default function Theme4TermsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <Link
-              href="/theme4"
+              href="/"
               className="inline-flex items-center gap-2 text-xs font-bold text-turo-purple hover:underline mb-2"
             >
               <ArrowLeft className="size-3.5" />
@@ -93,7 +93,7 @@ export default function Theme4TermsPage() {
                     1. Renter Eligibility & Driver Verification
                   </h2>
                   <p className="text-sm text-gray-600 leading-relaxed mt-4 font-medium">
-                    To rent any vehicle on the Phillip Cars platform, guests must satisfy our driver screening standards:
+                    To rent any vehicle on the Phillips Car Rental platform, guests must satisfy our driver screening standards:
                   </p>
                   <ul className="list-disc list-inside text-xs text-gray-500 space-y-2 mt-3 pl-2 leading-relaxed">
                     <li>Hold a valid driver&apos;s license (foreign licenses must accompany a passport).</li>
@@ -148,7 +148,7 @@ export default function Theme4TermsPage() {
                     1. Listing Policies & Host Obligations
                   </h2>
                   <p className="text-sm text-gray-600 leading-relaxed mt-4 font-medium">
-                    Hosts who share vehicles on Phillip Cars must ensure their listings comply with platform standards:
+                    Hosts who share vehicles on Phillips Car Rental must ensure their listings comply with platform standards:
                   </p>
                   <ul className="list-disc list-inside text-xs text-gray-500 space-y-2 mt-3 pl-2 leading-relaxed">
                     <li>Keep vehicles mechanically sound, clean, and fully registered with clean titles. Branded or salvage titles are prohibited.</li>
@@ -215,7 +215,7 @@ export default function Theme4TermsPage() {
                     Unlike short-term car rentals, RTO contracts delegate responsibility directly to the buyer:
                   </p>
                   <ul className="list-disc list-inside text-xs text-gray-500 space-y-2 mt-3 pl-2 leading-relaxed">
-                    <li><strong>Mandatory Buyer Insurance:</strong> The buyer must maintain a comprehensive and collision auto policy. Both the host (lienholder) and Phillip Cars must be named as additional insureds/loss payees.</li>
+                    <li><strong>Mandatory Buyer Insurance:</strong> The buyer must maintain a comprehensive and collision auto policy. Both the host (lienholder) and Phillips Car Rental must be named as additional insureds/loss payees.</li>
                     <li><strong>Routine Maintenance:</strong> The buyer must cover all routine upkeep (oil changes, tires, brake pads) to maintain vehicle value.</li>
                     <li><strong>Platform Escrow for Title:</strong> The vehicle title is registered under escrow terms during the RTO contract, ensuring clean transfer upon final contract completion.</li>
                   </ul>

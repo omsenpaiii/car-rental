@@ -22,6 +22,8 @@ export type TuroCar = {
   rentToOwnPrice?: number;
   rentToOwnMonths?: number;
   downPayment?: number;
+  saleAvailable?: boolean;
+  salePrice?: number;
 };
 
 export const makeCategories = [
@@ -125,6 +127,8 @@ export const turoCars: TuroCar[] = [
     seats: 4,
     description: "Feel the rumble of a pure V8 muscle car. This Mustang GT features a 6-speed manual transmission, active exhaust control, and aggressive styling. Live the dream of driving a classic American legend in Melbourne.",
     features: ["V8 Engine", "Manual Transmission", "Premium Sound", "Bluetooth", "Backup Camera"],
+    saleAvailable: true,
+    salePrice: 48000,
   },
   {
     id: "tesla-model-y-2024",
@@ -171,6 +175,8 @@ export const turoCars: TuroCar[] = [
     seats: 5,
     description: "Uncompromised luxury meets raw motorsport performance. This AMG C63 offers a handcrafted bi-turbo V8, premium Burmester sound system, and exquisite leather details throughout. Drive in absolute style.",
     features: ["V8 Bi-Turbo", "Burmester Audio", "Premium Leather", "GPS", "Heated Seats", "360 Camera"],
+    saleAvailable: true,
+    salePrice: 65000,
   }
 ];
 
@@ -180,8 +186,8 @@ export const hostFaqs = [
     answer: "Earnings depend on your vehicle's make, model, age, location, and demand. Standard cars can earn $1,000–$2,000 per month, while premium and specialty vehicles can make up to $4,000+ per month. Use our calculator above to estimate your earning potential!"
   },
   {
-    question: "What insurance coverage is provided?",
-    answer: "Every trip is backed by our comprehensive insurance policy. This includes up to $20M in third-party property damage coverage, physical damage protection for your vehicle, and 24/7 roadside assistance."
+    question: "Does the platform provide insurance coverage?",
+    answer: "No, Phillips Car Rental is a peer-to-peer vehicle sharing and sale listing platform. We do not provide physical damage protection, liability coverage, or warranty. All hosts, sellers, renters, and buyers must carry their own appropriate private or commercial insurance policies."
   },
   {
     question: "Who will be renting my car?",

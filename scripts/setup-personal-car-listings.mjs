@@ -27,6 +27,8 @@ create table if not exists public.personal_car_listings (
   enable_rent_to_own boolean not null default false,
   rent_to_own_price integer,
   rent_to_own_months integer,
+  enable_direct_sale boolean not null default false,
+  sale_price integer,
   status text not null default 'active',
   created_at timestamptz not null default timezone('utc', now()),
   constraint rent_to_own_requirements check (
@@ -36,6 +38,17 @@ create table if not exists public.personal_car_listings (
       and rent_to_own_months is not null
       and rent_to_own_months between 12 and 60
     )
+  )
+);
+
+alter table public.personal_car_listings add column if not exists enable_direct_sale boolean not null default false;
+alter table public.personal_car_listings add column if not exists sale_price integer;
+
+alter table public.personal_car_listings drop constraint if exists sale_requirements;
+alter table public.personal_car_listings add constraint sale_requirements check (
+  enable_direct_sale = false
+  or (
+    sale_price is not null
   )
 );
 `;

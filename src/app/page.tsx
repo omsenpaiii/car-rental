@@ -1,5 +1,1 @@
-import { redirect } from "next/navigation";
-
-export default function Home() {
-  redirect("/theme4");
-}
+export { default } from "./theme4/page";

@@ -44,7 +44,7 @@ function Theme4SearchPageContent() {
 
     const loadPersonalCars = async () => {
       try {
-        const response = await fetch("/api/theme4/personal-listings", {
+        const response = await fetch("/api/portal/listings", {
           cache: "no-store",
         });
         const payload = await response.json();
@@ -94,7 +94,7 @@ function Theme4SearchPageContent() {
   const handleSearchBarSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     router.push(
-      `/theme4/search?mode=${searchMode}&location=${encodeURIComponent(location)}&pickup=${pickupDate}&return=${returnDate}`
+      `/search?mode=${searchMode}&location=${encodeURIComponent(location)}&pickup=${pickupDate}&return=${returnDate}`
     );
   };
 
@@ -109,7 +109,7 @@ function Theme4SearchPageContent() {
 
   // Filter & Sort Logic
   const filteredCars = useMemo(() => {
-    let result = [...personalCars, ...turoCars];
+    let result = personalCars.length ? [...personalCars] : [...turoCars];
 
     // Filter by Brand/Make (if search came from home make categories)
     if (initMake) {
@@ -431,7 +431,7 @@ function Theme4SearchPageContent() {
                     transition={{ duration: 0.3 }}
                   >
                     <Link
-                      href={`/theme4/car/${car.id}${searchMode === "rto" ? "?mode=rto" : ""}`}
+                      href={`/car/${car.id}${searchMode === "rto" ? "?mode=rto" : ""}`}
                       onMouseEnter={() => setHoveredCarId(car.id)}
                       onMouseLeave={() => setHoveredCarId(null)}
                       className={`flex flex-col sm:flex-row border rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer ${
@@ -623,7 +623,7 @@ function Theme4SearchPageContent() {
                           <span>{selectedCar.rating.toFixed(2)}</span>
                         </div>
                         <Link 
-                          href={`/theme4/car/${selectedCar.id}${searchMode === "rto" ? "?mode=rto" : ""}`}
+                          href={`/car/${selectedCar.id}${searchMode === "rto" ? "?mode=rto" : ""}`}
                           className="bg-turo-purple hover:bg-turo-hover text-white text-[10px] font-black px-3 py-1.5 rounded-lg transition-colors shadow-sm"
                         >
                           View Details ({searchMode === "rto" ? `$${monthlyPrice.toLocaleString()}/mo` : `$${selectedCar.pricePerDay}/day`})
@@ -656,7 +656,7 @@ function Theme4SearchPageContent() {
 
 export default function Theme4SearchPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-turo-purple font-bold">Searching Phillip Cars...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-turo-purple font-bold">Searching Phillips Car Rental...</div>}>
       <Theme4SearchPageContent />
     </Suspense>
   );

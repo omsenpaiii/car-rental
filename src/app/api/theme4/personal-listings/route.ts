@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 
 import {
-  createPersonalCarListing,
-  listPersonalCarListings,
-} from "@/lib/personal-car-listings.server";
-import { getPersonalListingValidationMessage } from "@/lib/personal-car-listings";
+  createUserVehicleListing,
+  getPortalErrorMessage,
+  listApprovedVehicleCards,
+} from "@/lib/portal-listings.server";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const listings = await listPersonalCarListings();
+    const listings = await listApprovedVehicleCards();
     return NextResponse.json({ listings });
   } catch (error) {
     console.error("Failed to load personal car listings", error);
@@ -24,15 +24,11 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const listing = await createPersonalCarListing(body);
+    const listing = await createUserVehicleListing(body);
     return NextResponse.json({ listing }, { status: 201 });
   } catch (error) {
-    const message = getPersonalListingValidationMessage(error);
-    const status = message.includes("required") || message.includes("check") ? 400 : 500;
-
-    if (status === 500) {
-      console.error("Failed to create personal car listing", error);
-    }
+    const message = getPortalErrorMessage(error);
+    const status = message.includes("log in") ? 401 : 400;
 
     return NextResponse.json({ error: message }, { status });
   }

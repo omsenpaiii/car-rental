@@ -52,6 +52,8 @@ export async function listPersonalCarListingRows() {
       enable_rent_to_own,
       rent_to_own_price,
       rent_to_own_months,
+      enable_direct_sale,
+      sale_price,
       status,
       created_at
     from public.personal_car_listings
@@ -80,8 +82,10 @@ export async function createPersonalCarListing(input: unknown) {
       price_per_day,
       enable_rent_to_own,
       rent_to_own_price,
-      rent_to_own_months
-    ) values ($1, $2, $3, $4, $5, $6, $7, $8)
+      rent_to_own_months,
+      enable_direct_sale,
+      sale_price
+    ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     returning
       id,
       make,
@@ -92,6 +96,8 @@ export async function createPersonalCarListing(input: unknown) {
       enable_rent_to_own,
       rent_to_own_price,
       rent_to_own_months,
+      enable_direct_sale,
+      sale_price,
       status,
       created_at`,
     [
@@ -103,6 +109,8 @@ export async function createPersonalCarListing(input: unknown) {
       values.enable_rent_to_own,
       values.rent_to_own_price,
       values.rent_to_own_months,
+      values.enable_direct_sale,
+      values.sale_price,
     ]
   );
 

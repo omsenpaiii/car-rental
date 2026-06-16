@@ -59,6 +59,8 @@ describe("personal car listings", () => {
       enable_rent_to_own: false,
       rent_to_own_price: null,
       rent_to_own_months: null,
+      enable_direct_sale: false,
+      sale_price: null,
     });
   });
 
@@ -73,6 +75,8 @@ describe("personal car listings", () => {
       enable_rent_to_own: true,
       rent_to_own_price: 48000,
       rent_to_own_months: 36,
+      enable_direct_sale: true,
+      sale_price: 52000,
       status: "active",
       created_at: "2026-06-16T00:00:00.000Z",
     });
@@ -81,6 +85,7 @@ describe("personal car listings", () => {
     expect(car.category).toBe("Electric");
     expect(car.rentToOwnAvailable).toBe(true);
     expect(car.downPayment).toBe(getRentToOwnDownPayment(48000));
+    expect(car.saleAvailable).toBe(true);
     expect(car.hostName).toBe("Phillips Car Rental Host");
   });
 });

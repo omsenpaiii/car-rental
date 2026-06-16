@@ -19,6 +19,8 @@ export const personalCarListingSchema = z
     enableRentToOwn: z.coerce.boolean().default(false),
     rentToOwnPrice: z.coerce.number().int().min(1000).max(500000).nullable().optional(),
     rentToOwnMonths: z.coerce.number().int().min(12).max(60).nullable().optional(),
+    enableDirectSale: z.coerce.boolean().default(false),
+    salePrice: z.coerce.number().int().min(1000).max(500000).nullable().optional(),
   })
   .superRefine((value, ctx) => {
     if (value.enableRentToOwn) {
@@ -38,6 +40,16 @@ export const personalCarListingSchema = z
         });
       }
     }
+
+    if (value.enableDirectSale) {
+      if (!value.salePrice) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["salePrice"],
+          message: "Listing sale price is required when sale mode is enabled.",
+        });
+      }
+    }
   });
 
 export type PersonalCarListingInput = z.infer<typeof personalCarListingSchema>;
@@ -52,6 +64,8 @@ export type PersonalCarListingRow = {
   enable_rent_to_own: boolean;
   rent_to_own_price: number | null;
   rent_to_own_months: number | null;
+  enable_direct_sale: boolean;
+  sale_price: number | null;
   status: string;
   created_at: string;
 };
@@ -152,6 +166,8 @@ export function toPersonalCarInsert(input: PersonalCarListingInput) {
     enable_rent_to_own: input.enableRentToOwn,
     rent_to_own_price: input.enableRentToOwn ? input.rentToOwnPrice ?? null : null,
     rent_to_own_months: input.enableRentToOwn ? input.rentToOwnMonths ?? null : null,
+    enable_direct_sale: input.enableDirectSale,
+    sale_price: input.enableDirectSale ? input.salePrice ?? null : null,
   };
 }
 
@@ -188,6 +204,12 @@ export function mapPersonalListingRowToCar(row: PersonalCarListingRow): TuroCar 
             row.rent_to_own_price != null
               ? getRentToOwnDownPayment(row.rent_to_own_price)
               : undefined,
+        }
+      : {}),
+    ...(row.enable_direct_sale
+      ? {
+          saleAvailable: true,
+          salePrice: row.sale_price ?? undefined,
         }
       : {}),
   };

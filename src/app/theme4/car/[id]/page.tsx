@@ -9,11 +9,14 @@ import {
   HelpCircle, CheckCircle2, Heart, Share2, Info, ChevronRight, Award, MessageSquare,
   FileText, PenTool
 } from "lucide-react";
+import { AuthPanel } from "@/components/portal/auth-panel";
+import { useAuth } from "@/components/portal/auth-provider";
 import { turoCars, TuroCar } from "@/lib/theme4-data";
 
 export default function Theme4CarDetailsPage() {
   const params = useParams();
   const router = useRouter();
+  const { user, profile, refresh } = useAuth();
   const id = params.id as string;
   const [personalCars, setPersonalCars] = useState<TuroCar[]>([]);
 
@@ -22,7 +25,7 @@ export default function Theme4CarDetailsPage() {
 
     const loadPersonalCars = async () => {
       try {
-        const response = await fetch("/api/theme4/personal-listings", {
+        const response = await fetch("/api/portal/listings", {
           cache: "no-store",
         });
         const payload = await response.json();
@@ -48,7 +51,7 @@ export default function Theme4CarDetailsPage() {
 
   // Find car by ID
   const car = useMemo(() => {
-    const allCars = [...personalCars, ...turoCars];
+    const allCars = personalCars.length ? personalCars : turoCars;
     return allCars.find((c) => c.id === id) || turoCars[0];
   }, [id, personalCars]);
 
@@ -72,10 +75,14 @@ export default function Theme4CarDetailsPage() {
   const [returnDate, setReturnDate] = useState("2026-06-18");
   const [deliveryLocation, setDeliveryLocation] = useState("Melbourne Airport");
   const [protectionPlan, setProtectionPlan] = useState<"standard" | "minimum" | "none">("standard");
+  const [requesterPhone, setRequesterPhone] = useState("");
+  const [enquiryMessage, setEnquiryMessage] = useState("");
+  const [enquiryError, setEnquiryError] = useState<string | null>(null);
+  const [isSubmittingEnquiry, setIsSubmittingEnquiry] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
-    alert("Share link copied to clipboard!");
   };
 
   // Calculate days count
@@ -114,7 +121,7 @@ export default function Theme4CarDetailsPage() {
   // Rent-to-Own States
   const searchParams = useSearchParams();
   const initMode = searchParams.get("mode") || "rent";
-  const [bookingMode, setBookingMode] = useState<"rent" | "rto">(
+  const [bookingMode, setBookingMode] = useState<"rent" | "rto" | "sale">(
     initMode === "rto" && car.rentToOwnAvailable ? "rto" : "rent"
   );
   const [rtoMonths, setRtoMonths] = useState<number>(car.rentToOwnMonths || 24);
@@ -207,15 +214,43 @@ export default function Theme4CarDetailsPage() {
     };
   }, [car, rtoMonths]);
 
-  const handleBookingSubmit = (e: React.FormEvent) => {
+  const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (bookingMode === "rto") {
-      setTypedSignature("");
-      setAgreedToTerms(false);
-      setSignatureError("");
-      setIsRtoModalOpen(true);
-    } else {
+
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    setIsSubmittingEnquiry(true);
+    setEnquiryError(null);
+
+    try {
+      const response = await fetch("/api/portal/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          listingId: car.id,
+          mode: bookingMode === "rto" ? "rent_to_own" : bookingMode,
+          pickupDate,
+          returnDate,
+          deliveryLocation,
+          requesterName: profile?.full_name || profile?.email || "",
+          requesterPhone: requesterPhone || profile?.phone || "",
+          message: enquiryMessage,
+        }),
+      });
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Unable to submit enquiry.");
+      }
+
       setIsSuccessModalOpen(true);
+    } catch (error) {
+      setEnquiryError(error instanceof Error ? error.message : "Unable to submit enquiry.");
+    } finally {
+      setIsSubmittingEnquiry(false);
     }
   };
 
@@ -448,7 +483,7 @@ export default function Theme4CarDetailsPage() {
           <div className="sticky top-28 bg-white border border-gray-200 rounded-3xl shadow-xl p-6 sm:p-8 space-y-6">
             
             {/* Rent vs Rent-to-Own Tab Switcher */}
-            {car.rentToOwnAvailable && (
+            {(car.rentToOwnAvailable || car.saleAvailable) && (
               <div className="flex bg-gray-100 p-1 rounded-2xl mb-4 border border-gray-200/50">
                 <button
                   type="button"
@@ -461,26 +496,47 @@ export default function Theme4CarDetailsPage() {
                 >
                   Standard Rent
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setBookingMode("rto")}
-                  className={`flex-1 text-center py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    bookingMode === "rto"
-                      ? "bg-turo-purple text-white shadow-sm"
-                      : "text-gray-500 hover:text-turo-purple"
-                  }`}
-                >
-                  Rent to Own
-                </button>
+                {car.rentToOwnAvailable ? (
+                  <button
+                    type="button"
+                    onClick={() => setBookingMode("rto")}
+                    className={`flex-1 text-center py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      bookingMode === "rto"
+                        ? "bg-turo-purple text-white shadow-sm"
+                        : "text-gray-500 hover:text-turo-purple"
+                    }`}
+                  >
+                    Rent to Own
+                  </button>
+                ) : null}
+                {car.saleAvailable ? (
+                  <button
+                    type="button"
+                    onClick={() => setBookingMode("sale")}
+                    className={`flex-1 text-center py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      bookingMode === "sale"
+                        ? "bg-turo-purple text-white shadow-sm"
+                        : "text-gray-500 hover:text-turo-purple"
+                    }`}
+                  >
+                    Buy
+                  </button>
+                ) : null}
               </div>
             )}
 
             <div className="flex justify-between items-baseline">
               <div>
                 <span className="text-2xl sm:text-3xl font-black text-gray-900">
-                  {bookingMode === "rto" ? `$${rtoMetrics.monthlyRate.toLocaleString()}` : `$${car.pricePerDay}`}
+                  {bookingMode === "sale"
+                    ? `$${(car.salePrice ?? 0).toLocaleString()}`
+                    : bookingMode === "rto"
+                      ? `$${rtoMetrics.monthlyRate.toLocaleString()}`
+                      : `$${car.pricePerDay}`}
                 </span>
-                <span className="text-xs font-normal text-gray-500"> {bookingMode === "rto" ? "/mo" : "/day"}</span>
+                <span className="text-xs font-normal text-gray-500">
+                  {bookingMode === "sale" ? " sale price" : bookingMode === "rto" ? " /mo" : " /day"}
+                </span>
               </div>
               <span className="text-xs text-turo-purple font-bold flex items-center gap-0.5">
                 <Shield className="size-3.5" />
@@ -595,7 +651,7 @@ export default function Theme4CarDetailsPage() {
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span>Phillip Cars Service fee</span>
+                      <span>Phillips Car Rental Service fee</span>
                       <span className="text-gray-800">${pricing.serviceFee}</span>
                     </div>
                     
@@ -605,7 +661,7 @@ export default function Theme4CarDetailsPage() {
                     </div>
                   </div>
                 </>
-              ) : (
+              ) : bookingMode === "rto" ? (
                 <>
                   {/* Buyout Period Selection */}
                   <div>
@@ -678,20 +734,68 @@ export default function Theme4CarDetailsPage() {
                     </div>
                   </div>
                 </>
+              ) : (
+                <div className="rounded-2xl border border-purple-100 bg-purple-50/50 p-4 text-xs font-medium leading-relaxed text-purple-900">
+                  <div className="flex items-center gap-2 font-black text-turo-purple">
+                    <MessageSquare className="size-4" />
+                    Sale enquiry
+                  </div>
+                  <p className="mt-2">
+                    Submit your buying interest and Phillips Car Rental will connect you with the listing owner after identity and availability checks.
+                  </p>
+                  <div className="mt-3 text-2xl font-black text-gray-950">
+                    ${(car.salePrice ?? 0).toLocaleString()} AUD
+                  </div>
+                </div>
               )}
+
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Your contact phone
+                </label>
+                <input
+                  value={requesterPhone}
+                  onChange={(event) => setRequesterPhone(event.target.value)}
+                  placeholder={profile?.phone || "0400 000 000"}
+                  className="w-full border border-gray-200 px-4 py-3 rounded-2xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple bg-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Message
+                </label>
+                <textarea
+                  value={enquiryMessage}
+                  onChange={(event) => setEnquiryMessage(event.target.value)}
+                  placeholder="Share timing, delivery, sale, or finance questions..."
+                  className="min-h-24 w-full resize-none border border-gray-200 px-4 py-3 rounded-2xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple bg-white"
+                />
+              </div>
+              {enquiryError ? (
+                <p className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-xs font-bold text-red-600">
+                  {enquiryError}
+                </p>
+              ) : null}
 
               {/* Submit button */}
               <button
                 type="submit"
                 className="w-full bg-turo-purple hover:bg-turo-hover text-white font-black py-4 rounded-2xl transition-colors cursor-pointer text-sm uppercase tracking-wider shadow-lg shadow-turo-purple/20 flex items-center justify-center gap-2"
               >
-                {bookingMode === "rto" ? (
+                {isSubmittingEnquiry ? (
+                  "Sending enquiry..."
+                ) : bookingMode === "rto" ? (
                   <>
                     <FileText className="size-4" />
-                    Review & Sign Lease Option
+                    Send Rent-to-Own Enquiry
+                  </>
+                ) : bookingMode === "sale" ? (
+                  <>
+                    <MessageSquare className="size-4" />
+                    Send Sale Enquiry
                   </>
                 ) : (
-                  "Book Instantly"
+                  "Send Rental Enquiry"
                 )}
               </button>
             </form>
@@ -702,7 +806,7 @@ export default function Theme4CarDetailsPage() {
               </span>
               <p className="text-[10px] text-gray-400 mt-1 max-w-[240px] mx-auto leading-relaxed">
                 {bookingMode === "rto" 
-                  ? "All monthly rent payments are secured in escrow. Commission is handled automatically by Phillip Cars." 
+                  ? "All monthly rent payments are secured in escrow. Commission is handled automatically by Phillips Car Rental." 
                   : "Full refund up to 24 hours before your trip starts. 24/7 support is available."
                 }
               </p>
@@ -733,29 +837,62 @@ export default function Theme4CarDetailsPage() {
               </div>
               <div>
                 <h3 className="font-black text-xl text-gray-900">
-                  Booking Confirmed!
+                  Enquiry submitted
                 </h3>
                 <p className="text-sm text-gray-500 mt-2 leading-relaxed">
-                  Your request has been approved. You are set to rent the <strong>{car.name}</strong> from <strong>{pickupDate}</strong> to <strong>{returnDate}</strong>.
+                  Your {bookingMode === "sale" ? "sale" : bookingMode === "rto" ? "rent-to-own" : "rental"} enquiry for <strong>{car.name}</strong> has been saved. Phillips Car Rental will review and respond from Melbourne.
                 </p>
               </div>
               <div className="bg-gray-50 p-4 rounded-2xl text-left border border-gray-100 text-xs text-gray-600 space-y-1.5">
+                <div><strong>Request:</strong> {bookingMode === "sale" ? "Purchase enquiry" : bookingMode === "rto" ? "Rent-to-own enquiry" : "Rental enquiry"}</div>
                 <div><strong>Pickup:</strong> {pickupDate} at 10:00 AM</div>
                 <div><strong>Delivery Location:</strong> {deliveryLocation}</div>
-                <div><strong>Host Contact:</strong> {car.hostName} (melbourne-p2p@phillipcars.com)</div>
+                <div><strong>Host:</strong> {car.hostName}</div>
               </div>
               <button
                 onClick={() => {
                   setIsSuccessModalOpen(false);
-                  router.push("/theme4");
+                  router.push("/account");
                 }}
                 className="w-full bg-turo-purple hover:bg-turo-hover text-white text-xs font-bold py-3 rounded-full transition-colors cursor-pointer"
               >
-                Back to Home
+                View account
               </button>
             </motion.div>
           </motion.div>
         )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isAuthModalOpen ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+              className="w-full max-w-md"
+            >
+              <button
+                type="button"
+                onClick={() => setIsAuthModalOpen(false)}
+                className="mb-3 ml-auto block rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white"
+              >
+                Close
+              </button>
+              <AuthPanel
+                onAuthenticated={async () => {
+                  await refresh();
+                  setIsAuthModalOpen(false);
+                }}
+              />
+            </motion.div>
+          </motion.div>
+        ) : null}
       </AnimatePresence>
 
       {/* RTO Lease-Option Contract Signature Modal */}
@@ -793,7 +930,7 @@ export default function Theme4CarDetailsPage() {
                   LEASE WITH OPTION TO PURCHASE AGREEMENT
                 </p>
                 <p>
-                  This Lease with Option to Purchase Agreement (the &quot;Agreement&quot;) is entered into by and between the Host (hereinafter &quot;Seller/Lessor&quot;) and the verified Phillip Cars Renter (hereinafter &quot;Buyer/Lessee&quot;).
+                  This Lease with Option to Purchase Agreement (the &quot;Agreement&quot;) is entered into by and between the Host (hereinafter &quot;Seller/Lessor&quot;) and the verified Phillips Car Rental Renter (hereinafter &quot;Buyer/Lessee&quot;).
                 </p>
                 <div>
                   <strong className="text-gray-800">1. VEHICLE DESCRIPTION:</strong>
@@ -815,13 +952,13 @@ export default function Theme4CarDetailsPage() {
                 <div>
                   <strong className="text-gray-800">3. PURCHASE OPTION & TITLE ESCROW:</strong>
                   <p className="mt-1">
-                    The Buyer/Lessee shall have the exclusive right and option to purchase the vehicle. Upon completion of {rtoMonths} consecutive monthly payments, title ownership will be transferred from Seller to Buyer. Phillip Cars holds the title and transfer paperwork in digital escrow to guarantee fulfillment.
+                    The Buyer/Lessee shall have the exclusive right and option to purchase the vehicle. Upon completion of {rtoMonths} consecutive monthly payments, title ownership will be transferred from Seller to Buyer. Phillips Car Rental holds the title and transfer paperwork in digital escrow to guarantee fulfillment.
                   </p>
                 </div>
                 <div>
                   <strong className="text-gray-800">4. MAINTENANCE, INSURANCE & TAXES:</strong>
                   <p className="mt-1">
-                    During the lease period, all maintenance costs, registration, insurance coverage, and vehicle running costs are the sole responsibility of the Buyer/Lessee. Buyer/Lessee agrees to abide by all platform <Link href="/theme4/policies/terms" target="_blank" className="text-turo-purple hover:underline font-bold">Terms of Service</Link> and Rent-to-Own Provisions.
+                    During the lease period, all maintenance costs, registration, insurance coverage, and vehicle running costs are the sole responsibility of the Buyer/Lessee. Buyer/Lessee agrees to abide by all platform <Link href="/policies/terms" target="_blank" className="text-turo-purple hover:underline font-bold">Terms of Service</Link> and Rent-to-Own Provisions.
                   </p>
                 </div>
                 <div>
@@ -909,7 +1046,7 @@ export default function Theme4CarDetailsPage() {
                     className="mt-0.5 accent-turo-purple shrink-0 size-4 rounded cursor-pointer"
                   />
                   <span>
-                    I agree to the platform <Link href="/theme4/policies/terms" target="_blank" className="text-turo-purple hover:underline font-bold">Terms & Conditions</Link>, and the Rent-to-Own Provisions outlined above.
+                    I agree to the platform <Link href="/policies/terms" target="_blank" className="text-turo-purple hover:underline font-bold">Terms & Conditions</Link>, and the Rent-to-Own Provisions outlined above.
                   </span>
                 </label>
 
@@ -1030,7 +1167,7 @@ export default function Theme4CarDetailsPage() {
               <button
                 onClick={() => {
                   setIsRtoSuccess(false);
-                  router.push("/theme4");
+                  router.push("/");
                 }}
                 className="w-full bg-turo-purple hover:bg-turo-hover text-white text-xs font-bold py-3.5 rounded-full transition-colors cursor-pointer"
               >
