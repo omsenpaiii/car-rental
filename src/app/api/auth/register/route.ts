@@ -51,8 +51,11 @@ export async function POST(request: Request) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Registration failed", error);
-    return NextResponse.json({ error: "Unable to create account right now." }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "Unable to create account right now." },
+      { status: 500 }
+    );
   }
 }

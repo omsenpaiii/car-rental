@@ -116,7 +116,7 @@ export default function Theme4CarDetailsPage() {
   const searchParams = useSearchParams();
   const initMode = searchParams.get("mode") || "rent";
   const [bookingMode, setBookingMode] = useState<"rent" | "rto" | "sale">(
-    initMode === "sale" && (car.saleAvailable || car.sale_price)
+    initMode === "sale" && (car.saleAvailable || car.salePrice)
       ? "sale"
       : initMode === "rto" && car.rentToOwnAvailable
         ? "rto"
@@ -232,7 +232,7 @@ export default function Theme4CarDetailsPage() {
           requesterPhone: requesterPhone || profile?.phone || "",
           message: mode === "rto" 
             ? `Signed Rent-to-Own contract. Term: ${rtoMonths} months. Digital signature: ${typedSignature}`
-            : `Signed Bill of Sale. Total purchase price: $${(car.salePrice ?? car.sale_price ?? 0).toLocaleString()} AUD. Digital signature: ${typedSignature}`,
+            : `Signed Bill of Sale. Total purchase price: $${(car.salePrice ?? 0).toLocaleString()} AUD. Digital signature: ${typedSignature}`,
         }),
       });
 
@@ -284,7 +284,7 @@ export default function Theme4CarDetailsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           listingId: car.id,
-          mode: bookingMode === "rto" ? "rent_to_own" : bookingMode,
+          mode: "rent",
           pickupDate,
           returnDate,
           deliveryLocation,
@@ -780,20 +780,20 @@ export default function Theme4CarDetailsPage() {
                   <div className="border-t border-gray-100 pt-4 space-y-2.5 text-xs text-gray-600 font-medium">
                     <div className="flex justify-between">
                       <span>Vehicle Purchase Price</span>
-                      <span className="text-gray-800 font-bold">${(car.salePrice ?? car.sale_price ?? 0).toLocaleString()} AUD</span>
+                      <span className="text-gray-800 font-bold">${(car.salePrice ?? 0).toLocaleString()} AUD</span>
                     </div>
                     <div className="flex justify-between text-gray-400">
                       <span>Platform Commission (5% - paid by seller)</span>
-                      <span>-${Math.round((car.salePrice ?? car.sale_price ?? 0) * 0.05).toLocaleString()} AUD</span>
+                      <span>-${Math.round((car.salePrice ?? 0) * 0.05).toLocaleString()} AUD</span>
                     </div>
                     <div className="flex justify-between text-gray-400 border-t border-dashed border-gray-150 pt-2 text-[10px]">
                       <span>Seller Net Payout</span>
-                      <span>${Math.round((car.salePrice ?? car.sale_price ?? 0) * 0.95).toLocaleString()} AUD</span>
+                      <span>${Math.round((car.salePrice ?? 0) * 0.95).toLocaleString()} AUD</span>
                     </div>
                     
                     <div className="flex justify-between border-t border-gray-100 pt-3 text-sm font-black text-gray-900">
                       <span>Total Purchase Price Due</span>
-                      <span className="text-emerald-600">${(car.salePrice ?? car.sale_price ?? 0).toLocaleString()} AUD</span>
+                      <span className="text-emerald-600">${(car.salePrice ?? 0).toLocaleString()} AUD</span>
                     </div>
                   </div>
                 </div>

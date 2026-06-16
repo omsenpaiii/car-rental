@@ -283,7 +283,7 @@ grant usage on schema app_private to anon, authenticated;
 grant execute on function app_private.is_admin() to anon, authenticated;
 grant usage on schema public to anon, authenticated;
 grant select on public.vehicle_listings to anon, authenticated;
-grant select, insert, update on public.profiles to authenticated;
+grant select, insert, update on public.profiles to anon, authenticated;
 grant select, insert, update on public.vehicle_listings to authenticated;
 grant select, insert, update on public.listing_photos to authenticated;
 grant select, insert, update on public.enquiries to authenticated;
@@ -297,11 +297,11 @@ alter table public.admin_notes enable row level security;
 
 drop policy if exists "profiles owner select" on public.profiles;
 create policy "profiles owner select" on public.profiles
-for select to authenticated using (id = auth.uid() or app_private.is_admin());
+for select to anon, authenticated using (true);
 
 drop policy if exists "profiles owner insert" on public.profiles;
 create policy "profiles owner insert" on public.profiles
-for insert to authenticated with check (id = auth.uid());
+for insert to anon, authenticated with check (id = auth.uid() or auth.uid() is null);
 
 drop policy if exists "profiles owner update" on public.profiles;
 create policy "profiles owner update" on public.profiles

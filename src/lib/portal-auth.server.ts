@@ -3,6 +3,7 @@ import "server-only";
 import type { User } from "@supabase/supabase-js";
 
 import { isConfiguredAdminEmail } from "@/lib/admin";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type PortalProfile = {
@@ -32,7 +33,11 @@ export async function ensureProfileForUser(user: User) {
   }
 
   const role = isConfiguredAdminEmail(email) ? "admin" : "user";
-  const supabase = await createSupabaseServerClient();
+  
+  // Use admin client if service role key is available (bypasses RLS), otherwise fallback to server client
+  const supabase = process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? createSupabaseAdminClient()
+    : await createSupabaseServerClient();
 
   // Fetch existing profile to handle coalesce for full_name and conditionally update role
   const { data: existingProfile } = await supabase
