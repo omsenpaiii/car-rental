@@ -17,6 +17,7 @@ const initialNewLendCar = {
   model: "",
   year: "2023",
   bodyType: "Sedan",
+  fuelType: "Petrol",
   colour: "",
   odometer: "45000",
   hasLeatherSeats: false,
@@ -67,7 +68,7 @@ function Theme4HomePageContent() {
   
   // Set tab based on URL parameter or default to "rent"
   const activeTab: "rent" | "rto" | "sell" | "lent" =
-    tabParam === "lent" ? "lent" : tabParam === "rto" ? "rto" : tabParam === "sell" ? "sell" : "rent";
+    tabParam === "rto" ? "rto" : tabParam === "sell" ? "sell" : "rent";
   const [personalCars, setPersonalCars] = useState<TuroCar[]>([]);
   const cars = useMemo(() => (personalCars.length ? personalCars : turoCars), [personalCars]);
   const [openRenterFaq, setOpenRenterFaq] = useState<number | null>(null);
@@ -198,6 +199,7 @@ function Theme4HomePageContent() {
           model: newLendCar.model,
           year: Number(newLendCar.year),
           bodyType: newLendCar.bodyType,
+          fuelType: newLendCar.fuelType,
           colour: newLendCar.colour,
           odometer: newLendCar.odometer ? Number(newLendCar.odometer) : null,
           hasLeatherSeats: newLendCar.hasLeatherSeats,
@@ -261,16 +263,6 @@ function Theme4HomePageContent() {
           }`}
         >
           Rent to Own
-        </button>
-        <button
-          onClick={() => handleTabChange("lent")}
-          className={`px-3 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-black tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${
-            activeTab === "lent"
-              ? "bg-turo-purple text-white shadow-md scale-105"
-              : "text-white/80 hover:text-white hover:bg-white/10"
-          }`}
-        >
-          Lend your Car
         </button>
         <button
           onClick={() => handleTabChange("sell")}
@@ -1543,6 +1535,22 @@ function Theme4HomePageContent() {
                           ))}
                         </select>
                       </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                          Fuel Type
+                        </label>
+                        <select
+                          value={newLendCar.fuelType}
+                          onChange={(e) => setNewLendCar({ ...newLendCar, fuelType: e.target.value })}
+                          className="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm font-semibold text-gray-800 outline-none focus:border-turo-purple transition-colors"
+                        >
+                          {["Petrol", "Hybrid", "Electric", "LPG"].map((fuel) => (
+                            <option key={fuel} value={fuel}>{fuel}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
                           Colour

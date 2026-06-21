@@ -130,7 +130,7 @@ export default function AccountPage() {
               ))
             ) : (
               <p className="py-8 text-sm font-medium text-gray-500">
-                No listings yet. Use “Lend your car” or “Sell your car” from the home page.
+                No listings yet. Use “Sell your car” from the home page to get started.
               </p>
             )}
           </div>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { User, Bell, Globe, Search, Settings, HelpCircle, LogIn, Award, Check } from "lucide-react";
+import { User, Bell, Globe, Search, Settings, HelpCircle, LogIn, Check } from "lucide-react";
 
 import { AuthPanel } from "@/components/portal/auth-panel";
 import { useAuth } from "@/components/portal/auth-provider";
@@ -94,14 +94,6 @@ export function PortalShell({
 
           {/* Right Nav Options */}
           <div className="flex items-center gap-4 sm:gap-6 relative">
-            <Link
-              href="/?tab=lent"
-              className={`text-sm font-bold px-3 py-2 rounded-full transition-colors hidden sm:block ${
-                isLightHeader ? "text-gray-800 hover:bg-gray-55" : "text-white hover:bg-white/10"
-              }`}
-            >
-              Lend your car
-            </Link>
             <Link
               href="/?tab=sell"
               className={`text-sm font-bold px-3 py-2 rounded-full transition-colors hidden sm:block ${
@@ -222,14 +214,6 @@ export function PortalShell({
                   {user ? (
                     <>
                       <Link 
-                        href="/?tab=lent" 
-                        onClick={() => setIsProfileOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700 transition-colors"
-                      >
-                        <Award className="size-4 text-gray-400" />
-                        Become a Host
-                      </Link>
-                      <Link 
                         href="/search" 
                         onClick={() => setIsProfileOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-xs font-bold text-gray-700 transition-colors"
@@ -311,8 +295,8 @@ export function PortalShell({
             </h3>
             <ul className="space-y-2.5">
               <li><Link href="/" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">About Phillips Car Rental</Link></li>
-              <li><Link href="/?tab=lent" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">How it works (Lending)</Link></li>
               <li><Link href="/" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">How it works (Renting)</Link></li>
+              <li><Link href="/?tab=rto" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">How it works (Rent to Own)</Link></li>
               <li><Link href="/policies/terms" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">Policies & Trust</Link></li>
             </ul>
           </div>
@@ -332,9 +316,9 @@ export function PortalShell({
               Hosting
             </h3>
             <ul className="space-y-2.5">
-              <li><Link href="/?tab=lent" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">List your car</Link></li>
               <li><Link href="/?tab=sell" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">Sell your car</Link></li>
-              <li><Link href="/?tab=lent" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">Car calculator</Link></li>
+              <li><Link href="/?tab=rto" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">Rent to own</Link></li>
+              <li><Link href="/search" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">Browse cars</Link></li>
               <li><Link href="/account" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">Account</Link></li>
               <li><Link href="/policies/terms" className="text-sm text-gray-600 hover:text-turo-purple transition-colors">Insurance disclaimers</Link></li>
             </ul>

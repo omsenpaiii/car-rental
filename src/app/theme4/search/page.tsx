@@ -376,7 +376,7 @@ function Theme4SearchPageContent() {
                 Fuel Type
               </label>
               <div className="flex gap-1 bg-white p-1 rounded-xl border border-gray-200 overflow-x-auto scrollbar-hide">
-                {["", "Electric", "Petrol", "Hybrid"].map((f) => (
+                {["", "Electric", "Petrol", "Hybrid", "LPG"].map((f) => (
                   <button
                     key={f}
                     type="button"

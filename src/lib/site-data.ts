@@ -7,7 +7,7 @@ export type FleetItem = {
   pricePerDay: number;
   seats: number;
   transmission: "Auto" | "Manual";
-  fuelType: "Petrol" | "Hybrid" | "Diesel" | "Electric";
+  fuelType: "Petrol" | "Hybrid" | "Diesel" | "Electric" | "LPG";
   image: string;
   accent: string;
   year: string;
@@ -148,19 +148,6 @@ export const fleetItems: FleetItem[] = [
     year: "2024",
   },
   {
-    id: "toyota-kluger-2019",
-    name: "Toyota Kluger 2019",
-    category: "SUV",
-    pricePerDay: 50,
-    seats: 7,
-    transmission: "Auto",
-    fuelType: "Petrol",
-    image:
-      "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1200&q=80",
-    accent: "bg-stone-100",
-    year: "2019",
-  },
-  {
     id: "honda-jazz-2014",
     name: "Honda Jazz 2014",
     category: "Hatchback",
@@ -213,13 +200,26 @@ export const fleetItems: FleetItem[] = [
     year: "2025",
   },
   {
+    id: "toyota-kluger-2019",
+    name: "Toyota Kluger 2019",
+    category: "SUV",
+    pricePerDay: 50,
+    seats: 7,
+    transmission: "Auto",
+    fuelType: "Petrol",
+    image:
+      "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1200&q=80",
+    accent: "bg-stone-100",
+    year: "2019",
+  },
+  {
     id: "hyundai-getz-2009",
     name: "Hyundai Getz 2009",
     category: "Hatchback",
     pricePerDay: 23,
     seats: 5,
     transmission: "Auto",
-    fuelType: "Petrol",
+    fuelType: "LPG",
     image:
       "https://images.unsplash.com/photo-1502161254066-6c74afbf07aa?auto=format&fit=crop&w=1200&q=80",
     accent: "bg-stone-100",

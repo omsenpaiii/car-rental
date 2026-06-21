@@ -14,7 +14,7 @@ export type ListingStatus = (typeof LISTING_STATUSES)[number];
 
 export const VEHICLE_CATEGORIES = ["Electric", "Sport", "SUV", "Luxury", "Classic"] as const;
 export const TRANSMISSIONS = ["Automatic", "Manual"] as const;
-export const FUEL_TYPES = ["Electric", "Petrol", "Hybrid"] as const;
+export const FUEL_TYPES = ["Electric", "Petrol", "Hybrid", "LPG"] as const;
 export const BODY_TYPES = [
   "SUV",
   "Sedan",
