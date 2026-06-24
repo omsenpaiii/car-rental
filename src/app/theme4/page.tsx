@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, Calendar, Clock, MapPin, Compass, DollarSign, 
-  ShieldCheck, HelpCircle, Star, Sparkles, Plus, AlertCircle, Info, ChevronDown 
+  ShieldCheck, HelpCircle, Star, Sparkles, Plus, AlertCircle, Info, ChevronDown, Heart 
 } from "lucide-react";
 import { AuthPanel } from "@/components/portal/auth-panel";
 import { useAuth } from "@/components/portal/auth-provider";
@@ -77,6 +77,50 @@ function Theme4HomePageContent() {
   const [personalCarsError, setPersonalCarsError] = useState<string | null>(null);
   const [listingError, setListingError] = useState<string | null>(null);
   const [isSubmittingListing, setIsSubmittingListing] = useState(false);
+
+  // Shortlist State & Sync
+  const [shortlist, setShortlist] = useState<string[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("shortlisted_cars");
+    if (saved) {
+      try {
+        setShortlist(JSON.parse(saved));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    const handleUpdate = () => {
+      const current = localStorage.getItem("shortlisted_cars");
+      if (current) {
+        try {
+          setShortlist(JSON.parse(current));
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        setShortlist([]);
+      }
+    };
+
+    window.addEventListener("shortlistUpdated", handleUpdate);
+    return () => window.removeEventListener("shortlistUpdated", handleUpdate);
+  }, []);
+
+  const toggleShortlist = (carId: string) => {
+    let updated = [...shortlist];
+    if (updated.includes(carId)) {
+      updated = updated.filter((id) => id !== carId);
+    } else {
+      updated.push(carId);
+    }
+    setShortlist(updated);
+    localStorage.setItem("shortlisted_cars", JSON.stringify(updated));
+    window.dispatchEvent(new Event("shortlistUpdated"));
+  };
+
+  const isShortlisted = (carId: string) => shortlist.includes(carId);
 
   // RTO Calculator State
   const [rtoCalcValue, setRtoCalcValue] = useState(40000);
@@ -513,6 +557,17 @@ function Theme4HomePageContent() {
                             alt={car.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              toggleShortlist(car.id);
+                            }}
+                            className="absolute top-4 right-4 z-10 size-8 rounded-full bg-white/90 hover:bg-white text-gray-700 hover:text-red-500 flex items-center justify-center shadow-md transition-colors"
+                          >
+                            <Heart className={`size-4.5 ${isShortlisted(car.id) ? "fill-red-500 text-red-500" : ""}`} />
+                          </button>
                           {car.isAllStarHost && (
                             <span className="absolute top-4 left-4 bg-turo-purple text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
                               All-Star Host
@@ -908,6 +963,17 @@ function Theme4HomePageContent() {
                             alt={car.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              toggleShortlist(car.id);
+                            }}
+                            className="absolute top-4 right-4 z-10 size-8 rounded-full bg-white/90 hover:bg-white text-gray-700 hover:text-red-500 flex items-center justify-center shadow-md transition-colors"
+                          >
+                            <Heart className={`size-4.5 ${isShortlisted(car.id) ? "fill-red-500 text-red-500" : ""}`} />
+                          </button>
                           <span className="absolute top-4 left-4 bg-turo-purple text-white text-[9px] font-black px-2.5 py-1.5 rounded-full uppercase tracking-wider shadow-md">
                             Rent to Own
                           </span>
@@ -1099,6 +1165,17 @@ function Theme4HomePageContent() {
                           alt={car.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleShortlist(car.id);
+                          }}
+                          className="absolute top-4 right-4 z-10 size-8 rounded-full bg-white/90 hover:bg-white text-gray-700 hover:text-red-500 flex items-center justify-center shadow-md transition-colors"
+                        >
+                          <Heart className={`size-4.5 ${isShortlisted(car.id) ? "fill-red-500 text-red-500" : ""}`} />
+                        </button>
                         <div className="absolute top-4 left-4 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-md">
                           For Sale
                         </div>

@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, SlidersHorizontal, Map, Grid, List, Star, 
-  MapPin, Calendar, Check, Compass, ChevronDown, RefreshCw 
+  MapPin, Calendar, Check, Compass, ChevronDown, RefreshCw, Heart 
 } from "lucide-react";
 import { turoCars, TuroCar } from "@/lib/theme4-data";
 
@@ -31,13 +31,68 @@ function Theme4SearchPageContent() {
   // Active filters
   const [sortBy, setSortBy] = useState<"relevance" | "priceLow" | "priceHigh" | "rating">("relevance");
   const [selectedCategory, setSelectedCategory] = useState<string>(initCategory);
-  const [maxPrice, setMaxPrice] = useState<number>(initMode === "rto" ? 2500 : 300);
-  const [selectedTransmission, setSelectedTransmission] = useState<string>("");
-  const [selectedFuelType, setSelectedFuelType] = useState<string>("");
+  const [selectedMake, setSelectedMake] = useState<string>(initMake);
+  const [selectedYear, setSelectedYear] = useState<string>(searchParams.get("year") || "");
+  const [selectedBodyType, setSelectedBodyType] = useState<string>(searchParams.get("bodyType") || "");
+  const [selectedOdometer, setSelectedOdometer] = useState<string>(searchParams.get("odometer") || "");
+  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get("query") || "");
+  
+  const [maxPrice, setMaxPrice] = useState<number>(
+    searchParams.get("price") 
+      ? Number(searchParams.get("price")) 
+      : (initMode === "rto" ? 2500 : 300)
+  );
+  const [selectedTransmission, setSelectedTransmission] = useState<string>(searchParams.get("transmission") || "");
+  const [selectedFuelType, setSelectedFuelType] = useState<string>(searchParams.get("fuel") || "");
+  
   const [showMap, setShowMap] = useState<boolean>(true);
   const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
   const [hoveredCarId, setHoveredCarId] = useState<string | null>(null);
   const [personalCars, setPersonalCars] = useState<TuroCar[]>([]);
+
+  // Shortlist State & Sync
+  const [shortlist, setShortlist] = useState<string[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("shortlisted_cars");
+    if (saved) {
+      try {
+        setShortlist(JSON.parse(saved));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    const handleUpdate = () => {
+      const current = localStorage.getItem("shortlisted_cars");
+      if (current) {
+        try {
+          setShortlist(JSON.parse(current));
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        setShortlist([]);
+      }
+    };
+
+    window.addEventListener("shortlistUpdated", handleUpdate);
+    return () => window.removeEventListener("shortlistUpdated", handleUpdate);
+  }, []);
+
+  const toggleShortlist = (carId: string) => {
+    let updated = [...shortlist];
+    if (updated.includes(carId)) {
+      updated = updated.filter((id) => id !== carId);
+    } else {
+      updated.push(carId);
+    }
+    setShortlist(updated);
+    localStorage.setItem("shortlisted_cars", JSON.stringify(updated));
+    window.dispatchEvent(new Event("shortlistUpdated"));
+  };
+
+  const isShortlisted = (carId: string) => shortlist.includes(carId);
 
   useEffect(() => {
     let isActive = true;
@@ -68,27 +123,36 @@ function Theme4SearchPageContent() {
     };
   }, []);
 
+  // Sync URL search params to React states
   useEffect(() => {
-    if (initCategory) {
-      queueMicrotask(() => {
-        setSelectedCategory(initCategory);
-      });
-    }
-  }, [initCategory]);
+    const make = searchParams.get("make") || "";
+    const category = searchParams.get("category") || "";
+    const fuel = searchParams.get("fuel") || "";
+    const transmission = searchParams.get("transmission") || "";
+    const priceStr = searchParams.get("price");
+    const year = searchParams.get("year") || "";
+    const bodyType = searchParams.get("bodyType") || "";
+    const odometer = searchParams.get("odometer") || "";
+    const query = searchParams.get("query") || "";
+    const mode = searchParams.get("mode") || "rent";
+    const loc = searchParams.get("location") || "Melbourne, VIC";
 
-  useEffect(() => {
-    if (initMode === "rto") {
-      queueMicrotask(() => {
-        setSearchMode("rto");
-        setMaxPrice(2500);
-      });
+    setSelectedMake(make);
+    setSelectedCategory(category);
+    setSelectedFuelType(fuel);
+    setSelectedTransmission(transmission);
+    if (priceStr) {
+      setMaxPrice(Number(priceStr));
     } else {
-      queueMicrotask(() => {
-        setSearchMode("rent");
-        setMaxPrice(300);
-      });
+      setMaxPrice(mode === "rto" ? 2500 : 300);
     }
-  }, [initMode]);
+    setSelectedYear(year);
+    setSelectedBodyType(bodyType);
+    setSelectedOdometer(odometer);
+    setSearchQuery(query);
+    setSearchMode(mode === "rto" ? "rto" : "rent");
+    setLocation(loc);
+  }, [searchParams]);
 
   // Handle Location/Date Search Bar submit
   const handleSearchBarSubmit = (e: React.FormEvent) => {
@@ -101,20 +165,26 @@ function Theme4SearchPageContent() {
   // Reset Filters
   const resetFilters = () => {
     setSelectedCategory("");
-    setMaxPrice(searchMode === "rto" ? 2500 : 300);
+    setSelectedMake("");
+    setSelectedYear("");
+    setSelectedBodyType("");
+    setSelectedOdometer("");
     setSelectedTransmission("");
     setSelectedFuelType("");
+    setSearchQuery("");
+    setMaxPrice(searchMode === "rto" ? 2500 : 300);
     setSortBy("relevance");
+    router.push(`/search?mode=${searchMode}&location=${encodeURIComponent(location)}&pickup=${pickupDate}&return=${returnDate}`);
   };
 
   // Filter & Sort Logic
   const filteredCars = useMemo(() => {
     let result = personalCars.length ? [...personalCars] : [...turoCars];
 
-    // Filter by Brand/Make (if search came from home make categories)
-    if (initMake) {
+    // Filter by Brand/Make
+    if (selectedMake) {
       result = result.filter(
-        (car) => car.make.toLowerCase() === initMake.toLowerCase()
+        (car) => car.make.toLowerCase() === selectedMake.toLowerCase()
       );
     }
 
@@ -154,6 +224,50 @@ function Theme4SearchPageContent() {
       );
     }
 
+    // Filter by Year
+    if (selectedYear) {
+      result = result.filter(
+        (car) => car.year.toString() === selectedYear
+      );
+    }
+
+    // Filter by Body Type
+    if (selectedBodyType) {
+      result = result.filter(
+        (car) => car.bodyType && car.bodyType.toLowerCase() === selectedBodyType.toLowerCase()
+      );
+    }
+
+    // Filter by Odometer / KM Driven
+    if (selectedOdometer) {
+      result = result.filter((car) => {
+        if (!car.odometer) return true;
+        const odo = car.odometer;
+        if (selectedOdometer === "< 20,000") {
+          return odo < 20000;
+        } else if (selectedOdometer === "20,000 - 50,000") {
+          return odo >= 20000 && odo <= 50000;
+        } else if (selectedOdometer === "> 50,000") {
+          return odo > 50000;
+        }
+        return true;
+      });
+    }
+
+    // Filter by search Query keyword
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (car) =>
+          car.name.toLowerCase().includes(q) ||
+          car.make.toLowerCase().includes(q) ||
+          car.model.toLowerCase().includes(q) ||
+          car.category.toLowerCase().includes(q) ||
+          car.fuelType.toLowerCase().includes(q) ||
+          car.description.toLowerCase().includes(q)
+      );
+    }
+
     // Sorting
     if (sortBy === "priceLow") {
       if (searchMode === "rto") {
@@ -181,13 +295,17 @@ function Theme4SearchPageContent() {
 
     return result;
   }, [
-    initMake,
-    maxPrice,
     personalCars,
-    searchMode,
+    selectedMake,
     selectedCategory,
-    selectedFuelType,
+    searchMode,
+    maxPrice,
     selectedTransmission,
+    selectedFuelType,
+    selectedYear,
+    selectedBodyType,
+    selectedOdometer,
+    searchQuery,
     sortBy,
   ]);
 
@@ -448,6 +566,17 @@ function Theme4SearchPageContent() {
                           alt={car.name}
                           className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
                         />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleShortlist(car.id);
+                          }}
+                          className="absolute bottom-4 right-4 z-10 size-8 rounded-full bg-white/90 hover:bg-white text-gray-700 hover:text-red-500 flex items-center justify-center shadow-md transition-colors"
+                        >
+                          <Heart className={`size-4.5 ${isShortlisted(car.id) ? "fill-red-500 text-red-500" : ""}`} />
+                        </button>
                         {car.isAllStarHost && (
                           <span className="absolute top-4 left-4 bg-turo-purple text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
                             All-Star Host
