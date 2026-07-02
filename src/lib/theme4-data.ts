@@ -14,7 +14,7 @@ export type TuroCar = {
   image: string;
   location: string;
   transmission: "Automatic" | "Manual";
-  fuelType: "Electric" | "Petrol" | "Hybrid" | "LPG";
+  fuelType: "Electric" | "Petrol" | "Diesel" | "Hybrid" | "LPG";
   seats: number;
   bodyType?: string;
   colour?: string;

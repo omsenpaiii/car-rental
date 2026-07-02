@@ -14,7 +14,7 @@ export type ListingStatus = (typeof LISTING_STATUSES)[number];
 
 export const VEHICLE_CATEGORIES = ["Electric", "Sport", "SUV", "Luxury", "Classic"] as const;
 export const TRANSMISSIONS = ["Automatic", "Manual"] as const;
-export const FUEL_TYPES = ["Electric", "Petrol", "Hybrid", "LPG"] as const;
+export const FUEL_TYPES = ["Electric", "Petrol", "Diesel", "Hybrid", "LPG"] as const;
 export const BODY_TYPES = [
   "SUV",
   "Sedan",
@@ -232,6 +232,15 @@ export function toVehicleListingInsert(input: VehicleListingInput, ownerId: stri
   const category = input.category ?? inferCategory(input.make, input.model);
   const fuelType = input.fuelType ?? inferFuelType(input.make);
   const pricePerDay = input.enableRent ? input.pricePerDay ?? null : null;
+  const features = [
+    input.bodyType,
+    input.colour?.trim() ? `${input.colour.trim()} exterior` : null,
+    input.odometer != null ? `${input.odometer.toLocaleString()} km odometer` : null,
+    input.hasLeatherSeats ? "Leather seats" : null,
+    input.hasFourByFour ? "4x4" : null,
+    "Bluetooth",
+    "GPS",
+  ].filter((feature): feature is string => Boolean(feature));
 
   return {
     owner_id: ownerId,
@@ -258,15 +267,7 @@ export function toVehicleListingInsert(input: VehicleListingInput, ownerId: stri
     has_leather_seats: input.hasLeatherSeats,
     has_4x4: input.hasFourByFour,
     description: input.description?.trim() || null,
-    features: [
-      input.bodyType,
-      input.colour?.trim() ? `${input.colour.trim()} exterior` : null,
-      input.odometer != null ? `${input.odometer.toLocaleString()} km odometer` : null,
-      input.hasLeatherSeats ? "Leather seats" : null,
-      input.hasFourByFour ? "4x4" : null,
-      "Bluetooth",
-      "GPS",
-    ].filter(Boolean),
+    features,
     image_url: input.imageUrl?.trim() || inferImage(input.make),
     owner_display_name: input.contactName.trim(),
     owner_email: input.contactEmail.trim().toLowerCase(),

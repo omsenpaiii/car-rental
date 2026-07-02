@@ -701,7 +701,16 @@ export function PortalShell({
   children: React.ReactNode;
 }) {
   const { user, profile, isLoading, logout } = useAuth();
+  const pathname = usePathname();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+
+  if (pathname?.startsWith("/theme5")) {
+    return (
+      <div className="min-h-screen bg-white font-sans antialiased">
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white text-turo-dark flex flex-col font-sans antialiased">
