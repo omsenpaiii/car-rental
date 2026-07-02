@@ -31,24 +31,22 @@ import {
 import type { TuroCar } from "@/lib/theme4-data";
 
 export const theme5Button =
-  "inline-flex items-center justify-center gap-2 rounded-full bg-[#1157d9] px-5 py-3 text-sm font-black text-white shadow-[0_18px_36px_rgba(17,87,217,0.24)] transition hover:bg-[#0d48b4]";
+  "inline-flex items-center justify-center gap-2 rounded-[6px] bg-[#6b22f6] px-5 py-3 text-sm font-black text-white shadow-[0_16px_30px_rgba(107,34,246,0.28)] transition hover:bg-[#5718d9]";
 
 export const theme5SecondaryButton =
-  "inline-flex items-center justify-center gap-2 rounded-full border border-[#d8e3f4] bg-white px-5 py-3 text-sm font-black text-[#10213f] transition hover:border-[#1157d9] hover:text-[#1157d9]";
+  "inline-flex items-center justify-center gap-2 rounded-[6px] border border-[#d6dff1] bg-white px-5 py-3 text-sm font-black text-[#111827] transition hover:border-[#185ee8] hover:text-[#185ee8]";
 
 export function PhillipsMark({ compact = false, inverse = false }: { compact?: boolean; inverse?: boolean }) {
   return (
-    <Link href="/theme5" className="flex items-center gap-3">
-      <span className="flex size-10 items-center justify-center rounded-[14px] bg-[#1157d9] font-heading text-lg font-black text-white shadow-lg shadow-blue-600/20">
-        P
+    <Link href="/theme5" className="flex items-end gap-2">
+      <span className={`font-heading text-[29px] font-black italic uppercase leading-none ${inverse ? "text-white" : "text-[#185ee8]"}`}>
+        PHILL<span className="text-[#ffbd16]">I</span>PS
       </span>
+      <span className="mb-0.5 h-3 w-1.5 skew-x-[-18deg] rounded-sm bg-[#ffbd16]" />
       <span className="leading-none">
-        <span className={`block font-heading text-[19px] font-black uppercase tracking-normal ${inverse ? "text-white" : "text-[#10213f]"}`}>
-          Phillips
-        </span>
         {!compact ? (
-          <span className={`block text-[10px] font-black uppercase tracking-normal ${inverse ? "text-white/60" : "text-[#6b7b96]"}`}>
-            Car marketplace
+          <span className={`hidden text-[10px] font-black uppercase tracking-normal sm:block ${inverse ? "text-white/60" : "text-[#6b7b96]"}`}>
+            Cars
           </span>
         ) : null}
       </span>
@@ -71,8 +69,8 @@ export function Theme5Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-[#e4ebf7] bg-white/95 backdrop-blur-xl">
-        <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-40 border-b border-[#e8edf6] bg-white/96 backdrop-blur-xl">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <PhillipsMark />
           <nav className="hidden items-center gap-1 md:flex">
             {navItems.map((item) => {
@@ -81,8 +79,8 @@ export function Theme5Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`rounded-full px-4 py-2 text-sm font-black ${
-                    active ? "bg-[#edf4ff] text-[#1157d9]" : "text-[#4d5c73] hover:bg-[#f3f7fd]"
+                  className={`rounded-[6px] px-4 py-2 text-sm font-black ${
+                    active ? "bg-[#eaf1ff] text-[#185ee8]" : "text-[#4d5c73] hover:bg-[#f3f7fd]"
                   }`}
                 >
                   {item.label}
@@ -114,7 +112,7 @@ export function Theme5Header() {
           </div>
           <button
             type="button"
-            className="flex size-11 items-center justify-center rounded-full border border-[#d8e3f4] text-[#10213f] md:hidden"
+            className="flex size-11 items-center justify-center rounded-full border border-[#d8e3f4] text-[#111827] md:hidden"
             onClick={() => setMenuOpen((current) => !current)}
             aria-label="Toggle menu"
           >
@@ -128,7 +126,7 @@ export function Theme5Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-2xl px-4 py-3 text-sm font-black text-[#10213f] hover:bg-[#f3f7fd]"
+                  className="rounded-[6px] px-4 py-3 text-sm font-black text-[#111827] hover:bg-[#f3f7fd]"
                   onClick={() => setMenuOpen(false)}
                 >
                   {item.label}
@@ -141,7 +139,7 @@ export function Theme5Header() {
                     setMenuOpen(false);
                     void logout();
                   }}
-                  className="rounded-2xl px-4 py-3 text-left text-sm font-black text-[#10213f] hover:bg-[#f3f7fd]"
+                  className="rounded-[6px] px-4 py-3 text-left text-sm font-black text-[#111827] hover:bg-[#f3f7fd]"
                 >
                   Log out
                 </button>
@@ -152,7 +150,7 @@ export function Theme5Header() {
                     setMenuOpen(false);
                     setAuthOpen(true);
                   }}
-                  className="rounded-2xl px-4 py-3 text-left text-sm font-black text-[#10213f] hover:bg-[#f3f7fd]"
+                  className="rounded-[6px] px-4 py-3 text-left text-sm font-black text-[#111827] hover:bg-[#f3f7fd]"
                 >
                   Log in or register
                 </button>
@@ -168,7 +166,7 @@ export function Theme5Header() {
 
 export function Theme5Footer() {
   return (
-    <footer className="border-t border-[#e4ebf7] bg-[#07111f] px-4 py-12 text-white sm:px-6 lg:px-8">
+    <footer className="border-t border-[#0f4bd0] bg-[#185ee8] px-4 py-12 text-white sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.1fr_1fr_1fr_1fr]">
         <div>
           <PhillipsMark compact inverse />
@@ -197,7 +195,7 @@ export function Theme5Footer() {
 
 export function Theme5Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#f7faff] text-[#10213f]">
+    <div className="min-h-screen bg-[#f3f6fb] text-[#111827]">
       <Theme5Header />
       {children}
       <Theme5Footer />
@@ -217,7 +215,7 @@ export function Theme5AuthModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#07111f]/70 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#185ee8]/70 p-4 backdrop-blur-sm">
       <div className="w-full max-w-md">
         <button
           type="button"
@@ -283,7 +281,7 @@ export function Theme5CarCard({ car, mode }: { car: TuroCar; mode: Theme5Mode })
   return (
     <Link
       href={`/theme5/car/${car.id}?mode=${mode}`}
-      className="group overflow-hidden rounded-[8px] border border-[#dfe7f3] bg-white shadow-[0_18px_50px_rgba(16,33,63,0.08)] transition hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(16,33,63,0.14)]"
+      className="group overflow-hidden rounded-[8px] border border-[#d9e1ef] bg-white shadow-[0_18px_36px_rgba(17,24,39,0.10)] transition hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(24,94,232,0.18)]"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-[#eaf1fb]">
         <Image
@@ -293,29 +291,29 @@ export function Theme5CarCard({ car, mode }: { car: TuroCar; mode: Theme5Mode })
           sizes="(max-width: 768px) 100vw, 33vw"
           className="object-cover transition duration-500 group-hover:scale-105"
         />
-        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-black text-[#1157d9]">
+        <span className="absolute left-3 top-3 rounded-[4px] bg-[#ffbd16] px-3 py-1 text-xs font-black text-[#111827]">
           {car.bodyType || car.category}
         </span>
       </div>
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-lg font-black text-[#10213f]">{car.name}</h3>
+            <h3 className="text-lg font-black text-[#111827]">{car.name}</h3>
             <p className="mt-1 flex items-center gap-1.5 text-xs font-bold text-[#60728d]">
               <MapPin size={14} />
               {car.location}
             </p>
           </div>
-          <Heart className="size-5 text-[#1157d9]" />
+          <Heart className="size-5 text-[#185ee8]" />
         </div>
         <div className="mt-5 flex items-end justify-between gap-3">
           <div>
-            <div className="text-2xl font-black text-[#10213f]">{formatMoney(price)}</div>
+            <div className="text-2xl font-black text-[#111827]">{formatMoney(price)}</div>
             <div className="text-xs font-bold uppercase tracking-normal text-[#7a8aa3]">
               {getModeUnit(mode)}
             </div>
           </div>
-          <span className="inline-flex items-center gap-1 rounded-full bg-[#fff4d6] px-3 py-1 text-xs font-black text-[#9a6b00]">
+          <span className="inline-flex items-center gap-1 rounded-[4px] bg-[#fff4d6] px-3 py-1 text-xs font-black text-[#9a6b00]">
             {car.rating.toFixed(2)}
           </span>
         </div>
@@ -338,8 +336,8 @@ export function Theme5CarCard({ car, mode }: { car: TuroCar; mode: Theme5Mode })
 export function Theme5EmptyState({ title, body }: { title: string; body: string }) {
   return (
     <div className="rounded-[8px] border border-dashed border-[#cbd8ea] bg-white p-10 text-center">
-      <ShieldCheck className="mx-auto size-10 text-[#1157d9]" />
-      <h3 className="mt-4 text-xl font-black text-[#10213f]">{title}</h3>
+      <ShieldCheck className="mx-auto size-10 text-[#185ee8]" />
+      <h3 className="mt-4 text-xl font-black text-[#111827]">{title}</h3>
       <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-[#60728d]">{body}</p>
     </div>
   );
@@ -365,24 +363,24 @@ export function Theme5SearchBar({
         if (location) params.set("location", location);
         router.push(`/theme5/search?${params.toString()}`);
       }}
-      className="grid gap-3 rounded-[8px] border border-[#dfe7f3] bg-white p-3 shadow-[0_20px_60px_rgba(16,33,63,0.12)] md:grid-cols-[1fr_1fr_auto]"
+      className="grid gap-3 rounded-[8px] border border-[#d8e1f2] bg-white p-3 shadow-[0_20px_50px_rgba(17,24,39,0.16)] md:grid-cols-[1fr_1fr_auto]"
     >
-      <label className="flex min-h-12 items-center gap-3 rounded-[6px] bg-[#f4f8fe] px-4">
-        <Search size={18} className="text-[#1157d9]" />
+      <label className="flex min-h-12 items-center gap-3 rounded-[6px] bg-[#f1f5fb] px-4">
+        <Search size={18} className="text-[#185ee8]" />
         <input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search make, model, fuel, body"
-          className="w-full bg-transparent text-sm font-bold text-[#10213f] outline-none placeholder:text-[#7a8aa3]"
+          className="w-full bg-transparent text-sm font-bold text-[#111827] outline-none placeholder:text-[#7a8aa3]"
         />
       </label>
-      <label className="flex min-h-12 items-center gap-3 rounded-[6px] bg-[#f4f8fe] px-4">
-        <MapPin size={18} className="text-[#1157d9]" />
+      <label className="flex min-h-12 items-center gap-3 rounded-[6px] bg-[#f1f5fb] px-4">
+        <MapPin size={18} className="text-[#185ee8]" />
         <input
           value={location}
           onChange={(event) => setLocation(event.target.value)}
           placeholder="Melbourne, VIC"
-          className="w-full bg-transparent text-sm font-bold text-[#10213f] outline-none placeholder:text-[#7a8aa3]"
+          className="w-full bg-transparent text-sm font-bold text-[#111827] outline-none placeholder:text-[#7a8aa3]"
         />
       </label>
       <button className={theme5Button}>
@@ -408,7 +406,7 @@ export function Theme5ModeTabs({
           type="button"
           onClick={() => onChange(mode.value)}
           className={`rounded-[6px] px-4 py-3 text-sm font-black ${
-            value === mode.value ? "bg-[#1157d9] text-white" : "text-[#60728d] hover:bg-[#f4f8fe]"
+            value === mode.value ? "bg-[#185ee8] text-white" : "text-[#60728d] hover:bg-[#f4f8fe]"
           }`}
         >
           {mode.shortLabel}

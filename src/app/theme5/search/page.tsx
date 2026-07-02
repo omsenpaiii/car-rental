@@ -59,7 +59,7 @@ function Theme5SearchContent() {
   return (
     <Theme5Shell>
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <section className="rounded-[8px] bg-[#07111f] p-6 text-white sm:p-8">
+        <section className="rounded-[8px] bg-[#185ee8] p-6 text-white sm:p-8">
           <h1 className="font-heading text-4xl font-black uppercase sm:text-6xl">Find your car</h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-white/70">
             Filter real Phillips marketplace inventory by body type, kms, fuel, transmission, seats, price, and availability mode.
@@ -72,11 +72,11 @@ function Theme5SearchContent() {
         <section className="mt-6 grid gap-6 lg:grid-cols-[320px_1fr]">
           <aside className="h-fit rounded-[8px] border border-[#dfe7f3] bg-white p-4 shadow-sm lg:sticky lg:top-24">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-black uppercase tracking-normal text-[#10213f]">Filters</h2>
+              <h2 className="text-sm font-black uppercase tracking-normal text-[#111827]">Filters</h2>
               <button
                 type="button"
                 onClick={() => updateFilters({ ...defaultTheme5Filters, mode: filters.mode, price: filters.mode === "sale" ? 90000 : filters.mode === "rent_to_own" ? 5000 : 500 })}
-                className="flex items-center gap-1 text-xs font-black text-[#1157d9]"
+                className="flex items-center gap-1 text-xs font-black text-[#185ee8]"
               >
                 <RefreshCw size={13} />
                 Reset
@@ -87,7 +87,7 @@ function Theme5SearchContent() {
               <label className="grid gap-2">
                 <span className="text-xs font-black uppercase tracking-normal text-[#60728d]">Search</span>
                 <div className="flex items-center gap-2 rounded-[6px] bg-[#f4f8fe] px-3">
-                  <Search size={16} className="text-[#1157d9]" />
+                  <Search size={16} className="text-[#185ee8]" />
                   <input
                     value={filters.query}
                     onChange={(event) => updateFilters({ query: event.target.value })}
@@ -103,7 +103,7 @@ function Theme5SearchContent() {
                   <select
                     value={String(filters[field.key] ?? "")}
                     onChange={(event) => updateFilters({ [field.key]: event.target.value } as Partial<Theme5Filters>)}
-                    className="h-11 rounded-[6px] border border-[#dfe7f3] bg-white px-3 text-sm font-bold text-[#10213f] outline-none focus:border-[#1157d9]"
+                    className="h-11 rounded-[6px] border border-[#dfe7f3] bg-white px-3 text-sm font-bold text-[#111827] outline-none focus:border-[#185ee8]"
                   >
                     {field.options.map((option) => (
                       <option key={option || "any"} value={option}>
@@ -125,7 +125,7 @@ function Theme5SearchContent() {
                   step={filters.mode === "sale" ? 5000 : filters.mode === "rent_to_own" ? 250 : 25}
                   value={filters.price}
                   onChange={(event) => updateFilters({ price: Number(event.target.value) })}
-                  className="accent-[#1157d9]"
+                  className="accent-[#185ee8]"
                 />
               </label>
             </div>
@@ -134,7 +134,7 @@ function Theme5SearchContent() {
           <section>
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm font-black text-[#10213f]">
+                <p className="text-sm font-black text-[#111827]">
                   {isLoading ? "Loading listings..." : `${filteredCars.length} matching cars`}
                 </p>
                 <p className="text-xs font-semibold text-[#60728d]">Authenticated actions save to your Phillips account.</p>
@@ -142,7 +142,7 @@ function Theme5SearchContent() {
               <select
                 value={filters.sort}
                 onChange={(event) => updateFilters({ sort: event.target.value as Theme5Filters["sort"] })}
-                className="h-11 rounded-[6px] border border-[#dfe7f3] bg-white px-3 text-sm font-bold text-[#10213f] outline-none"
+                className="h-11 rounded-[6px] border border-[#dfe7f3] bg-white px-3 text-sm font-bold text-[#111827] outline-none"
               >
                 <option value="recommended">Recommended</option>
                 <option value="price_low">Price: low to high</option>

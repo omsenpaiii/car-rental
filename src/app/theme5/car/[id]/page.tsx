@@ -143,7 +143,7 @@ function Theme5CarDetailContent() {
             <div className="mt-8">
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
-                  <h1 className="font-heading text-4xl font-black uppercase leading-none text-[#10213f] sm:text-6xl">
+                  <h1 className="font-heading text-4xl font-black uppercase leading-none text-[#111827] sm:text-6xl">
                     {car.name}
                   </h1>
                   <p className="mt-3 flex items-center gap-2 text-sm font-bold text-[#60728d]">
@@ -152,7 +152,7 @@ function Theme5CarDetailContent() {
                   </p>
                 </div>
                 <div className="rounded-[8px] border border-[#dfe7f3] bg-white px-5 py-4 text-right">
-                  <div className="text-3xl font-black text-[#10213f]">{formatMoney(price)}</div>
+                  <div className="text-3xl font-black text-[#111827]">{formatMoney(price)}</div>
                   <div className="text-xs font-black uppercase tracking-normal text-[#60728d]">{getModeUnit(activeMode)}</div>
                 </div>
               </div>
@@ -167,19 +167,19 @@ function Theme5CarDetailContent() {
                   const TypedIcon = Icon as typeof Fuel;
                   return (
                     <div key={label as string} className="rounded-[8px] border border-[#dfe7f3] bg-white p-4">
-                      <TypedIcon className="text-[#1157d9]" size={20} />
-                      <div className="mt-2 text-sm font-black text-[#10213f]">{label as string}</div>
+                      <TypedIcon className="text-[#185ee8]" size={20} />
+                      <div className="mt-2 text-sm font-black text-[#111827]">{label as string}</div>
                     </div>
                   );
                 })}
               </div>
 
               <div className="mt-8 rounded-[8px] border border-[#dfe7f3] bg-white p-6">
-                <h2 className="text-2xl font-black text-[#10213f]">Vehicle details</h2>
+                <h2 className="text-2xl font-black text-[#111827]">Vehicle details</h2>
                 <p className="mt-3 text-sm leading-7 text-[#60728d]">{car.description}</p>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {detailFeatures.map((feature) => (
-                    <span key={feature} className="rounded-full bg-[#eef5ff] px-3 py-1 text-xs font-black text-[#1157d9]">
+                    <span key={feature} className="rounded-full bg-[#eef5ff] px-3 py-1 text-xs font-black text-[#185ee8]">
                       {feature}
                     </span>
                   ))}
@@ -191,7 +191,7 @@ function Theme5CarDetailContent() {
           <aside className="h-fit rounded-[8px] border border-[#dfe7f3] bg-white p-5 shadow-[0_18px_60px_rgba(16,33,63,0.10)] lg:sticky lg:top-24">
             <Theme5ModeTabs value={activeMode} onChange={setMode} />
             <div className="mt-5 rounded-[8px] bg-[#f4f8fe] p-4">
-              <div className="text-3xl font-black text-[#10213f]">{formatMoney(price)}</div>
+              <div className="text-3xl font-black text-[#111827]">{formatMoney(price)}</div>
               <div className="text-xs font-black uppercase tracking-normal text-[#60728d]">{getModeUnit(activeMode)}</div>
             </div>
 
@@ -200,18 +200,18 @@ function Theme5CarDetailContent() {
                 <div className="grid grid-cols-2 gap-3">
                   <label className="grid gap-2 text-xs font-black uppercase tracking-normal text-[#60728d]">
                     Pickup
-                    <input type="date" value={pickupDate} onChange={(event) => setPickupDate(event.target.value)} className="h-11 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#10213f]" />
+                    <input type="date" value={pickupDate} onChange={(event) => setPickupDate(event.target.value)} className="h-11 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#111827]" />
                   </label>
                   <label className="grid gap-2 text-xs font-black uppercase tracking-normal text-[#60728d]">
                     Return
-                    <input type="date" value={returnDate} min={pickupDate} onChange={(event) => setReturnDate(event.target.value)} className="h-11 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#10213f]" />
+                    <input type="date" value={returnDate} min={pickupDate} onChange={(event) => setReturnDate(event.target.value)} className="h-11 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#111827]" />
                   </label>
                 </div>
               ) : null}
 
               <label className="grid gap-2 text-xs font-black uppercase tracking-normal text-[#60728d]">
                 Pickup or inspection location
-                <select value={deliveryLocation} onChange={(event) => setDeliveryLocation(event.target.value)} className="h-11 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#10213f]">
+                <select value={deliveryLocation} onChange={(event) => setDeliveryLocation(event.target.value)} className="h-11 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#111827]">
                   <option>Host location</option>
                   <option>Melbourne Airport</option>
                   <option>Melbourne CBD</option>
@@ -225,7 +225,7 @@ function Theme5CarDetailContent() {
                     <div className="flex justify-between"><span>{rentDays} days rental</span><strong>{formatMoney(car.pricePerDay * rentDays)}</strong></div>
                     <div className="flex justify-between"><span>Service fee</span><strong>{formatMoney(serviceFee)}</strong></div>
                     <div className="flex justify-between"><span>Delivery</span><strong>{formatMoney(deliveryFee)}</strong></div>
-                    <div className="flex justify-between border-t border-[#dfe7f3] pt-2 text-[#10213f]"><span>Total estimate</span><strong>{formatMoney(rentTotal)}</strong></div>
+                    <div className="flex justify-between border-t border-[#dfe7f3] pt-2 text-[#111827]"><span>Total estimate</span><strong>{formatMoney(rentTotal)}</strong></div>
                   </div>
                 ) : activeMode === "sale" ? (
                   <div className="grid gap-2">
@@ -244,11 +244,11 @@ function Theme5CarDetailContent() {
 
               <label className="grid gap-2 text-xs font-black uppercase tracking-normal text-[#60728d]">
                 Contact phone
-                <input value={requesterPhone} onChange={(event) => setRequesterPhone(event.target.value)} placeholder="0400 000 000" className="h-11 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#10213f]" />
+                <input value={requesterPhone} onChange={(event) => setRequesterPhone(event.target.value)} placeholder="0400 000 000" className="h-11 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#111827]" />
               </label>
               <label className="grid gap-2 text-xs font-black uppercase tracking-normal text-[#60728d]">
                 Message
-                <textarea value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Tell the owner what you need..." className="min-h-24 rounded-[6px] border border-[#dfe7f3] px-3 py-3 text-sm font-bold text-[#10213f]" />
+                <textarea value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Tell the owner what you need..." className="min-h-24 rounded-[6px] border border-[#dfe7f3] px-3 py-3 text-sm font-bold text-[#111827]" />
               </label>
 
               {error ? <p className="rounded-[6px] bg-red-50 px-3 py-2 text-xs font-bold text-red-700">{error}</p> : null}

@@ -103,7 +103,7 @@ export default function Theme5ListYourCarPage() {
   return (
     <Theme5Shell>
       <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-        <section className="rounded-[8px] bg-[#07111f] p-6 text-white sm:p-8">
+        <section className="rounded-[8px] bg-[#185ee8] p-6 text-white sm:p-8">
           <h1 className="font-heading text-4xl font-black uppercase sm:text-6xl">List your car</h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-white/70">
             Add vehicle specs, pricing, and owner contact details. New listings are saved to your account and sent for review.
@@ -112,8 +112,8 @@ export default function Theme5ListYourCarPage() {
 
         {!isLoading && !user ? (
           <section className="mt-8 rounded-[8px] border border-[#dfe7f3] bg-white p-8 text-center">
-            <LockKeyhole className="mx-auto size-10 text-[#1157d9]" />
-            <h2 className="mt-4 text-2xl font-black text-[#10213f]">Log in to list a car</h2>
+            <LockKeyhole className="mx-auto size-10 text-[#185ee8]" />
+            <h2 className="mt-4 text-2xl font-black text-[#111827]">Log in to list a car</h2>
             <p className="mx-auto mt-2 max-w-lg text-sm leading-7 text-[#60728d]">
               Your account stores draft ownership details, review status, and future renter or buyer enquiries.
             </p>
@@ -132,7 +132,7 @@ export default function Theme5ListYourCarPage() {
                   type="button"
                   onClick={() => setStep(index + 1)}
                   className={`rounded-[6px] px-3 py-3 text-xs font-black uppercase tracking-normal ${
-                    step === index + 1 ? "bg-[#1157d9] text-white" : "bg-[#f4f8fe] text-[#60728d]"
+                    step === index + 1 ? "bg-[#185ee8] text-white" : "bg-[#f4f8fe] text-[#60728d]"
                   }`}
                 >
                   {label}
@@ -158,7 +158,7 @@ export default function Theme5ListYourCarPage() {
                       value={String(form[key as keyof typeof form])}
                       onChange={(event) => update(key as keyof typeof form, event.target.value)}
                       placeholder={placeholder}
-                      className="h-12 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#10213f] outline-none focus:border-[#1157d9]"
+                      className="h-12 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#111827] outline-none focus:border-[#185ee8]"
                       required={!["colour", "imageUrl"].includes(key)}
                     />
                   </label>
@@ -171,7 +171,7 @@ export default function Theme5ListYourCarPage() {
                   <textarea
                     value={form.description}
                     onChange={(event) => update("description", event.target.value)}
-                    className="min-h-28 rounded-[6px] border border-[#dfe7f3] px-3 py-3 text-sm font-bold text-[#10213f] outline-none focus:border-[#1157d9]"
+                    className="min-h-28 rounded-[6px] border border-[#dfe7f3] px-3 py-3 text-sm font-bold text-[#111827] outline-none focus:border-[#185ee8]"
                     placeholder="Condition, service history, pickup notes, features..."
                   />
                 </label>
@@ -262,7 +262,7 @@ function TextField({
       <input
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-12 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#10213f] outline-none focus:border-[#1157d9]"
+        className="h-12 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#111827] outline-none focus:border-[#185ee8]"
         required
       />
     </label>
@@ -283,7 +283,7 @@ function SelectField({
   return (
     <label className="grid gap-2 text-xs font-black uppercase tracking-normal text-[#60728d]">
       {label}
-      <select value={value} onChange={(event) => onChange(event.target.value)} className="h-12 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#10213f] outline-none focus:border-[#1157d9]">
+      <select value={value} onChange={(event) => onChange(event.target.value)} className="h-12 rounded-[6px] border border-[#dfe7f3] px-3 text-sm font-bold text-[#111827] outline-none focus:border-[#185ee8]">
         {options.map((option) => (
           <option key={option} value={option}>
             {option}
@@ -304,8 +304,8 @@ function Checkbox({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <label className="flex items-center gap-3 rounded-[8px] border border-[#dfe7f3] bg-white p-4 text-sm font-black text-[#10213f]">
-      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="size-4 accent-[#1157d9]" />
+    <label className="flex items-center gap-3 rounded-[8px] border border-[#dfe7f3] bg-white p-4 text-sm font-black text-[#111827]">
+      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="size-4 accent-[#185ee8]" />
       {label}
     </label>
   );
